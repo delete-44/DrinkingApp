@@ -12,6 +12,13 @@ export const SPACING_SM = 8;
 export const SPACING_MD = 16;
 export const SPACING_LG = 24;
 
+const baseButton = {
+  backgroundColor: CONTENT_COLOR,
+  borderWidth: 5,
+  borderColor: DECORATION_COLOR,
+  borderRadius: SPACING_SM,
+};
+
 export default StyleSheet.create({
   rootBg: {
     backgroundColor: BACKGROUND_COLOR,
@@ -27,11 +34,21 @@ export default StyleSheet.create({
     fontSize: 20,
     color: CONTENT_COLOR,
   },
-  button: {
+  textInput: {
+    width: "80%",
     backgroundColor: CONTENT_COLOR,
     borderWidth: 5,
     borderColor: DECORATION_COLOR,
     borderRadius: SPACING_SM,
+    padding: SPACING_SM,
+    fontSize: 20,
+  },
+  buttonSm: {
+    ...baseButton,
+    padding: SPACING_SM,
+  },
+  button: {
+    ...baseButton,
     padding: SPACING_MD,
   },
   buttonText: {

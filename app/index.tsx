@@ -1,51 +1,15 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 
-import globalStyles, {
-  CONTENT_BACKDROP,
-  SPACING_MD,
-  SPACING_SM,
-} from "@/assets/global-styles";
+import globalStyles from "@/assets/global-styles";
+import DeckSelector from "@/components/DeckSelector";
+import PlayerList from "@/components/PlayerList";
 
 export default function Index() {
   return (
     <View style={globalStyles.rootBg}>
-      <View style={styles.deckSelector}>
-        <Text style={globalStyles.textLg}>Default</Text>
+      <DeckSelector />
 
-        <View style={styles.deckSelectorActions}>
-          <Pressable
-            style={globalStyles.button}
-            onPress={() => alert("Pressed Edit")}
-          >
-            <Text style={globalStyles.buttonText}>Edit</Text>
-          </Pressable>
-          <Pressable
-            style={globalStyles.button}
-            onPress={() => alert("Pressed New")}
-          >
-            <Text style={globalStyles.buttonText}>New</Text>
-          </Pressable>
-        </View>
-      </View>
+      <PlayerList />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  deckSelector: {
-    padding: SPACING_MD,
-    marginInline: "auto",
-
-    backgroundColor: CONTENT_BACKDROP,
-    borderRadius: SPACING_SM,
-
-    flexDirection: "column",
-    alignItems: "center",
-    gap: SPACING_MD,
-  },
-  deckSelectorActions: {
-    flexDirection: "row",
-    gap: SPACING_MD,
-    justifyContent: "space-between",
-  },
-});
