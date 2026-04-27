@@ -1,4 +1,4 @@
-import { StorageProvider } from "@/contexts/StorageContext";
+import { StorageProvider } from "@/context/StorageContext";
 import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
 

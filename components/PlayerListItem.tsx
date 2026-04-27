@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles, { SPACING_SM } from "@/assets/global-styles";
-import { StorageContext } from "@/contexts/StorageContext";
+import { StorageContext } from "@/context/StorageContext";
 import { useCallback, useContext } from "react";
 
 type PlayerListItemProps = {

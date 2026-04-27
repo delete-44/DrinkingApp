@@ -1,5 +1,5 @@
 import PlayerListItem from "@/components/PlayerListItem";
-import { StorageContext } from "@/contexts/StorageContext";
+import { StorageContext } from "@/context/StorageContext";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 describe("PlayerListItem", () => {
