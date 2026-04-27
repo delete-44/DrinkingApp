@@ -39,15 +39,13 @@ const styles = StyleSheet.create({
     backgroundColor: CONTENT_BACKDROP,
     borderRadius: SPACING_SM,
 
-    display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: SPACING_MD,
   },
   deckSelectorActions: {
-    display: "flex",
     flexDirection: "row",
-    flexWrap: "nowrap",
     gap: SPACING_MD,
+    justifyContent: "space-between",
   },
 });

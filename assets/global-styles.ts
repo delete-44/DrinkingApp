@@ -17,8 +17,7 @@ export default StyleSheet.create({
     backgroundColor: BACKGROUND_COLOR,
     paddingTop: Constants.statusBarHeight + SPACING_LG,
     paddingBottom: SPACING_LG,
-    height: "100%",
-    alignItems: "baseline",
+    flex: 1,
   },
   textLg: {
     fontSize: 24,
