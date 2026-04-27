@@ -33,15 +33,21 @@ export default StyleSheet.create({
   textMd: {
     fontSize: 20,
     color: CONTENT_COLOR,
+    flex: 1,
   },
   textInput: {
-    width: "80%",
+    flex: 1,
     backgroundColor: CONTENT_COLOR,
     borderWidth: 5,
     borderColor: DECORATION_COLOR,
     borderRadius: SPACING_SM,
     padding: SPACING_SM,
     fontSize: 20,
+  },
+  buttonHighlight: {
+    ...baseButton,
+    padding: SPACING_SM,
+    backgroundColor: HIGHLIGHT_COLOR,
   },
   buttonSm: {
     ...baseButton,

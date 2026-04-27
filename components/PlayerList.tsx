@@ -5,24 +5,59 @@ import globalStyles, {
   SPACING_MD,
   SPACING_SM,
 } from "@/assets/global-styles";
+import { StorageContext } from "@/contexts/StorageContext";
+import { useCallback, useContext, useState } from "react";
+import PlayerListItem from "./PlayerListItem";
 
 export default function PlayerList() {
+  const { players, savePlayers } = useContext(StorageContext);
+  const [newPlayer, setNewPlayer] = useState<string>("");
+
+  const addPlayer = useCallback(
+    (name: string) => {
+      const newPlayers = [...players];
+
+      if (!name.trim()) {
+        // TODO: Error state
+        console.warn("Player name cannot be empty");
+        return;
+      }
+
+      if (players.includes(name.trim())) {
+        // TODO: Error state
+        console.warn("Player already exists");
+        return;
+      }
+
+      newPlayers.push(name.trim());
+
+      savePlayers(newPlayers);
+
+      setNewPlayer("");
+    },
+    [players, savePlayers],
+  );
+
   return (
     <View style={styles.playerList}>
       <View style={styles.playerInputWrapper}>
-        <TextInput style={globalStyles.textInput} />
+        <TextInput
+          style={globalStyles.textInput}
+          value={newPlayer}
+          onChangeText={setNewPlayer}
+        />
 
         <Pressable
-          style={globalStyles.buttonSm}
-          onPress={() => alert("Pressed Add")}
+          style={globalStyles.buttonHighlight}
+          onPress={() => addPlayer(newPlayer)}
         >
           <Text style={globalStyles.buttonText}>+</Text>
         </Pressable>
       </View>
 
-      <Text>Delete</Text>
-
-      <Text>Rincewind</Text>
+      {players.map((player) => (
+        <PlayerListItem name={player} key={player} />
+      ))}
     </View>
   );
 }
