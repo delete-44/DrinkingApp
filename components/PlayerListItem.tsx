@@ -16,10 +16,14 @@ export default function PlayerListItem({ name }: PlayerListItemProps) {
       const newPlayers = [...players];
       const idx = newPlayers.indexOf(player);
 
-      if (idx > -1) {
-        newPlayers.splice(idx, 1);
+      if (idx === -1) {
+        // TODO: Error state
+        console.warn("Could not remove player");
+
+        return;
       }
 
+      newPlayers.splice(idx, 1);
       savePlayers(newPlayers);
     },
     [players, savePlayers],
@@ -29,6 +33,8 @@ export default function PlayerListItem({ name }: PlayerListItemProps) {
     <View style={styles.playerListItemWrapper}>
       <Text style={globalStyles.textMd}>{name}</Text>
       <Pressable
+        role="button"
+        accessibilityLabel="Remove Player"
         style={globalStyles.buttonSm}
         onPress={() => removePlayer(name)}
       >
