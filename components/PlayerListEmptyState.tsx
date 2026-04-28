@@ -22,8 +22,8 @@ const styles = StyleSheet.create({
     gap: SPACING_SM,
   },
   image: {
-    width: 100,
-    height: 200,
+    width: 50,
+    height: 150,
     resizeMode: "contain",
   },
 });

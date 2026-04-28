@@ -1,12 +1,15 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import { pencil } from "@/assets/icons/pencil";
+import { plus } from "@/assets/icons/plus";
 import {
   CONTENT_BACKDROP,
   CONTENT_COLOR,
   SPACING_MD,
   SPACING_SM,
 } from "@/assets/style-constants";
+import SVG from "./SVG";
 
 export default function DeckSelector() {
   return (
@@ -23,16 +26,18 @@ export default function DeckSelector() {
       <View style={styles.deckSelectorActions}>
         <Pressable
           role="button"
-          style={globalStyles.button}
+          style={globalStyles.buttonSm}
           onPress={() => alert("Pressed Edit")}
         >
+          <SVG icon={pencil} width={24} height={24} />
           <Text style={globalStyles.buttonText}>Edit</Text>
         </Pressable>
         <Pressable
           role="button"
-          style={globalStyles.button}
+          style={globalStyles.buttonSm}
           onPress={() => alert("Pressed New")}
         >
+          <SVG icon={plus} width={24} height={24} />
           <Text style={globalStyles.buttonText}>New</Text>
         </Pressable>
       </View>

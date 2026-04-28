@@ -1,9 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import { minus } from "@/assets/icons/minus";
 import { SPACING_SM } from "@/assets/style-constants";
 import { StorageContext } from "@/context/StorageContext";
 import { useCallback, useContext } from "react";
+import SVG from "./SVG";
 
 type PlayerListItemProps = {
   name: string;
@@ -39,7 +41,7 @@ export default function PlayerListItem({ name }: PlayerListItemProps) {
         style={globalStyles.buttonSm}
         onPress={() => removePlayer(name)}
       >
-        <Text style={globalStyles.buttonText}>x</Text>
+        <SVG icon={minus} width={24} height={24} />
       </Pressable>
     </View>
   );

@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TextStyle, ViewStyle } from "react-native";
 import {
   BACKGROUND_COLOR,
   CONTENT_COLOR,
@@ -16,7 +16,7 @@ import {
 const baseText = {
   color: CONTENT_COLOR,
   fontFamily: "JockeyOne",
-};
+} as TextStyle;
 
 const baseButton = {
   backgroundColor: CONTENT_COLOR,
@@ -25,7 +25,9 @@ const baseButton = {
   borderRadius: SPACING_SM,
   minWidth: FORM_CONTROL_SIZE,
   minHeight: FORM_CONTROL_SIZE,
-};
+  justifyContent: "center",
+  alignItems: "center",
+} as ViewStyle;
 
 export default StyleSheet.create({
   rootBg: {
@@ -80,7 +82,7 @@ export default StyleSheet.create({
   },
   buttonText: {
     fontFamily: "JockeyOne",
-    fontSize: FONT_SIZE_MD,
+    fontSize: FONT_SIZE_SM,
     color: DECORATION_COLOR,
     textAlign: "center",
   },

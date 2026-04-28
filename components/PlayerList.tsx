@@ -3,11 +3,11 @@ import {
   FlatList,
   Pressable,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import { plus } from "@/assets/icons/plus";
 import {
   CONTENT_BACKDROP,
   ERROR_MESSAGE_HEIGHT,
@@ -20,6 +20,7 @@ import { StorageContext } from "@/context/StorageContext";
 import { useCallback, useContext, useState } from "react";
 import PlayerListEmptyState from "./PlayerListEmptyState";
 import PlayerListItem from "./PlayerListItem";
+import SVG from "./SVG";
 import WrappedTextInput from "./WrappedTextInput";
 
 export default function PlayerList() {
@@ -70,7 +71,7 @@ export default function PlayerList() {
           style={styles.addPlayerButton}
           onPress={() => addPlayer(newPlayer)}
         >
-          <Text style={globalStyles.buttonText}>+</Text>
+          <SVG icon={plus} width={24} height={24} />
         </Pressable>
       </View>
 

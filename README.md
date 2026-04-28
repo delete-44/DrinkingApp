@@ -28,3 +28,6 @@ You can start developing by editing the files inside the **app** directory. This
 ## Icon attribution
 
 <a href="https://www.flaticon.com/free-icons/deck-of-cards" title="deck-of-cards icons">Deck-of-cards icons created by Georgiana_Lavinia - Flaticon</a>
+<a href="https://lucide.dev/icons/pencil">Pencil icon from Lucide</a>
+<a href="https://lucide.dev/icons/minus">Minus icon from Lucide</a>
+<a href="https://lucide.dev/icons/plus">Plus icon from Lucide</a>
