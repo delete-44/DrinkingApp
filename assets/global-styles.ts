@@ -41,6 +41,7 @@ export default StyleSheet.create({
   label: {
     ...baseText,
     fontSize: FONT_SIZE_SM,
+    marginLeft: 5, // To account for the chunky borders
   },
   textDanger: {
     ...baseText,
@@ -56,7 +57,7 @@ export default StyleSheet.create({
     borderRadius: SPACING_SM,
     padding: SPACING_SM,
     fontSize: FONT_SIZE_MD,
-    minHeight: 32,
+    minHeight: 48,
   },
   formGroup: {
     flexDirection: "column",

@@ -4,7 +4,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 
@@ -18,6 +17,7 @@ import { StorageContext } from "@/context/StorageContext";
 import { useCallback, useContext, useState } from "react";
 import PlayerListEmptyState from "./PlayerListEmptyState";
 import PlayerListItem from "./PlayerListItem";
+import WrappedTextInput from "./WrappedTextInput";
 
 export default function PlayerList() {
   const { players, savePlayers, isLoading } = useContext(StorageContext);
@@ -51,29 +51,15 @@ export default function PlayerList() {
   return (
     <View style={styles.playerList}>
       <View style={styles.playerInputWrapper}>
-        <View style={globalStyles.formGroup}>
-          <Text style={globalStyles.label} nativeID="playerNameLabel">
-            Name
-          </Text>
-
-          <TextInput
-            autoCorrect={false}
-            aria-labelledby="playerNameLabel"
-            style={globalStyles.textInput}
-            value={newPlayer}
-            onChangeText={(text) => {
-              setErrorMessage("");
-              setNewPlayer(text);
-            }}
-          />
-
-          {errorMessage ? (
-            <Text style={globalStyles.textDanger}>{errorMessage}</Text>
-          ) : (
-            // Manually setting placeholder with fixed height to prevent UI jumps
-            <View style={{ height: 17 }} />
-          )}
-        </View>
+        <WrappedTextInput
+          label="Name"
+          value={newPlayer}
+          errorMessage={errorMessage}
+          onChange={(text) => {
+            setErrorMessage("");
+            setNewPlayer(text);
+          }}
+        />
 
         <Pressable
           role="button"
