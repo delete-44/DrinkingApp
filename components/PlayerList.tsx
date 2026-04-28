@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
@@ -19,7 +20,7 @@ import PlayerListEmptyState from "./PlayerListEmptyState";
 import PlayerListItem from "./PlayerListItem";
 
 export default function PlayerList() {
-  const { players, savePlayers } = useContext(StorageContext);
+  const { players, savePlayers, isLoading } = useContext(StorageContext);
 
   const [newPlayer, setNewPlayer] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -87,7 +88,16 @@ export default function PlayerList() {
       <FlatList
         data={players}
         renderItem={({ item }) => <PlayerListItem name={item} />}
-        ListEmptyComponent={PlayerListEmptyState}
+        ListEmptyComponent={
+          isLoading ? (
+            <ActivityIndicator
+              color="#fff"
+              accessibilityLabel="Loading players"
+            />
+          ) : (
+            PlayerListEmptyState
+          )
+        }
       />
     </View>
   );

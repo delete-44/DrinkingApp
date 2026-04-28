@@ -89,8 +89,22 @@ describe("PlayerList", () => {
     expect(input).toHaveProp("value", "");
   });
 
-  // TODO
-  it("renders a loading state", () => {});
+  it("renders a loading state", () => {
+    const mockValue = {
+      players: [],
+      savePlayers: jest.fn(),
+      isLoading: true,
+    };
+
+    render(
+      <StorageContext.Provider value={mockValue}>
+        <PlayerList />
+      </StorageContext.Provider>,
+    );
+
+    expect(screen.queryByText("Add players here!")).toBeNull();
+    expect(screen.getByLabelText("Loading players")).toBeVisible();
+  });
 
   describe("with existing players", () => {
     const mockValue = {
