@@ -1,3 +1,4 @@
+import DEFAULT_DECK from "@/src/constants/default-deck";
 import { StorageContextProps, StorageProviderProps, TDeck } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
@@ -43,7 +44,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
   useEffect(() => {
     const fetchData = async () => {
       const [loadedDecks, loadedPlayers] = await Promise.all([
-        loadResourceImpl(DECK_KEY, [] as TDeck[]),
+        loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
         loadResourceImpl(PLAYER_KEY, [] as string[]),
       ]);
 
