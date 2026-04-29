@@ -16,15 +16,14 @@ export type GameState = {
 
 // StorageContext types
 
-// Items we can commit to internal memory - either an array of players, or an array of decks
-export type CommitableResource = string[] | TDeck[];
-
 export type StorageProviderProps = {
   children: any;
 };
 
 export type StorageContextProps = {
   isLoading: boolean;
+  decks: TDeck[];
+  saveDecks: (newDecks: TDeck[]) => void;
   players: string[];
   savePlayers: (newPlayers: string[]) => void;
 };
