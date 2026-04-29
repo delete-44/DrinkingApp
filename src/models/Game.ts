@@ -9,10 +9,10 @@ export class Game {
 
   constructor(startingDeck: TDeck, startingPlayers: TPlayers) {
     this.deck = startingDeck;
-    this.currentDeck = startingDeck;
+    this.currentDeck = [...startingDeck];
 
     this.players = startingPlayers;
-    this.currentPlayers = startingPlayers;
+    this.currentPlayers = [...startingPlayers];
   }
 
   private resetDeck() {
@@ -32,6 +32,7 @@ export class Game {
       this.resetPlayers();
     }
 
+    // TODO: Randomise selection
     const card = this.currentDeck.pop() as string;
     const player = this.currentPlayers.pop() as string;
 
