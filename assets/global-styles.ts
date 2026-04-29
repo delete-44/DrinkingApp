@@ -11,7 +11,7 @@ import {
   HIGHLIGHT_COLOR,
   SPACING_MD,
   SPACING_SM,
-} from "./style-constants";
+} from "../src/constants/style-constants";
 
 const baseText = {
   color: CONTENT_COLOR,

@@ -9,15 +9,15 @@ import {
 } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import DeckSelector from "@/components/DeckSelector";
+import PlayerList from "@/components/PlayerList";
 import {
   BACKGROUND_COLOR,
   DECORATION_COLOR,
   SPACING_LG,
   SPACING_MD,
   SPACING_SM,
-} from "@/assets/style-constants";
-import DeckSelector from "@/components/DeckSelector";
-import PlayerList from "@/components/PlayerList";
+} from "@/src/constants/style-constants";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 

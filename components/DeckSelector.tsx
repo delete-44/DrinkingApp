@@ -8,7 +8,7 @@ import {
   CONTENT_COLOR,
   SPACING_MD,
   SPACING_SM,
-} from "@/assets/style-constants";
+} from "@/src/constants/style-constants";
 import SVG from "./SVG";
 
 export default function DeckSelector() {
