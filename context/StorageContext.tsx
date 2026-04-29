@@ -1,20 +1,23 @@
-import * as SecureStore from "expo-secure-store";
-import { createContext, useEffect, useState } from "react";
 import {
+  CommitableResource,
   StorageContextProps,
   StorageProviderProps,
-} from "./StorageContextTypes";
+} from "@/src/types";
+import * as SecureStore from "expo-secure-store";
+import { createContext, useEffect, useState } from "react";
 
 export const StorageContext = createContext({} as StorageContextProps);
 
-export async function loadPlayersImpl(
-  setPlayers: React.Dispatch<React.SetStateAction<string[]>>,
+export async function loadResourceImpl(
+  storageKey: string,
+  fallbackVal: CommitableResource,
+  setResource: React.Dispatch<React.SetStateAction<CommitableResource>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   try {
-    const players = await SecureStore.getItemAsync("players");
+    const data = await SecureStore.getItemAsync(storageKey);
 
-    setPlayers(players ? JSON.parse(players) : []);
+    setResource(data ? JSON.parse(data) : fallbackVal);
   } catch (error) {
     // TODO: Error handling
     console.error("Failed to load data: ", error);
@@ -23,33 +26,34 @@ export async function loadPlayersImpl(
   }
 }
 
-export async function savePlayersImpl(
-  setPlayers: React.Dispatch<React.SetStateAction<string[]>>,
-  newPlayers: string[],
+export async function saveResourceImpl(
+  storageKey: string,
+  setResource: React.Dispatch<React.SetStateAction<CommitableResource>>,
+  newVal: CommitableResource,
 ) {
   try {
-    await SecureStore.setItemAsync("players", JSON.stringify(newPlayers));
-    setPlayers(newPlayers);
+    await SecureStore.setItemAsync(storageKey, JSON.stringify(newVal));
+    setResource(newVal);
   } catch (error) {
     // TODO: Error handling
-    console.error("Failed to save players:", error);
+    console.error(`Failed to save ${storageKey}:`, error);
   }
 }
 
 export function StorageProvider({ children }: StorageProviderProps) {
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<CommitableResource>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadPlayersImpl(setPlayers, setIsLoading);
+    loadResourceImpl("players", [], setPlayers, setIsLoading);
   }, []);
 
   const savePlayers = (newPlayers: string[]) =>
-    savePlayersImpl(setPlayers, newPlayers);
+    saveResourceImpl("players", setPlayers, newPlayers);
 
   const value = {
     isLoading,
-    players,
+    players: players as string[],
     savePlayers,
   };
 

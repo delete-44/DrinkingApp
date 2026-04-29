@@ -1,4 +1,4 @@
-import { loadPlayersImpl, savePlayersImpl } from "@/context/StorageContext";
+import { loadResourceImpl, saveResourceImpl } from "@/context/StorageContext";
 import * as SecureStore from "expo-secure-store";
 
 const mockStore: Record<string, string> = {};
@@ -15,7 +15,9 @@ const mockSetItemAsync = jest.fn(async (key: string, value: string) => {
 jest.spyOn(SecureStore, "getItemAsync").mockImplementation(mockGetItemAsync);
 jest.spyOn(SecureStore, "setItemAsync").mockImplementation(mockSetItemAsync);
 
-const setPlayers = jest.fn();
+const storageKey = "players";
+const fallbackValue = [] as any;
+const callbackFn = jest.fn();
 const setIsLoading = jest.fn();
 
 describe("StorageContext", () => {
@@ -24,50 +26,65 @@ describe("StorageContext", () => {
     Object.keys(mockStore).forEach((k) => delete mockStore[k]);
   });
 
-  describe("#loadPlayers", () => {
+  describe("#loadResourceImpl", () => {
     it("throws an error state if the data load fails", async () => {
       mockGetItemAsync.mockRejectedValueOnce(new Error("test error"));
 
-      await loadPlayersImpl(setPlayers, setIsLoading);
+      await loadResourceImpl(
+        storageKey,
+        fallbackValue,
+        callbackFn,
+        setIsLoading,
+      );
 
-      expect(setPlayers).not.toHaveBeenCalled();
+      expect(callbackFn).not.toHaveBeenCalled();
       expect(setIsLoading).toHaveBeenCalledWith(false);
     });
 
     it("defaults to an empty array if no users found in storage", async () => {
       mockGetItemAsync.mockResolvedValueOnce(null);
 
-      await loadPlayersImpl(setPlayers, setIsLoading);
+      await loadResourceImpl(
+        storageKey,
+        fallbackValue,
+        callbackFn,
+        setIsLoading,
+      );
 
-      expect(setPlayers).toHaveBeenCalledWith([]);
+      expect(callbackFn).toHaveBeenCalledWith([]);
       expect(setIsLoading).toHaveBeenCalledWith(false);
     });
 
     it("loads users & sets loading to false", async () => {
       mockGetItemAsync.mockResolvedValueOnce(JSON.stringify(["Sally"]));
 
-      await loadPlayersImpl(setPlayers, setIsLoading);
+      await loadResourceImpl(
+        storageKey,
+        fallbackValue,
+        callbackFn,
+        setIsLoading,
+      );
 
-      expect(setPlayers).toHaveBeenCalledWith(["Sally"]);
+      expect(callbackFn).toHaveBeenCalledWith(["Sally"]);
       expect(setIsLoading).toHaveBeenCalledWith(false);
     });
   });
 
-  describe("#savePlayers", () => {
+  describe("#saveResource", () => {
     it("throws an error if data save fails", async () => {
       mockSetItemAsync.mockRejectedValueOnce(new Error("test error"));
 
-      await savePlayersImpl(setPlayers, ["Sally"]);
+      await saveResourceImpl("players", callbackFn, ["Sally"]);
 
-      expect(setPlayers).not.toHaveBeenCalled();
+      expect(callbackFn).not.toHaveBeenCalled();
     });
 
     it("successfully commits new user list to storage", async () => {
       mockSetItemAsync.mockResolvedValueOnce();
 
-      await savePlayersImpl(setPlayers, ["Sally"]);
+      await saveResourceImpl("players", callbackFn, ["Sally"]);
 
-      expect(setPlayers).toHaveBeenCalledWith(["Sally"]);
+      expect(callbackFn).toHaveBeenCalledWith(["Sally"]);
     });
   });
 });
