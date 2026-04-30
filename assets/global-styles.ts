@@ -1,6 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from "react-native";
 import {
   BACKGROUND_COLOR,
+  BACKGROUND_COLOR_HIGHLIGHT,
   CONTENT_COLOR,
   DANGER_COLOR,
   DECORATION_COLOR,
@@ -13,6 +14,12 @@ import {
   SPACING_MD,
   SPACING_SM,
 } from "../src/constants/style-constants";
+
+const baseBackground = {
+  backgroundColor: BACKGROUND_COLOR, // fallback if experimental bgImage fails
+  flex: 1,
+  justifyContent: "center",
+} as ViewStyle;
 
 const baseText = {
   color: CONTENT_COLOR,
@@ -31,9 +38,12 @@ const baseButton = {
 } as ViewStyle;
 
 export default StyleSheet.create({
-  rootBg: {
-    backgroundColor: BACKGROUND_COLOR,
-    flex: 1,
+  backgroundPlain: {
+    ...baseBackground,
+  },
+  backgroundGradient: {
+    ...baseBackground,
+    experimental_backgroundImage: `linear-gradient(347deg,${BACKGROUND_COLOR_HIGHLIGHT} 47%, ${BACKGROUND_COLOR} 47%)`,
   },
   textHero: {
     ...baseText,

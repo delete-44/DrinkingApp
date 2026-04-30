@@ -2,9 +2,9 @@ import {
   ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
+  Pressable,
   StyleSheet,
   Text,
-  TextStyle,
   View,
 } from "react-native";
 
@@ -18,7 +18,7 @@ import {
   SPACING_MD,
   SPACING_SM,
 } from "@/src/constants/style-constants";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -40,7 +40,7 @@ export default function Index() {
   }, []);
 
   return (
-    <SafeAreaView style={{ ...globalStyles.rootBg, gap: SPACING_MD }}>
+    <SafeAreaView style={{ ...globalStyles.backgroundPlain, gap: SPACING_MD }}>
       <ImageBackground
         source={require("../assets/images/decorative/bg-pattern.png")}
         resizeMode="repeat"
@@ -52,9 +52,13 @@ export default function Index() {
 
       <KeyboardAvoidingView behavior="padding">
         <View style={styles.heroButtonWrapper}>
-          <Link href="/game" style={styles.heroButton} role="button">
+          <Pressable
+            style={styles.heroButton}
+            role="button"
+            onPress={() => router.navigate("/game")}
+          >
             <Text style={styles.heroButtonText}>Get Started!</Text>
-          </Link>
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   heroButton: {
-    ...(globalStyles.buttonHighlight as TextStyle),
+    ...globalStyles.buttonHighlight,
     paddingVertical: SPACING_LG,
     alignSelf: "center",
     boxShadow: `-5px 5px 0 ${DECORATION_COLOR}`,

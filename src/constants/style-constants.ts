@@ -1,4 +1,5 @@
 export const BACKGROUND_COLOR = "#540D6E";
+export const BACKGROUND_COLOR_HIGHLIGHT = "#6A1B87";
 export const CONTENT_COLOR = "#FFFFFF";
 export const HIGHLIGHT_COLOR = "#F49907";
 export const DECORATION_COLOR = "#000000";

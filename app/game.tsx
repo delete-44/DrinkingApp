@@ -1,19 +1,74 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import globalStyles from "@/assets/global-styles";
 import { StorageContext } from "@/context/StorageContext";
-import { SPACING_MD } from "@/src/constants/style-constants";
+import { SPACING_LG, SPACING_MD } from "@/src/constants/style-constants";
 import { Game } from "@/src/models/Game";
-import { useContext, useState } from "react";
+import { GameState } from "@/src/types";
+import { router } from "expo-router";
+import { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GameScreen() {
-  const { currentDeck, players } = useContext(StorageContext);
-  const [game] = useState(new Game(currentDeck, players));
-  const [currentCard, setCurrentCard] = useState(game.drawCard());
+  const { currentDeck, players, isLoading } = useContext(StorageContext);
 
+  const [game, setGame] = useState<Game>();
+  const [currentCard, setCurrentCard] = useState<GameState>();
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    try {
+      const newGame = new Game(currentDeck, players);
+      setGame(newGame);
+      setCurrentCard(newGame.drawCard());
+    } catch (e) {
+      console.error(e);
+
+      setErrorMessage("Game not properly initialized");
+    }
+  }, [isLoading, currentDeck, players]);
+
+  // Loading screen
+  if (isLoading) {
+    return (
+      <SafeAreaView style={globalStyles.backgroundGradient}>
+        <ActivityIndicator color="#fff" accessibilityLabel="Loading game" />
+      </SafeAreaView>
+    );
+  }
+
+  // Error screen
+  if (!game || !currentCard || errorMessage) {
+    return (
+      <SafeAreaView
+        style={{ ...globalStyles.backgroundGradient, padding: SPACING_LG }}
+      >
+        <Text style={globalStyles.textLg}>
+          Error: {errorMessage || "Game not properly initialized"}
+        </Text>
+
+        <Pressable
+          onPress={() => router.back()}
+          style={globalStyles.button}
+          role="button"
+        >
+          <Text style={globalStyles.buttonText}>Back to Home</Text>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }
+
+  // Game
   return (
-    <SafeAreaView style={globalStyles.rootBg}>
+    <SafeAreaView style={globalStyles.backgroundGradient}>
       <Pressable
         style={styles.buttonWrapper}
         onPress={() => {
