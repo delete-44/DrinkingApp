@@ -22,7 +22,7 @@ export default function RootLayout() {
 
   return (
     <StorageProvider>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="game" />
       </Stack>
