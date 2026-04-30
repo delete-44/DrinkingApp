@@ -1,26 +1,31 @@
-import { StorageProvider } from "@/context/StorageContext";
-import { render, screen, waitFor } from "@testing-library/react-native";
-import { act } from "react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react-native";
+import { router } from "expo-router";
+import React, { act } from "react";
 import { DeviceEventEmitter } from "react-native";
 import Index from "../app/index";
 
-jest.mock("expo-secure-store", () => ({
-  getItemAsync: jest.fn(async (key: string) => {
-    if (key === "decks")
-      return JSON.stringify([{ name: "Default", cards: ["a"] }]);
-    if (key === "current_deck_idx") return JSON.stringify(0);
-    return null;
-  }),
-  setItemAsync: jest.fn(),
+jest.mock("expo-router", () => ({
+  router: {
+    navigate: jest.fn(),
+  },
 }));
 
 describe("Index", () => {
-  it("should hide DeckSelector when keyboard shows", async () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <StorageProvider>{children}</StorageProvider>
-    );
+  beforeEach(() => {
+    jest.spyOn(React, "useContext").mockReturnValue({
+      decks: [{ id: "1", name: "Default", cards: ["Card 1"] }],
+      currentDeckIndex: 0,
+      isLoading: false,
+    });
+  });
 
-    render(<Index />, { wrapper });
+  it("hides DeckSelector when keyboard shows", async () => {
+    render(<Index />);
 
     await waitFor(() => expect(screen.getByText("Default")).toBeTruthy());
 
@@ -34,12 +39,8 @@ describe("Index", () => {
     });
   });
 
-  it("should show DeckSelector when keyboard hides", async () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <StorageProvider>{children}</StorageProvider>
-    );
-
-    render(<Index />, { wrapper });
+  it("shows DeckSelector when keyboard hides", async () => {
+    render(<Index />);
 
     await waitFor(() => expect(screen.getByText("Default")).toBeTruthy());
 
@@ -58,5 +59,17 @@ describe("Index", () => {
     await waitFor(() => {
       expect(screen.getByText("Default")).toBeVisible();
     });
+  });
+
+  it("navigates to game screen on Get Started! press", () => {
+    render(<Index />);
+
+    const getStartedButton = screen.getByRole("button", {
+      name: "Get Started!",
+    });
+    expect(getStartedButton).toBeVisible();
+
+    fireEvent.press(getStartedButton);
+    expect(router.navigate).toHaveBeenCalledWith("/game");
   });
 });

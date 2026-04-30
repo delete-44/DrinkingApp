@@ -1,11 +1,12 @@
 import GameScreen from "@/app/game";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
+import { router } from "expo-router";
 import React from "react";
 
-const mockGetItemAsync = jest.fn();
-
-jest.mock("expo-secure-store", () => ({
-  getItemAsync: mockGetItemAsync,
+jest.mock("expo-router", () => ({
+  router: {
+    back: jest.fn(),
+  },
 }));
 
 describe("Game", () => {
@@ -31,8 +32,13 @@ describe("Game", () => {
     render(<GameScreen />);
 
     expect(screen.getByText("Error: Game has no players")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Back to Home" })).toBeVisible();
     expect(screen.queryByLabelText("Loading game")).toBeNull();
+
+    const homeButton = screen.getByRole("button", { name: "Back to Home" });
+    expect(homeButton).toBeVisible();
+
+    fireEvent.press(homeButton);
+    expect(router.back).toHaveBeenCalled();
   });
 
   it("renders a GameState on load", () => {
@@ -52,5 +58,27 @@ describe("Game", () => {
 
     expect(screen.queryByLabelText("Loading game")).toBeNull();
     expect(screen.queryByRole("button", { name: "Back to Home" })).toBeNull();
+  });
+
+  it("cycles to the next GameState on click", () => {
+    jest.spyOn(React, "useContext").mockReturnValue({
+      currentDeck: { id: "1", name: "Deck", cards: ["Card 1", "Card 2"] },
+      players: ["Sally", "Alice"],
+      isLoading: false,
+    });
+
+    render(<GameScreen />);
+
+    const nextCardButton = screen.getByRole("button", {
+      name: "Tap to draw next card",
+    });
+
+    expect(screen.getByText("Alice's Turn")).toBeVisible();
+    expect(screen.getByText("Card 2")).toBeVisible();
+
+    fireEvent.press(nextCardButton);
+
+    expect(screen.getByText("Sally's Turn")).toBeVisible();
+    expect(screen.getByText("Card 1")).toBeVisible();
   });
 });

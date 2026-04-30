@@ -1,29 +1,37 @@
 import DeckSelector from "@/components/DeckSelector";
-import { StorageProvider } from "@/context/StorageContext";
-import { render, screen, waitFor } from "@testing-library/react-native";
-
-jest.mock("expo-secure-store", () => ({
-  getItemAsync: jest.fn(async (key: string) => {
-    if (key === "decks")
-      return JSON.stringify([{ name: "Default", cards: ["a"] }]);
-    if (key === "current_deck_idx") return JSON.stringify(0);
-    return null;
-  }),
-  setItemAsync: jest.fn(),
-}));
+import { render, screen } from "@testing-library/react-native";
+import React from "react";
 
 describe("DeckSelector", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("renders loading spinner when fetching data", () => {
+    jest.spyOn(React, "useContext").mockReturnValueOnce({
+      decks: [{ id: "1", name: "Default", cards: ["Card 1"] }],
+      currentDeckIndex: 0,
+      isLoading: true,
+    });
+
+    render(<DeckSelector />);
+
+    expect(screen.getByLabelText("Loading decks")).toBeVisible();
+    expect(screen.queryByText("Default")).toBeNull();
+    expect(screen.getAllByRole("button")).toHaveLength(2);
+  });
+
   it("renders UI elements correctly", async () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <StorageProvider>{children}</StorageProvider>
-    );
+    jest.spyOn(React, "useContext").mockReturnValueOnce({
+      decks: [{ id: "1", name: "Default", cards: ["Card 1"] }],
+      currentDeckIndex: 0,
+      isLoading: false,
+    });
 
-    render(<DeckSelector />, { wrapper });
+    render(<DeckSelector />);
 
-    await waitFor(() => expect(screen.getByText("Default")).toBeTruthy());
-
+    expect(screen.queryByLabelText("Loading decks")).toBeNull();
     expect(screen.getByText("Default")).toBeVisible();
-
     expect(screen.getAllByRole("button")).toHaveLength(2);
   });
 });
