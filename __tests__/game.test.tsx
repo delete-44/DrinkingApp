@@ -9,7 +9,15 @@ jest.mock("expo-router", () => ({
   },
 }));
 
-describe("Game", () => {
+describe("GameScreen", () => {
+  beforeEach(() => {
+    jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
+  });
+
+  afterEach(() => {
+    jest.spyOn(global.Math, "random").mockRestore();
+  });
+
   it("shows loading spinner whilst loading content from store", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
       currentDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
@@ -73,12 +81,12 @@ describe("Game", () => {
       name: "Tap to draw next card",
     });
 
-    expect(screen.getByText("Alice's Turn")).toBeVisible();
-    expect(screen.getByText("Card 2")).toBeVisible();
+    expect(screen.getByText("Sally's Turn")).toBeVisible();
+    expect(screen.getByText("Card 1")).toBeVisible();
 
     fireEvent.press(nextCardButton);
 
-    expect(screen.getByText("Sally's Turn")).toBeVisible();
-    expect(screen.getByText("Card 1")).toBeVisible();
+    expect(screen.getByText("Alice's Turn")).toBeVisible();
+    expect(screen.getByText("Card 2")).toBeVisible();
   });
 });

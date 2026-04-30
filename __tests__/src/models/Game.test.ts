@@ -2,6 +2,14 @@ import { Game } from "@/src/models/Game";
 import { TDeck, TPlayers } from "@/src/types";
 
 describe("Game", () => {
+  beforeEach(() => {
+    jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
+  });
+
+  afterEach(() => {
+    jest.spyOn(global.Math, "random").mockRestore();
+  });
+
   it("throws an error if deck is empty upon instantiation", () => {
     const deck = { name: "Test deck", cards: [] };
     const players = ["Sally"];
@@ -34,9 +42,9 @@ describe("Game", () => {
 
     const game = new Game(deck as TDeck, players as TPlayers);
 
-    expect(game.drawCard().player).toEqual("Alice");
     expect(game.drawCard().player).toEqual("Sally");
     expect(game.drawCard().player).toEqual("Alice");
+    expect(game.drawCard().player).toEqual("Sally");
   });
 
   it("shuffles deck once it reaches the end of the list", () => {
@@ -48,8 +56,8 @@ describe("Game", () => {
 
     const game = new Game(deck as TDeck, players as TPlayers);
 
-    expect(game.drawCard().card).toEqual("Card 2");
     expect(game.drawCard().card).toEqual("Card");
     expect(game.drawCard().card).toEqual("Card 2");
+    expect(game.drawCard().card).toEqual("Card");
   });
 });

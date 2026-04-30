@@ -31,6 +31,10 @@ export class Game {
     this.currentPlayers = [...this.players];
   }
 
+  private randomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }
+
   public drawCard(): GameState {
     if (this.currentCards.length === 0) {
       this.resetDeck();
@@ -40,9 +44,15 @@ export class Game {
       this.resetPlayers();
     }
 
-    // TODO: Randomise selection
-    const card = this.currentCards.pop() as string;
-    const player = this.currentPlayers.pop() as string;
+    const card = this.currentCards.splice(
+      this.randomInt(this.currentCards.length),
+      1,
+    )[0];
+
+    const player = this.currentPlayers.splice(
+      this.randomInt(this.currentPlayers.length),
+      1,
+    )[0];
 
     return { card, player };
   }
