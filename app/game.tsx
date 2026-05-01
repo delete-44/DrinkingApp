@@ -1,18 +1,13 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import ErrorScreen from "@/components/status/ErrorScreen";
+import LoadingScreen from "@/components/status/LoadingScreen";
 import { StorageContext } from "@/context/StorageContext";
-import { SPACING_LG, SPACING_MD } from "@/src/constants/style-constants";
+import { SPACING_MD } from "@/src/constants/style-constants";
 import { Game } from "@/src/models/Game";
 import { GameState } from "@/src/types";
 import { useKeepAwake } from "expo-keep-awake";
-import { router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -39,31 +34,13 @@ export default function GameScreen() {
 
   // Loading screen
   if (isLoading) {
-    return (
-      <SafeAreaView style={globalStyles.backgroundGradient}>
-        <ActivityIndicator color="#fff" accessibilityLabel="Loading game" />
-      </SafeAreaView>
-    );
+    return <LoadingScreen label="Loading game" />;
   }
 
   // Error screen
   if (!game || !currentCard || errorMessage) {
     return (
-      <SafeAreaView
-        style={{ ...globalStyles.backgroundGradient, padding: SPACING_LG }}
-      >
-        <Text style={globalStyles.textLg}>
-          Error: {errorMessage || "Game not properly initialized"}
-        </Text>
-
-        <Pressable
-          onPress={() => router.back()}
-          style={globalStyles.button}
-          role="button"
-        >
-          <Text style={globalStyles.buttonText}>Back to Home</Text>
-        </Pressable>
-      </SafeAreaView>
+      <ErrorScreen message={errorMessage || "Game not properly initialized"} />
     );
   }
 
