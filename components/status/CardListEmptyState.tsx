@@ -10,7 +10,7 @@ export default function CardListEmptyState() {
         source={require("../../assets/images/decorative/arrow-up.png")}
         alt=""
       />
-      <Text style={globalStyles.textMd}>Add cards here!</Text>
+      <Text style={globalStyles.textMd}>Add Cards here!</Text>
     </View>
   );
 }

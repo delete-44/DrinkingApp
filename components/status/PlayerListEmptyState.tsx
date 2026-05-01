@@ -10,7 +10,7 @@ export default function PlayerListEmptyState() {
         source={require("../../assets/images/decorative/arrow-up.png")}
         alt=""
       />
-      <Text style={globalStyles.textMd}>Add players here!</Text>
+      <Text style={globalStyles.textMd}>Add Players here!</Text>
     </View>
   );
 }

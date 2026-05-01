@@ -27,7 +27,7 @@ describe("GameScreen", () => {
 
     render(<GameScreen />);
 
-    expect(screen.getByLabelText("Loading game")).toBeVisible();
+    expect(screen.getByLabelText("Loading Game")).toBeVisible();
   });
 
   it("shows a CTA to return home if the initialisation fails", () => {
@@ -39,8 +39,8 @@ describe("GameScreen", () => {
 
     render(<GameScreen />);
 
-    expect(screen.getByText("Error: Game has no players")).toBeVisible();
-    expect(screen.queryByLabelText("Loading game")).toBeNull();
+    expect(screen.getByText("Error: Game has no Players")).toBeVisible();
+    expect(screen.queryByLabelText("Loading Game")).toBeNull();
 
     const homeButton = screen.getByRole("button", { name: "Back to Home" });
     expect(homeButton).toBeVisible();
@@ -61,10 +61,10 @@ describe("GameScreen", () => {
     expect(screen.getByText("Sally's Turn")).toBeVisible();
     expect(screen.getByText("Card 1")).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Tap to draw next card" }),
+      screen.getByRole("button", { name: "Tap to draw next Card" }),
     ).toBeVisible();
 
-    expect(screen.queryByLabelText("Loading game")).toBeNull();
+    expect(screen.queryByLabelText("Loading Game")).toBeNull();
     expect(screen.queryByRole("button", { name: "Back to Home" })).toBeNull();
   });
 
@@ -78,7 +78,7 @@ describe("GameScreen", () => {
     render(<GameScreen />);
 
     const nextCardButton = screen.getByRole("button", {
-      name: "Tap to draw next card",
+      name: "Tap to draw next Card",
     });
 
     expect(screen.getByText("Sally's Turn")).toBeVisible();

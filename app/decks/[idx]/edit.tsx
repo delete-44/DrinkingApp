@@ -22,7 +22,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Form() {
+export default function Edit() {
   const [newCard, setNewCard] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [deck, setDeck] = useState<TDeck>();
@@ -108,7 +108,7 @@ export default function Form() {
 
         <View style={styles.inputWrapper}>
           <WrappedTextInput
-            label="Add Card"
+            label="Card Content"
             value={newCard}
             errorMessage={errorMessage}
             onChange={(text) => {

@@ -34,7 +34,7 @@ export default function GameScreen() {
 
   // Loading screen
   if (isLoading) {
-    return <LoadingScreen label="Loading game" />;
+    return <LoadingScreen label="Loading Game" />;
   }
 
   // Error screen
@@ -53,7 +53,7 @@ export default function GameScreen() {
           setCurrentCard(game.drawCard());
         }}
         role="button"
-        accessibilityLabel="Tap to draw next card"
+        accessibilityLabel="Tap to draw next Card"
       >
         <Text style={{ ...globalStyles.textLg, ...styles.screenTextMixin }}>
           {currentCard.player}&apos;s Turn

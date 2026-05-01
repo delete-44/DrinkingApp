@@ -51,7 +51,7 @@ export default function DeckSelector() {
           }
         >
           <SVG icon={pencil} width={24} height={24} />
-          <Text style={globalStyles.buttonText}>Edit</Text>
+          <Text style={globalStyles.buttonText}>Edit Deck</Text>
         </Pressable>
         <Pressable
           role="button"

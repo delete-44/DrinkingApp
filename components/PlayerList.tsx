@@ -96,7 +96,7 @@ export default function PlayerList() {
           isLoading ? (
             <ActivityIndicator
               color="#fff"
-              accessibilityLabel="Loading players"
+              accessibilityLabel="Loading Players"
             />
           ) : (
             PlayerListEmptyState

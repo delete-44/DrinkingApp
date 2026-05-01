@@ -9,11 +9,11 @@ export class Game {
 
   constructor(startingDeck: TDeck, startingPlayers: TPlayers) {
     if (startingDeck.cards.length === 0) {
-      throw TypeError("Deck has no cards");
+      throw TypeError("Deck has no Cards");
     }
 
     if (startingPlayers.length === 0) {
-      throw TypeError("Game has no players");
+      throw TypeError("Game has no Players");
     }
 
     this.cards = startingDeck.cards;

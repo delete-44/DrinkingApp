@@ -15,10 +15,9 @@ describe("Game", () => {
     const players = ["Sally"];
 
     try {
-      // @ts-expect-error - We know the deck is invalid, that's what we're testing
       new Game(deck as TDeck, players);
     } catch (e: any) {
-      expect(e.message).toEqual("Deck has no cards");
+      expect(e.message).toEqual("Deck has no Cards");
     }
   });
 
@@ -29,7 +28,7 @@ describe("Game", () => {
     try {
       new Game(deck as TDeck, players);
     } catch (e: any) {
-      expect(e.message).toEqual("Game has no players");
+      expect(e.message).toEqual("Game has no Players");
     }
   });
 

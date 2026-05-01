@@ -18,8 +18,8 @@ describe("PlayerList", () => {
 
     render(<PlayerList />);
 
-    expect(screen.queryByText("Add players here!")).toBeNull();
-    expect(screen.getByLabelText("Loading players")).toBeVisible();
+    expect(screen.queryByText("Add Players here!")).toBeNull();
+    expect(screen.getByLabelText("Loading Players")).toBeVisible();
   });
 
   describe("with no players initialised", () => {
@@ -34,8 +34,8 @@ describe("PlayerList", () => {
     it("renders an empty state when no players provided", () => {
       render(<PlayerList />);
 
-      const noPlayersMessage = screen.getByText("Add players here!");
-      expect(noPlayersMessage).toBeVisible();
+      expect(screen.getByText("Add Players here!")).toBeVisible();
+      expect(screen.queryByLabelText("Loading Players")).toBeNull();
     });
 
     it("prevents user adding empty names", () => {
