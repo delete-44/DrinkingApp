@@ -1,13 +1,15 @@
-import { View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import RemovableListItem from "@/components/RemovableListItem";
+import CardListEmptyState from "@/components/status/CardListEmptyState";
 import ErrorScreen from "@/components/status/ErrorScreen";
 import LoadingScreen from "@/components/status/LoadingScreen";
 import WrappedTextInput from "@/components/WrappedTextInput";
 import { StorageContext } from "@/context/StorageContext";
 import { TDeck } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Form() {
@@ -16,8 +18,22 @@ export default function Form() {
   const [deck, setDeck] = useState<TDeck>();
   const [pageLoadError, setPageLoadError] = useState("");
 
-  const { decks, isLoading } = useContext(StorageContext);
+  const { decks, saveDeck, isLoading } = useContext(StorageContext);
   const { idx } = useLocalSearchParams<{ idx: string }>();
+
+  const removeCardAt = useCallback(
+    (cardIndex: number) => {
+      if (!deck) return;
+
+      const newCards = deck.cards.filter((_, idx) => idx !== cardIndex);
+
+      saveDeck(cardIndex, {
+        name: deck.name,
+        cards: newCards,
+      });
+    },
+    [deck, saveDeck],
+  );
 
   useEffect(() => {
     if (isLoading) return;
@@ -36,13 +52,27 @@ export default function Form() {
     return <LoadingScreen label="Loading Deck" />;
   }
 
-  if (pageLoadError) {
+  if (pageLoadError || !deck) {
     return <ErrorScreen message={pageLoadError} />;
   }
 
   return (
     <SafeAreaView style={globalStyles.backgroundGradient}>
       <View>
+        <Text style={globalStyles.textLg}>{deck.name}</Text>
+
+        <FlatList
+          data={deck.cards}
+          renderItem={({ item, index }) => (
+            <RemovableListItem
+              label={item}
+              idx={index}
+              removeItemAt={removeCardAt}
+            />
+          )}
+          ListEmptyComponent={CardListEmptyState}
+        />
+
         <WrappedTextInput
           label="Add Card"
           value={newCard}

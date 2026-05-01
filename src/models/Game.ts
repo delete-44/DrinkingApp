@@ -1,7 +1,7 @@
-import { GameState, NonEmptyArray, TDeck, TPlayers } from "../types";
+import { GameState, TDeck, TPlayers } from "../types";
 
 export class Game {
-  private readonly cards: NonEmptyArray<string>;
+  private readonly cards: string[];
   private readonly players: TPlayers;
 
   private currentCards: string[];
