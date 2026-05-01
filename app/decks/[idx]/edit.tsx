@@ -1,12 +1,22 @@
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import { plus } from "@/assets/icons/plus";
+import HorizontalDivider from "@/components/HorizontalDivider";
 import RemovableListItem from "@/components/RemovableListItem";
 import CardListEmptyState from "@/components/status/CardListEmptyState";
 import ErrorScreen from "@/components/status/ErrorScreen";
 import LoadingScreen from "@/components/status/LoadingScreen";
+import SVG from "@/components/SVG";
 import WrappedTextInput from "@/components/WrappedTextInput";
 import { StorageContext } from "@/context/StorageContext";
+import {
+  FORM_CONTROL_SIZE,
+  FORM_LABEL_HEIGHT,
+  SPACING_LG,
+  SPACING_MD,
+  SPACING_SM,
+} from "@/src/constants/style-constants";
 import { TDeck } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -21,18 +31,40 @@ export default function Form() {
   const { decks, saveDeck, isLoading } = useContext(StorageContext);
   const { idx } = useLocalSearchParams<{ idx: string }>();
 
+  const addCard = useCallback(
+    (newCard: string) => {
+      if (!deck) return;
+
+      if (!newCard.trim()) {
+        setErrorMessage("Card cannot be empty");
+
+        return;
+      }
+
+      const newCards = [...deck.cards, newCard.trim()];
+
+      saveDeck(parseInt(idx), {
+        name: deck.name,
+        cards: newCards,
+      });
+
+      setNewCard("");
+    },
+    [deck, idx, saveDeck],
+  );
+
   const removeCardAt = useCallback(
     (cardIndex: number) => {
       if (!deck) return;
 
       const newCards = deck.cards.filter((_, idx) => idx !== cardIndex);
 
-      saveDeck(cardIndex, {
+      saveDeck(parseInt(idx), {
         name: deck.name,
         cards: newCards,
       });
     },
-    [deck, saveDeck],
+    [deck, idx, saveDeck],
   );
 
   useEffect(() => {
@@ -58,7 +90,7 @@ export default function Form() {
 
   return (
     <SafeAreaView style={globalStyles.backgroundGradient}>
-      <View>
+      <View style={styles.listContainer}>
         <Text style={globalStyles.textLg}>{deck.name}</Text>
 
         <FlatList
@@ -71,18 +103,56 @@ export default function Form() {
             />
           )}
           ListEmptyComponent={CardListEmptyState}
+          ItemSeparatorComponent={HorizontalDivider}
         />
 
-        <WrappedTextInput
-          label="Add Card"
-          value={newCard}
-          errorMessage={errorMessage}
-          onChange={(text) => {
-            setErrorMessage("");
-            setNewCard(text);
-          }}
-        />
+        <View style={styles.inputWrapper}>
+          <WrappedTextInput
+            label="Add Card"
+            value={newCard}
+            errorMessage={errorMessage}
+            onChange={(text) => {
+              setErrorMessage("");
+              setNewCard(text);
+            }}
+          />
+
+          <Pressable
+            role="button"
+            accessibilityLabel="Add Card"
+            style={styles.addButton}
+            onPress={() => addCard(newCard)}
+          >
+            <SVG icon={plus} width={24} height={24} />
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  listContainer: {
+    maxWidth: "90%",
+    paddingHorizontal: SPACING_MD,
+    paddingVertical: SPACING_SM,
+    marginInline: "auto",
+    flex: 1,
+
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  inputWrapper: {
+    gap: SPACING_SM,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    height: "auto",
+    marginTop: SPACING_LG,
+  },
+  addButton: {
+    ...globalStyles.buttonHighlight,
+    marginBottom: FORM_LABEL_HEIGHT,
+    height: FORM_CONTROL_SIZE,
+  },
+});

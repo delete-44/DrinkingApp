@@ -18,6 +18,7 @@ import {
   SPACING_SM,
 } from "@/src/constants/style-constants";
 import { useCallback, useContext, useState } from "react";
+import HorizontalDivider from "./HorizontalDivider";
 import RemovableListItem from "./RemovableListItem";
 import PlayerListEmptyState from "./status/PlayerListEmptyState";
 import SVG from "./SVG";
@@ -101,6 +102,7 @@ export default function PlayerList() {
             PlayerListEmptyState
           )
         }
+        ItemSeparatorComponent={HorizontalDivider}
       />
     </View>
   );

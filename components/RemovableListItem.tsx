@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginVertical: 4,
+    marginVertical: SPACING_SM,
   },
   listItemLabel: {
     ...globalStyles.textLg,
