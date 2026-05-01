@@ -125,7 +125,7 @@ describe("PlayerList", () => {
   describe("with existing players", () => {
     const mockValue = {
       players: ["Alice", "Rincewind"],
-      savePlayers: jest.fn(),
+      savePlayers: mockSavePlayers,
       isLoading: false,
       currentDeck: {
         name: "Test",
@@ -169,6 +169,21 @@ describe("PlayerList", () => {
 
       errorMessage = screen.getByText("Player already exists");
       expect(errorMessage).toBeVisible();
+    });
+
+    it("allows user to remove players", () => {
+      render(
+        <StorageContext.Provider value={mockValue}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
+
+      const removePlayerButton = screen.getByRole("button", {
+        name: "Remove Rincewind",
+      });
+
+      fireEvent.press(removePlayerButton);
+      expect(mockSavePlayers).toHaveBeenCalledWith(["Alice"]);
     });
   });
 });
