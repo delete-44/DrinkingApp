@@ -133,24 +133,34 @@ describe("StorageContext", () => {
       });
     });
 
-    describe("#saveDecks", () => {
-      it("saves decks to SecureStore and updates context", async () => {
+    describe("#saveDeck", () => {
+      it("saves single deck to SecureStore and updates context", async () => {
+        const decks = [
+          { name: "Default", cards: ["Test card"] },
+          { name: "Second Deck", cards: ["Test 2"] },
+        ] as TDeck[];
+
+        mockStore["decks"] = JSON.stringify(decks);
+
         const storageContext = await renderStorageContext();
 
-        const newDecks = [{ name: "Default", cards: ["Test card"] }] as TDeck[];
+        const updatedDeck = {
+          name: "Default",
+          cards: ["Test card updated"],
+        } as TDeck;
 
         await act(async () => {
-          await storageContext.current.saveDecks(newDecks);
+          await storageContext.current.saveDeck(0, updatedDeck);
         });
 
         expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
         expect(mockSetItemAsync).toHaveBeenCalledWith(
           "decks",
-          JSON.stringify(newDecks),
+          JSON.stringify([updatedDeck, decks[1]]),
         );
 
         // Assert context state updated
-        expect(storageContext.current.decks).toEqual(newDecks);
+        expect(storageContext.current.decks).toEqual([updatedDeck, decks[1]]);
       });
     });
 

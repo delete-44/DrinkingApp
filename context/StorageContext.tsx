@@ -71,9 +71,17 @@ export function StorageProvider({ children }: StorageProviderProps) {
     setCurrentDeckIndex(idx);
   };
 
-  const saveDecks = async (newDecks: TDeck[]) => {
+  const _saveDecks = async (newDecks: TDeck[]) => {
     await saveResourceImpl(DECK_KEY, newDecks);
     setDecks(newDecks);
+  };
+
+  const saveDeck = async (deckIdx: number, updatedDeck: TDeck) => {
+    const newDecks = decks.map((deck, idx) =>
+      idx === deckIdx ? updatedDeck : deck,
+    );
+
+    await _saveDecks(newDecks);
   };
 
   const savePlayers = async (newPlayers: string[]) => {
@@ -86,7 +94,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     currentDeckIndex,
     saveCurrentDeckIndex,
     decks,
-    saveDecks,
+    saveDeck,
     players,
     savePlayers,
     isLoading,
