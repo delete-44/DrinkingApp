@@ -62,7 +62,7 @@ export default function PlayerList() {
 
   return (
     <View style={styles.playerList}>
-      <View style={styles.playerInputWrapper}>
+      <View style={styles.playerInputWrapper} role="form">
         <WrappedTextInput
           label="Name"
           value={newPlayer}
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    height: "auto",
     marginTop: SPACING_LG,
   },
   addPlayerButton: {

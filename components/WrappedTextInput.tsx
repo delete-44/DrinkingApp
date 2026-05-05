@@ -6,6 +6,7 @@ type WrappedTextInputProps = {
   label: string;
   value: string;
   errorMessage: string;
+  autofocus?: boolean;
   onChange: (text: string) => void;
 };
 
@@ -13,6 +14,7 @@ export default function WrappedTextInput({
   label,
   value,
   errorMessage,
+  autofocus = false,
   onChange,
 }: WrappedTextInputProps) {
   return (
@@ -29,6 +31,7 @@ export default function WrappedTextInput({
         style={globalStyles.textInput}
         value={value}
         onChangeText={onChange}
+        autoFocus={autofocus}
       />
 
       <View style={style.textWrapper}>
