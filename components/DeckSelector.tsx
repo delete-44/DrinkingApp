@@ -22,7 +22,7 @@ import { useContext } from "react";
 import SVG from "./SVG";
 
 export default function DeckSelector() {
-  const { selectedDeck, isLoading } = useContext(StorageContext);
+  const { selectedDeck, createDeck, isLoading } = useContext(StorageContext);
 
   if (isLoading) {
     return (
@@ -36,7 +36,25 @@ export default function DeckSelector() {
         <Image source={require("../assets/icons/deck.png")} alt="" />
       </View>
 
-      <Text style={globalStyles.textLg}>{selectedDeck.name}</Text>
+      <View style={styles.deckSelectorActions}>
+        <Pressable
+          role="button"
+          style={globalStyles.buttonSm}
+          accessibilityLabel="Previous Deck"
+        >
+          <Text>&lt;</Text>
+        </Pressable>
+
+        <Text style={globalStyles.textLg}>{selectedDeck.name}</Text>
+
+        <Pressable
+          role="button"
+          style={globalStyles.buttonSm}
+          accessibilityLabel="Next Deck"
+        >
+          <Text>&gt;</Text>
+        </Pressable>
+      </View>
 
       <View style={styles.deckSelectorActions}>
         <Pressable
@@ -56,7 +74,14 @@ export default function DeckSelector() {
         <Pressable
           role="button"
           style={globalStyles.buttonSm}
-          onPress={() => alert("Pressed New")}
+          onPress={async () => {
+            const newDeck = await createDeck();
+
+            router.navigate({
+              pathname: "/decks/[id]/edit",
+              params: { id: newDeck.id },
+            });
+          }}
         >
           <SVG icon={plus} width={24} height={24} />
           <Text style={globalStyles.buttonText}>New Deck</Text>
@@ -87,5 +112,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: SPACING_SM,
     justifyContent: "space-between",
+    alignItems: "center",
   },
 });

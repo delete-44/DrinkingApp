@@ -76,6 +76,16 @@ export function StorageProvider({ children }: StorageProviderProps) {
     return decks.find((d) => d.id === id) || null;
   };
 
+  const createDeck = async (name = "" as string): Promise<Deck> => {
+    const newDeck = new Deck(name, []);
+    const newDecks = [...decks, newDeck];
+
+    await saveResourceImpl(DECK_KEY, newDecks);
+    setDecks(newDecks);
+
+    return newDeck;
+  };
+
   const saveDeck = async (id: string, updatedDeck: Deck) => {
     const newDecks = decks.map((deck) => (deck.id === id ? updatedDeck : deck));
 
@@ -93,6 +103,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     saveSelectedDeckId,
     decks,
     fetchDeck,
+    createDeck,
     saveDeck,
     players,
     savePlayers,
