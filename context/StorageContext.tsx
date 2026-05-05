@@ -1,11 +1,12 @@
 import DEFAULT_DECK from "@/src/constants/default-deck";
-import { StorageContextProps, StorageProviderProps, TDeck } from "@/src/types";
+import { Deck } from "@/src/models/Deck";
+import { StorageContextProps, StorageProviderProps } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useMemo, useState } from "react";
 
 export const StorageContext = createContext({} as StorageContextProps);
 
-const CURRENT_DECK_KEY = "current_deck_idx";
+const SELECTED_DECK_KEY = "selected_deck_id";
 const DECK_KEY = "decks";
 const PLAYER_KEY = "players";
 
@@ -38,22 +39,22 @@ export async function saveResourceImpl<T>(
 }
 
 export function StorageProvider({ children }: StorageProviderProps) {
-  const [currentDeckIndex, setCurrentDeckIndex] = useState(0);
-  const [decks, setDecks] = useState<TDeck[]>([]);
+  const [selectedDeckId, setSelectedDeckId] = useState<string>();
+  const [decks, setDecks] = useState<Deck[]>([]);
   const [players, setPlayers] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const [loadedCurrentDeckIndex, loadedDecks, loadedPlayers] =
+      const [loadedSelectedDeckId, loadedDecks, loadedPlayers] =
         await Promise.all([
-          loadResourceImpl(CURRENT_DECK_KEY, 0),
+          loadResourceImpl(SELECTED_DECK_KEY, ""),
           loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
           loadResourceImpl(PLAYER_KEY, [] as string[]),
         ]);
 
-      setCurrentDeckIndex(loadedCurrentDeckIndex);
-      setDecks(loadedDecks);
+      setSelectedDeckId(loadedSelectedDeckId);
+      setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
       setPlayers(loadedPlayers);
 
       setIsLoading(false);
@@ -62,16 +63,22 @@ export function StorageProvider({ children }: StorageProviderProps) {
     fetchData();
   }, []);
 
-  const currentDeck = useMemo(() => {
-    return decks[currentDeckIndex] || decks[0];
-  }, [decks, currentDeckIndex]);
+  const selectedDeck = useMemo(() => {
+    return decks.find((d) => d.id === selectedDeckId) || decks[0];
+  }, [decks, selectedDeckId]);
 
-  const saveCurrentDeckIndex = async (idx: number) => {
-    await saveResourceImpl(CURRENT_DECK_KEY, idx);
-    setCurrentDeckIndex(idx);
+  const saveSelectedDeckId = async (id: string) => {
+    await saveResourceImpl(SELECTED_DECK_KEY, id);
+    setSelectedDeckId(id);
   };
 
-  const saveDecks = async (newDecks: TDeck[]) => {
+  const fetchDeck = (id: string) => {
+    return decks.find((d) => d.id === id) || null;
+  };
+
+  const saveDeck = async (id: string, updatedDeck: Deck) => {
+    const newDecks = decks.map((deck) => (deck.id === id ? updatedDeck : deck));
+
     await saveResourceImpl(DECK_KEY, newDecks);
     setDecks(newDecks);
   };
@@ -82,11 +89,11 @@ export function StorageProvider({ children }: StorageProviderProps) {
   };
 
   const value = {
-    currentDeck,
-    currentDeckIndex,
-    saveCurrentDeckIndex,
+    selectedDeck,
+    saveSelectedDeckId,
     decks,
-    saveDecks,
+    fetchDeck,
+    saveDeck,
     players,
     savePlayers,
     isLoading,

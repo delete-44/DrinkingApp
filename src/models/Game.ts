@@ -1,19 +1,20 @@
-import { GameState, NonEmptyArray, TDeck, TPlayers } from "../types";
+import { GameState, TPlayers } from "../types";
+import { Deck } from "./Deck";
 
 export class Game {
-  private readonly cards: NonEmptyArray<string>;
+  private readonly cards: string[];
   private readonly players: TPlayers;
 
   private currentCards: string[];
   private currentPlayers: string[];
 
-  constructor(startingDeck: TDeck, startingPlayers: TPlayers) {
+  constructor(startingDeck: Deck, startingPlayers: TPlayers) {
     if (startingDeck.cards.length === 0) {
-      throw TypeError("Deck has no cards");
+      throw TypeError("Deck has no Cards");
     }
 
     if (startingPlayers.length === 0) {
-      throw TypeError("Game has no players");
+      throw TypeError("Game has no Players");
     }
 
     this.cards = startingDeck.cards;

@@ -17,43 +17,49 @@ import {
   SPACING_MD,
   SPACING_SM,
 } from "@/src/constants/style-constants";
-import { useContext, useMemo } from "react";
+import { router } from "expo-router";
+import { useContext } from "react";
 import SVG from "./SVG";
 
 export default function DeckSelector() {
-  const { decks, currentDeckIndex, isLoading } = useContext(StorageContext);
+  const { selectedDeck, isLoading } = useContext(StorageContext);
 
-  const currentDeck = useMemo(() => {
-    return decks[currentDeckIndex] || decks[0];
-  }, [decks, currentDeckIndex]);
+  if (isLoading) {
+    return (
+      <ActivityIndicator color="#fff" accessibilityLabel="Loading decks" />
+    );
+  }
 
   return (
     <View style={styles.deckSelector}>
       <View style={styles.logoBackground}>
         <Image source={require("../assets/icons/deck.png")} alt="" />
       </View>
-      {isLoading ? (
-        <ActivityIndicator color="#fff" accessibilityLabel="Loading decks" />
-      ) : (
-        <Text style={globalStyles.textLg}>{currentDeck.name}</Text>
-      )}
+
+      <Text style={globalStyles.textLg}>{selectedDeck.name}</Text>
 
       <View style={styles.deckSelectorActions}>
         <Pressable
           role="button"
           style={globalStyles.buttonSm}
-          onPress={() => alert("Pressed Edit")}
+          onPress={() =>
+            router.navigate({
+              pathname: "/decks/[id]/edit",
+              params: { id: selectedDeck.id },
+            })
+          }
         >
           <SVG icon={pencil} width={24} height={24} />
-          <Text style={globalStyles.buttonText}>Edit</Text>
+          <Text style={globalStyles.buttonText}>Edit Deck</Text>
         </Pressable>
+
         <Pressable
           role="button"
           style={globalStyles.buttonSm}
           onPress={() => alert("Pressed New")}
         >
           <SVG icon={plus} width={24} height={24} />
-          <Text style={globalStyles.buttonText}>New</Text>
+          <Text style={globalStyles.buttonText}>New Deck</Text>
         </Pressable>
       </View>
     </View>

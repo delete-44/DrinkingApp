@@ -4,7 +4,8 @@ import {
   StorageContext,
   StorageProvider,
 } from "@/context/StorageContext";
-import { TDeck } from "@/src/types";
+import { Deck } from "@/src/models/Deck";
+import { TDeckData } from "@/src/types";
 import { renderHook, waitFor } from "@testing-library/react-native";
 import * as SecureStore from "expo-secure-store";
 import { act, useContext } from "react";
@@ -83,7 +84,14 @@ describe("StorageContext", () => {
   });
 
   describe("StorageProvider", () => {
+    const decks = [
+      { id: "1", name: "Default", cards: ["Test card"] },
+      { id: "2", name: "Second Deck", cards: ["Test 2"] },
+    ] as TDeckData[];
+
     beforeEach(() => {
+      mockStore["decks"] = JSON.stringify(decks);
+
       mockSetItemAsync.mockResolvedValueOnce();
     });
 
@@ -104,53 +112,63 @@ describe("StorageContext", () => {
       return result;
     };
 
-    describe("#saveCurrentDeckIndex", () => {
+    describe("#saveSelectedDeckId", () => {
       it("saves current deck idx to SecureStore and updates context", async () => {
-        const decks = [
-          { name: "Default", cards: ["Test card"] },
-          { name: "Second Deck", cards: ["Test 2"] },
-        ] as TDeck[];
-
-        mockStore["decks"] = JSON.stringify(decks);
-
         const storageContext = await renderStorageContext();
 
-        const newIdx = 1;
+        const newId = decks[1].id;
 
         await act(async () => {
-          await storageContext.current.saveCurrentDeckIndex(newIdx);
+          await storageContext.current.saveSelectedDeckId(newId);
         });
 
         expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
         expect(mockSetItemAsync).toHaveBeenCalledWith(
-          "current_deck_idx",
-          JSON.stringify(newIdx),
+          "selected_deck_id",
+          JSON.stringify(newId),
         );
 
         // Assert context state updated
-        expect(storageContext.current.currentDeckIndex).toEqual(newIdx);
-        expect(storageContext.current.currentDeck).toEqual(decks[newIdx]);
+        expect(storageContext.current.selectedDeck).toEqual(decks[1]);
       });
     });
 
-    describe("#saveDecks", () => {
-      it("saves decks to SecureStore and updates context", async () => {
+    describe("#fetchDeck", () => {
+      it("returns deck if found", async () => {
         const storageContext = await renderStorageContext();
 
-        const newDecks = [{ name: "Default", cards: ["Test card"] }] as TDeck[];
+        expect(storageContext.current.fetchDeck(decks[0].id)).toEqual(decks[0]);
+      });
+
+      it("returns null if not", async () => {
+        const storageContext = await renderStorageContext();
+
+        expect(storageContext.current.fetchDeck("FAKE ID")).toBeNull();
+      });
+    });
+
+    describe("#saveDeck", () => {
+      it("saves single deck to SecureStore and updates context", async () => {
+        const storageContext = await renderStorageContext();
+
+        const updatedDeck = new Deck(
+          decks[0].name,
+          ["Test card updated"],
+          decks[0].id,
+        );
 
         await act(async () => {
-          await storageContext.current.saveDecks(newDecks);
+          await storageContext.current.saveDeck(decks[0].id, updatedDeck);
         });
 
         expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
         expect(mockSetItemAsync).toHaveBeenCalledWith(
           "decks",
-          JSON.stringify(newDecks),
+          JSON.stringify([updatedDeck, decks[1]]),
         );
 
         // Assert context state updated
-        expect(storageContext.current.decks).toEqual(newDecks);
+        expect(storageContext.current.decks).toEqual([updatedDeck, decks[1]]);
       });
     });
 

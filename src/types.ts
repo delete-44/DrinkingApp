@@ -1,10 +1,11 @@
-export type NonEmptyArray<T> = [T, ...T[]];
-
 // Game logic types
 
-export type TDeck = {
+import { Deck } from "./models/Deck";
+
+export type TDeckData = {
+  id: string;
   name: string;
-  cards: NonEmptyArray<string>;
+  cards: string[];
 };
 
 export type TPlayers = string[];
@@ -21,11 +22,11 @@ export type StorageProviderProps = {
 };
 
 export type StorageContextProps = {
-  currentDeck: TDeck;
-  currentDeckIndex: number;
-  saveCurrentDeckIndex: (idx: number) => void;
-  decks: TDeck[];
-  saveDecks: (newDecks: TDeck[]) => void;
+  selectedDeck: Deck;
+  saveSelectedDeckId: (id: string) => void;
+  decks: Deck[];
+  fetchDeck: (id: string) => Deck | null;
+  saveDeck: (id: string, updatedDeck: Deck) => void;
   players: string[];
   savePlayers: (newPlayers: string[]) => void;
   isLoading: boolean;

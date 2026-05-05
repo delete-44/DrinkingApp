@@ -20,27 +20,27 @@ describe("GameScreen", () => {
 
   it("shows loading spinner whilst loading content from store", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
       players: ["Player 1", "Player 2"],
       isLoading: true,
     });
 
     render(<GameScreen />);
 
-    expect(screen.getByLabelText("Loading game")).toBeVisible();
+    expect(screen.getByLabelText("Loading Game")).toBeVisible();
   });
 
   it("shows a CTA to return home if the initialisation fails", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
       players: [],
       isLoading: false,
     });
 
     render(<GameScreen />);
 
-    expect(screen.getByText("Error: Game has no players")).toBeVisible();
-    expect(screen.queryByLabelText("Loading game")).toBeNull();
+    expect(screen.getByText("Error: Game has no Players")).toBeVisible();
+    expect(screen.queryByLabelText("Loading Game")).toBeNull();
 
     const homeButton = screen.getByRole("button", { name: "Back to Home" });
     expect(homeButton).toBeVisible();
@@ -51,7 +51,7 @@ describe("GameScreen", () => {
 
   it("renders a GameState on load", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
       players: ["Sally"],
       isLoading: false,
     });
@@ -61,16 +61,16 @@ describe("GameScreen", () => {
     expect(screen.getByText("Sally's Turn")).toBeVisible();
     expect(screen.getByText("Card 1")).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Tap to draw next card" }),
+      screen.getByRole("button", { name: "Tap to draw next Card" }),
     ).toBeVisible();
 
-    expect(screen.queryByLabelText("Loading game")).toBeNull();
+    expect(screen.queryByLabelText("Loading Game")).toBeNull();
     expect(screen.queryByRole("button", { name: "Back to Home" })).toBeNull();
   });
 
   it("cycles to the next GameState on click", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1", "Card 2"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1", "Card 2"] },
       players: ["Sally", "Alice"],
       isLoading: false,
     });
@@ -78,7 +78,7 @@ describe("GameScreen", () => {
     render(<GameScreen />);
 
     const nextCardButton = screen.getByRole("button", {
-      name: "Tap to draw next card",
+      name: "Tap to draw next Card",
     });
 
     expect(screen.getByText("Sally's Turn")).toBeVisible();

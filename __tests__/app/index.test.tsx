@@ -1,3 +1,4 @@
+import { Deck } from "@/src/models/Deck";
 import {
   fireEvent,
   render,
@@ -7,7 +8,7 @@ import {
 import { router } from "expo-router";
 import React, { act } from "react";
 import { DeviceEventEmitter } from "react-native";
-import Index from "../app/index";
+import Index from "../../app/index";
 
 jest.mock("expo-router", () => ({
   router: {
@@ -17,9 +18,9 @@ jest.mock("expo-router", () => ({
 
 describe("Index", () => {
   beforeEach(() => {
+    const testDeck = new Deck("Default", ["Card 1"], "1");
     jest.spyOn(React, "useContext").mockReturnValue({
-      decks: [{ id: "1", name: "Default", cards: ["Card 1"] }],
-      currentDeckIndex: 0,
+      selectedDeck: testDeck,
       isLoading: false,
     });
   });

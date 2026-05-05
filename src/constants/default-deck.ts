@@ -1,4 +1,4 @@
-import { TDeck } from "../types";
+import { TDeckData } from "../types";
 
 const DEFAULT_DECK = {
   name: "Default",
@@ -75,6 +75,6 @@ const DEFAULT_DECK = {
     "The player opposite you drinks",
     "The person nearest to you drinks",
   ],
-} as TDeck;
+} as TDeckData;
 
 export default DEFAULT_DECK;

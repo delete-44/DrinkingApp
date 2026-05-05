@@ -11,15 +11,16 @@ import { plus } from "@/assets/icons/plus";
 import { StorageContext } from "@/context/StorageContext";
 import {
   CONTENT_BACKDROP,
-  ERROR_MESSAGE_HEIGHT,
   FORM_CONTROL_SIZE,
+  FORM_LABEL_HEIGHT,
   SPACING_LG,
   SPACING_MD,
   SPACING_SM,
 } from "@/src/constants/style-constants";
 import { useCallback, useContext, useState } from "react";
-import PlayerListEmptyState from "./PlayerListEmptyState";
-import PlayerListItem from "./PlayerListItem";
+import HorizontalDivider from "./HorizontalDivider";
+import RemovableListItem from "./RemovableListItem";
+import PlayerListEmptyState from "./status/PlayerListEmptyState";
 import SVG from "./SVG";
 import WrappedTextInput from "./WrappedTextInput";
 
@@ -31,8 +32,6 @@ export default function PlayerList() {
 
   const addPlayer = useCallback(
     (name: string) => {
-      const newPlayers = [...players];
-
       if (!name.trim()) {
         setErrorMessage("Player name cannot be empty");
         return;
@@ -43,11 +42,20 @@ export default function PlayerList() {
         return;
       }
 
-      newPlayers.push(name.trim());
+      const newPlayers = [...players, name.trim()];
 
       savePlayers(newPlayers);
 
       setNewPlayer("");
+    },
+    [players, savePlayers],
+  );
+
+  const removePlayerAt = useCallback(
+    (playerIndex: number) => {
+      const newPlayers = players.filter((_, idx) => idx !== playerIndex);
+
+      savePlayers(newPlayers);
     },
     [players, savePlayers],
   );
@@ -77,17 +85,24 @@ export default function PlayerList() {
 
       <FlatList
         data={players}
-        renderItem={({ item }) => <PlayerListItem name={item} />}
+        renderItem={({ item, index }) => (
+          <RemovableListItem
+            label={item}
+            idx={index}
+            removeItemAt={removePlayerAt}
+          />
+        )}
         ListEmptyComponent={
           isLoading ? (
             <ActivityIndicator
               color="#fff"
-              accessibilityLabel="Loading players"
+              accessibilityLabel="Loading Players"
             />
           ) : (
             PlayerListEmptyState
           )
         }
+        ItemSeparatorComponent={HorizontalDivider}
       />
     </View>
   );
@@ -117,7 +132,7 @@ const styles = StyleSheet.create({
   },
   addPlayerButton: {
     ...globalStyles.buttonHighlight,
-    marginBottom: ERROR_MESSAGE_HEIGHT,
+    marginBottom: FORM_LABEL_HEIGHT,
     height: FORM_CONTROL_SIZE,
   },
 });
