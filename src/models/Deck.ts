@@ -1,4 +1,4 @@
-import { TDeck } from "../types";
+import { TDeckData } from "../types";
 
 export class Deck {
   readonly id: string;
@@ -11,7 +11,7 @@ export class Deck {
     this.cards = cards;
   }
 
-  toJson(): TDeck {
+  toJson(): TDeckData {
     return {
       id: this.id,
       name: this.name,
@@ -19,7 +19,7 @@ export class Deck {
     };
   }
 
-  static fromJson({ name, cards, id }: TDeck): Deck {
+  static fromJson({ name, cards, id }: TDeckData): Deck {
     return new Deck(name, cards, id);
   }
 }

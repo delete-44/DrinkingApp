@@ -5,7 +5,7 @@ import {
   StorageProvider,
 } from "@/context/StorageContext";
 import { Deck } from "@/src/models/Deck";
-import { TDeck } from "@/src/types";
+import { TDeckData } from "@/src/types";
 import { renderHook, waitFor } from "@testing-library/react-native";
 import * as SecureStore from "expo-secure-store";
 import { act, useContext } from "react";
@@ -110,7 +110,7 @@ describe("StorageContext", () => {
         const decks = [
           { id: "1", name: "Default", cards: ["Test card"] },
           { id: "2", name: "Second Deck", cards: ["Test 2"] },
-        ] as TDeck[];
+        ] as TDeckData[];
 
         mockStore["decks"] = JSON.stringify(decks);
 
@@ -139,7 +139,7 @@ describe("StorageContext", () => {
         const decks = [
           { id: "1", name: "Default", cards: ["Test card"] },
           { id: "2", name: "Second Deck", cards: ["Test 2"] },
-        ] as TDeck[];
+        ] as TDeckData[];
 
         mockStore["decks"] = JSON.stringify(decks);
 

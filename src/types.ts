@@ -2,7 +2,7 @@
 
 import { Deck } from "./models/Deck";
 
-export type TDeck = {
+export type TDeckData = {
   id: string;
   name: string;
   cards: string[];

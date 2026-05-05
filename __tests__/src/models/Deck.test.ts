@@ -1,5 +1,5 @@
 import { Deck } from "@/src/models/Deck";
-import { TDeck } from "@/src/types";
+import { TDeckData } from "@/src/types";
 
 describe("Deck", () => {
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe("Deck", () => {
         id: "123",
         name: "Test Deck",
         cards: [],
-      } as TDeck;
+      } as TDeckData;
 
       const deck = Deck.fromJson(deckData);
 
