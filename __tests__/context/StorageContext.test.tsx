@@ -105,7 +105,7 @@ describe("StorageContext", () => {
       return result;
     };
 
-    describe("#saveCurrentDeckIndex", () => {
+    describe("#saveSelectedDeckId", () => {
       it("saves current deck idx to SecureStore and updates context", async () => {
         const decks = [
           { id: "1", name: "Default", cards: ["Test card"] },
@@ -116,21 +116,20 @@ describe("StorageContext", () => {
 
         const storageContext = await renderStorageContext();
 
-        const newIdx = 1;
+        const newId = decks[1].id;
 
         await act(async () => {
-          await storageContext.current.saveCurrentDeckIndex(newIdx);
+          await storageContext.current.saveSelectedDeckId(newId);
         });
 
         expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
         expect(mockSetItemAsync).toHaveBeenCalledWith(
-          "current_deck_idx",
-          JSON.stringify(newIdx),
+          "selected_deck_id",
+          JSON.stringify(newId),
         );
 
         // Assert context state updated
-        expect(storageContext.current.currentDeckIndex).toEqual(newIdx);
-        expect(storageContext.current.currentDeck).toEqual(decks[newIdx]);
+        expect(storageContext.current.selectedDeck).toEqual(decks[1]);
       });
     });
 
@@ -152,7 +151,7 @@ describe("StorageContext", () => {
         );
 
         await act(async () => {
-          await storageContext.current.saveDeck(0, updatedDeck);
+          await storageContext.current.saveDeck(decks[0].id, updatedDeck);
         });
 
         expect(mockSetItemAsync).toHaveBeenCalledTimes(1);

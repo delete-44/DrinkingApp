@@ -65,9 +65,9 @@ export default function Edit() {
         modifiedCards,
         currentDeck.id,
       );
-      saveDeck(parseInt(idx), modifiedDeck);
+      saveDeck(currentDeck.id, modifiedDeck);
     },
-    [currentDeck, idx, saveDeck],
+    [currentDeck, saveDeck],
   );
 
   const addCard = useCallback(
@@ -87,11 +87,11 @@ export default function Edit() {
         modifiedCards,
         currentDeck.id,
       );
-      saveDeck(parseInt(idx), modifiedDeck);
+      saveDeck(currentDeck.id, modifiedDeck);
 
       setNewCard("");
     },
-    [currentDeck, idx, saveDeck],
+    [currentDeck, saveDeck],
   );
 
   const removeCardAt = useCallback(
@@ -107,9 +107,9 @@ export default function Edit() {
         modifiedCards,
         currentDeck.id,
       );
-      saveDeck(parseInt(idx), modifiedDeck);
+      saveDeck(currentDeck.id, modifiedDeck);
     },
-    [currentDeck, idx, saveDeck],
+    [currentDeck, saveDeck],
   );
 
   if (isLoading) {

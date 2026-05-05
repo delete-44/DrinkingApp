@@ -18,15 +18,11 @@ import {
   SPACING_SM,
 } from "@/src/constants/style-constants";
 import { router } from "expo-router";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import SVG from "./SVG";
 
 export default function DeckSelector() {
-  const { decks, currentDeckIndex, isLoading } = useContext(StorageContext);
-
-  const currentDeck = useMemo(() => {
-    return decks[currentDeckIndex] || decks[0];
-  }, [decks, currentDeckIndex]);
+  const { selectedDeck, isLoading } = useContext(StorageContext);
 
   return (
     <View style={styles.deckSelector}>
@@ -36,7 +32,7 @@ export default function DeckSelector() {
       {isLoading ? (
         <ActivityIndicator color="#fff" accessibilityLabel="Loading decks" />
       ) : (
-        <Text style={globalStyles.textLg}>{currentDeck.name}</Text>
+        <Text style={globalStyles.textLg}>{selectedDeck.name}</Text>
       )}
 
       <View style={styles.deckSelectorActions}>
@@ -46,7 +42,7 @@ export default function DeckSelector() {
           onPress={() =>
             router.navigate({
               pathname: "/decks/[idx]/edit",
-              params: { idx: currentDeckIndex },
+              params: { idx: 0 }, // FIXME - using ID
             })
           }
         >

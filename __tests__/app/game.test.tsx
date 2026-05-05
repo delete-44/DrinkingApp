@@ -20,7 +20,7 @@ describe("GameScreen", () => {
 
   it("shows loading spinner whilst loading content from store", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
       players: ["Player 1", "Player 2"],
       isLoading: true,
     });
@@ -32,7 +32,7 @@ describe("GameScreen", () => {
 
   it("shows a CTA to return home if the initialisation fails", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
       players: [],
       isLoading: false,
     });
@@ -51,7 +51,7 @@ describe("GameScreen", () => {
 
   it("renders a GameState on load", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1"] },
       players: ["Sally"],
       isLoading: false,
     });
@@ -70,7 +70,7 @@ describe("GameScreen", () => {
 
   it("cycles to the next GameState on click", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
-      currentDeck: { id: "1", name: "Deck", cards: ["Card 1", "Card 2"] },
+      selectedDeck: { id: "1", name: "Deck", cards: ["Card 1", "Card 2"] },
       players: ["Sally", "Alice"],
       isLoading: false,
     });

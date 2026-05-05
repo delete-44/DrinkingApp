@@ -1,4 +1,5 @@
 import DeckSelector from "@/components/DeckSelector";
+import { Deck } from "@/src/models/Deck";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { router } from "expo-router";
 import React from "react";
@@ -10,14 +11,16 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("DeckSelector", () => {
+  const testDeck = new Deck("Default", ["Card 1"], "1");
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it("renders loading spinner when fetching data", () => {
     jest.spyOn(React, "useContext").mockReturnValueOnce({
-      decks: [{ id: "1", name: "Default", cards: ["Card 1"] }],
-      currentDeckIndex: 0,
+      decks: [testDeck],
+      selectedDeck: testDeck,
       isLoading: true,
     });
 
@@ -31,8 +34,8 @@ describe("DeckSelector", () => {
   describe("once loaded", () => {
     beforeEach(() => {
       jest.spyOn(React, "useContext").mockReturnValueOnce({
-        decks: [{ id: "1", name: "Default", cards: ["Card 1"] }],
-        currentDeckIndex: 0,
+        decks: [testDeck],
+        selectedDeck: testDeck,
         isLoading: false,
       });
     });

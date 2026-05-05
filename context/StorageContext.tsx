@@ -6,7 +6,7 @@ import { createContext, useEffect, useMemo, useState } from "react";
 
 export const StorageContext = createContext({} as StorageContextProps);
 
-const CURRENT_DECK_KEY = "current_deck_idx";
+const SELECTED_DECK_KEY = "selected_deck_id";
 const DECK_KEY = "decks";
 const PLAYER_KEY = "players";
 
@@ -39,21 +39,21 @@ export async function saveResourceImpl<T>(
 }
 
 export function StorageProvider({ children }: StorageProviderProps) {
-  const [currentDeckIndex, setCurrentDeckIndex] = useState(0);
+  const [selectedDeckId, setSelectedDeckId] = useState<string>();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [players, setPlayers] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const [loadedCurrentDeckIndex, loadedDecks, loadedPlayers] =
+      const [loadedSelectedDeckId, loadedDecks, loadedPlayers] =
         await Promise.all([
-          loadResourceImpl(CURRENT_DECK_KEY, 0),
+          loadResourceImpl(SELECTED_DECK_KEY, ""),
           loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
           loadResourceImpl(PLAYER_KEY, [] as string[]),
         ]);
 
-      setCurrentDeckIndex(loadedCurrentDeckIndex);
+      setSelectedDeckId(loadedSelectedDeckId);
       setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
       setPlayers(loadedPlayers);
 
@@ -63,26 +63,20 @@ export function StorageProvider({ children }: StorageProviderProps) {
     fetchData();
   }, []);
 
-  const currentDeck = useMemo(() => {
-    return decks[currentDeckIndex] || decks[0];
-  }, [decks, currentDeckIndex]);
+  const selectedDeck = useMemo(() => {
+    return decks.find((d) => d.id === selectedDeckId) || decks[0];
+  }, [decks, selectedDeckId]);
 
-  const saveCurrentDeckIndex = async (idx: number) => {
-    await saveResourceImpl(CURRENT_DECK_KEY, idx);
-    setCurrentDeckIndex(idx);
+  const saveSelectedDeckId = async (id: string) => {
+    await saveResourceImpl(SELECTED_DECK_KEY, id);
+    setSelectedDeckId(id);
   };
 
-  const _saveDecks = async (newDecks: Deck[]) => {
+  const saveDeck = async (id: string, updatedDeck: Deck) => {
+    const newDecks = decks.map((deck) => (deck.id === id ? updatedDeck : deck));
+
     await saveResourceImpl(DECK_KEY, newDecks);
     setDecks(newDecks);
-  };
-
-  const saveDeck = async (deckIdx: number, updatedDeck: Deck) => {
-    const newDecks = decks.map((deck, idx) =>
-      idx === deckIdx ? updatedDeck : deck,
-    );
-
-    await _saveDecks(newDecks);
   };
 
   const savePlayers = async (newPlayers: string[]) => {
@@ -91,9 +85,8 @@ export function StorageProvider({ children }: StorageProviderProps) {
   };
 
   const value = {
-    currentDeck,
-    currentDeckIndex,
-    saveCurrentDeckIndex,
+    selectedDeck,
+    saveSelectedDeckId,
     decks,
     saveDeck,
     players,

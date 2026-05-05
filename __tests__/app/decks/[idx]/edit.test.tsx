@@ -1,5 +1,6 @@
 import Edit from "@/app/decks/[idx]/edit";
 import DEFAULT_DECK from "@/src/constants/default-deck";
+import { Deck } from "@/src/models/Deck";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
@@ -12,28 +13,10 @@ describe("Edit", () => {
   const mockSaveDeck = jest.fn();
   const mockUseLocalSearchParams = useLocalSearchParams as jest.Mock;
 
-  jest.mock("expo-router", () => ({
-    useLocalSearchParams: mockUseLocalSearchParams,
-  }));
+  const testDeck = new Deck("Test Deck", [], "abc123");
 
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  it("renders an error state when deck not found", () => {
-    jest.spyOn(React, "useContext").mockReturnValue({
-      decks: [{ id: "1", name: "Test Deck", cards: [] }],
-      saveDeck: mockSaveDeck,
-      isLoading: false,
-    });
-
-    mockUseLocalSearchParams.mockReturnValue({ idx: "500" });
-
-    render(<Edit />);
-
-    expect(screen.queryByText("... or add your own here!")).toBeNull();
-    expect(screen.queryByLabelText("Loading Deck")).toBeNull();
-    expect(screen.getByText("Error: Failed to load Deck.")).toBeVisible();
   });
 
   describe("when deck found", () => {
@@ -43,7 +26,7 @@ describe("Edit", () => {
 
     it("renders a loading state", () => {
       jest.spyOn(React, "useContext").mockReturnValue({
-        decks: [{ name: "Test Deck", cards: [] }],
+        decks: [testDeck],
         saveDeck: mockSaveDeck,
         isLoading: true,
       });
@@ -58,10 +41,20 @@ describe("Edit", () => {
     describe("with no cards initialised", () => {
       beforeEach(() => {
         jest.spyOn(React, "useContext").mockReturnValue({
-          decks: [{ id: "1", name: "Test Deck", cards: [] }],
+          decks: [testDeck],
           saveDeck: mockSaveDeck,
           isLoading: false,
         });
+      });
+
+      it("renders an error state when deck not found", () => {
+        mockUseLocalSearchParams.mockReturnValue({ idx: "500" });
+
+        render(<Edit />);
+
+        expect(screen.queryByText("... or add your own here!")).toBeNull();
+        expect(screen.queryByLabelText("Loading Deck")).toBeNull();
+        expect(screen.getByText("Error: Failed to load Deck.")).toBeVisible();
       });
 
       it("renders an empty state when no cards provided", () => {
@@ -83,11 +76,10 @@ describe("Edit", () => {
           screen.getByRole("button", { name: "Load Default Cards" }),
         );
 
-        expect(mockSaveDeck).toHaveBeenCalledWith(0, {
-          id: "1",
-          name: "Test Deck",
-          cards: DEFAULT_DECK.cards,
-        });
+        expect(mockSaveDeck).toHaveBeenCalledWith(
+          testDeck.id,
+          new Deck(testDeck.name, DEFAULT_DECK.cards, testDeck.id),
+        );
       });
 
       it("prevents user adding empty cards", () => {
@@ -138,22 +130,25 @@ describe("Edit", () => {
         const addButton = screen.getByRole("button", { name: "Add Card" });
         fireEvent.press(addButton);
 
-        expect(mockSaveDeck).toHaveBeenCalledWith(0, {
-          id: "1",
-          name: "Test Deck",
-          cards: ["Drink up!"],
-        });
+        expect(mockSaveDeck).toHaveBeenCalledWith(
+          testDeck.id,
+          new Deck(testDeck.name, ["Drink up!"], testDeck.id),
+        );
 
         expect(input).toHaveProp("value", "");
       });
     });
 
     describe("with existing cards", () => {
+      const testDeck = new Deck(
+        "Test Deck",
+        ["Drink up!", "Do a flip", "Go for a walk"],
+        "abc123",
+      );
+
       beforeEach(() => {
         jest.spyOn(React, "useContext").mockReturnValue({
-          decks: [
-            { id: "1", name: "Test Deck", cards: ["Drink up!", "Do a flip"] },
-          ],
+          decks: [testDeck],
           saveDeck: mockSaveDeck,
           isLoading: false,
         });
@@ -174,11 +169,10 @@ describe("Edit", () => {
         });
 
         fireEvent.press(removeCardButton);
-        expect(mockSaveDeck).toHaveBeenCalledWith(0, {
-          id: "1",
-          name: "Test Deck",
-          cards: ["Drink up!"],
-        });
+        expect(mockSaveDeck).toHaveBeenCalledWith(
+          testDeck.id,
+          new Deck(testDeck.name, ["Drink up!", "Go for a walk"], testDeck.id),
+        );
       });
     });
   });

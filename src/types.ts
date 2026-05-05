@@ -22,11 +22,10 @@ export type StorageProviderProps = {
 };
 
 export type StorageContextProps = {
-  currentDeck: Deck;
-  currentDeckIndex: number;
-  saveCurrentDeckIndex: (idx: number) => void;
+  selectedDeck: Deck;
+  saveSelectedDeckId: (id: string) => void;
   decks: Deck[];
-  saveDeck: (idx: number, updatedDeck: Deck) => void;
+  saveDeck: (id: string, updatedDeck: Deck) => void;
   players: string[];
   savePlayers: (newPlayers: string[]) => void;
   isLoading: boolean;

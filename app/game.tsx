@@ -14,7 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function GameScreen() {
   useKeepAwake();
 
-  const { currentDeck, players, isLoading } = useContext(StorageContext);
+  // FIXME: Remove reliance on selectedDeck. Use /decks/{id}/game routing
+  const { selectedDeck, players, isLoading } = useContext(StorageContext);
 
   const [game, setGame] = useState<Game>();
   const [currentCard, setCurrentCard] = useState<GameState>();
@@ -24,13 +25,13 @@ export default function GameScreen() {
     if (isLoading) return;
 
     try {
-      const newGame = new Game(currentDeck, players);
+      const newGame = new Game(selectedDeck, players);
       setGame(newGame);
       setCurrentCard(newGame.drawCard());
     } catch (e: any) {
       setErrorMessage(e.message);
     }
-  }, [isLoading, currentDeck, players]);
+  }, [isLoading, selectedDeck, players]);
 
   // Loading screen
   if (isLoading) {
