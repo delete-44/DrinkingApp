@@ -11,10 +11,6 @@ export class Deck {
     this.cards = cards;
   }
 
-  setCards(cards: string[]) {
-    this.cards = cards;
-  }
-
   toJson(): TDeck {
     return {
       id: this.id,
