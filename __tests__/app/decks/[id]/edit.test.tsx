@@ -15,6 +15,7 @@ describe("Edit", () => {
     saveSelectedDeckId: jest.fn(),
     decks: [testDeck],
     fetchDeck: jest.fn(),
+    createDeck: jest.fn(),
     updateDeck: mockUpdateDeck,
     players: ["Alice"],
     savePlayers: jest.fn(),
@@ -62,7 +63,9 @@ describe("Edit", () => {
       expect(errorMessage).toBeNull();
 
       const input = screen.getByLabelText("Card Content");
-      const addButton = screen.getByRole("button", { name: "Add Card" });
+      const addButton = screen.getByRole("button", {
+        name: "Add Card to Deck",
+      });
       fireEvent.press(addButton);
 
       expect(mockUpdateDeck).not.toHaveBeenCalled();
@@ -77,7 +80,9 @@ describe("Edit", () => {
       expect(errorMessage).toBeNull();
 
       const input = screen.getByLabelText("Card Content");
-      const addButton = screen.getByRole("button", { name: "Add Card" });
+      const addButton = screen.getByRole("button", {
+        name: "Add Card to Deck",
+      });
       fireEvent.press(addButton);
 
       expect(mockUpdateDeck).not.toHaveBeenCalled();
@@ -96,7 +101,9 @@ describe("Edit", () => {
       const input = screen.getByLabelText("Card Content");
       fireEvent.changeText(input, " Drink up!  ");
 
-      const addButton = screen.getByRole("button", { name: "Add Card" });
+      const addButton = screen.getByRole("button", {
+        name: "Add Card to Deck",
+      });
       fireEvent.press(addButton);
 
       expect(mockUpdateDeck).toHaveBeenCalledWith(
