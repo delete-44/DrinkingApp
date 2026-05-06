@@ -147,6 +147,41 @@ describe("StorageContext", () => {
       });
     });
 
+    describe("#createDeck", () => {
+      it("creates a blank deck & adds it to context", async () => {
+        let newDeck;
+        const storageContext = await renderStorageContext();
+
+        await act(async () => {
+          newDeck = await storageContext.current.createDeck();
+        });
+
+        expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
+        expect(mockSetItemAsync).toHaveBeenCalledWith(
+          "decks",
+          JSON.stringify([...decks, newDeck]),
+        );
+
+        // Assert context state updated
+        expect(storageContext.current.decks).toEqual([...decks, newDeck]);
+
+        expect(newDeck!.name).toEqual("");
+        expect(newDeck!.cards).toEqual([]);
+      });
+
+      it("instantiates with a given name if provided", async () => {
+        let newDeck;
+        const storageContext = await renderStorageContext();
+
+        await act(async () => {
+          newDeck = await storageContext.current.createDeck("My Deck <3");
+        });
+
+        expect(newDeck!.name).toEqual("My Deck <3");
+        expect(newDeck!.cards).toEqual([]);
+      });
+    });
+
     describe("#updateDeck", () => {
       it("saves single deck to SecureStore and updates context", async () => {
         const storageContext = await renderStorageContext();
