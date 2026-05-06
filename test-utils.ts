@@ -9,6 +9,7 @@ export const BaseMockStorageContext = {
   saveSelectedDeckId: jest.fn(),
   decks: [BaseTestDeck],
   fetchDeck: jest.fn(),
+  createDeck: jest.fn(),
   saveDeck: jest.fn(),
   players: BaseTestPlayers,
   savePlayers: jest.fn(),
