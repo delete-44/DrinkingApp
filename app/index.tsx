@@ -43,7 +43,7 @@ export default function Index() {
   }, []);
 
   if (isLoading) {
-    return <LoadingScreen label="Loading Decks..." />;
+    return <LoadingScreen label="Loading Decks" />;
   }
 
   return (
