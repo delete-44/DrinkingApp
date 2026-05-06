@@ -32,3 +32,4 @@ You can start developing by editing the files inside the **app** directory. This
 - <a href="https://lucide.dev/icons/minus">Minus icon from Lucide</a>
 - <a href="https://lucide.dev/icons/plus">Plus icon from Lucide</a>
 - <a href="https://lucide.dev/icons/check">Check icon from Lucide</a>
+- <a href="https://lucide.dev/icons/x">Cross icon from Lucide</a>
