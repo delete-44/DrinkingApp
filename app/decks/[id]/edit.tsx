@@ -1,11 +1,8 @@
-import globalStyles from "@/assets/global-styles";
-import CardList from "@/components/CardList";
-import DeckTitlebar from "@/components/decks/DeckTitlebar";
+import DeckForm from "@/components/decks/DeckForm";
 import { useDeckFromLayout } from "@/context/DeckLayoutContext";
 import { StorageContext } from "@/context/StorageContext";
 import { Deck } from "@/src/models/Deck";
 import { useCallback, useContext } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Edit() {
   const { updateDeck } = useContext(StorageContext);
@@ -19,11 +16,5 @@ export default function Edit() {
     [currentDeck, updateDeck],
   );
 
-  return (
-    <SafeAreaView style={globalStyles.backgroundGradient}>
-      <DeckTitlebar deck={currentDeck} saveDeckCallback={saveDeck} />
-
-      <CardList deck={currentDeck} />
-    </SafeAreaView>
-  );
+  return <DeckForm deck={currentDeck} saveDeckCallback={saveDeck} />;
 }
