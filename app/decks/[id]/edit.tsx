@@ -8,7 +8,7 @@ import {
 
 import globalStyles from "@/assets/global-styles";
 import { plus } from "@/assets/icons/plus";
-import DeckTitlebar from "@/components/DeckTitlebar";
+import DeckTitlebar from "@/components/decks/DeckTitlebar";
 import HorizontalDivider from "@/components/HorizontalDivider";
 import RemovableListItem from "@/components/RemovableListItem";
 import CardListEmptyState from "@/components/status/CardListEmptyState";

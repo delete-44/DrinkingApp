@@ -1,4 +1,4 @@
-import DeckTitlebar from "@/components/DeckTitlebar";
+import DeckTitlebar from "@/components/decks/DeckTitlebar";
 import { StorageContext } from "@/context/StorageContext";
 import { Deck } from "@/src/models/Deck";
 import { fireEvent, render, screen } from "@testing-library/react-native";

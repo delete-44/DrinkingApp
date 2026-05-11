@@ -21,10 +21,10 @@ import {
 } from "@/src/constants/style-constants";
 import { router } from "expo-router";
 import { useContext, useState } from "react";
-import HorizontalDivider from "./HorizontalDivider";
-import ModalContainer from "./ModalContainer";
-import PressableListItem from "./PressableListItem";
-import SVG from "./SVG";
+import HorizontalDivider from "../HorizontalDivider";
+import ModalContainer from "../ModalContainer";
+import PressableListItem from "../PressableListItem";
+import SVG from "../SVG";
 
 export default function DeckSelector() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,7 +41,7 @@ export default function DeckSelector() {
     <>
       <View style={styles.deckSelectorWrapper}>
         <View style={styles.logoBackground}>
-          <Image source={require("../assets/icons/deck.png")} alt="" />
+          <Image source={require("../../assets/icons/deck.png")} alt="" />
         </View>
 
         <Pressable

@@ -19,8 +19,8 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import SVG from "./SVG";
-import WrappedTextInput from "./WrappedTextInput";
+import SVG from "../SVG";
+import WrappedTextInput from "../WrappedTextInput";
 
 type DeckTitlebarProps = {
   currentDeck: Deck;
