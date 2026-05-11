@@ -1,7 +1,6 @@
 import globalStyles from "@/assets/global-styles";
 import { check } from "@/assets/icons/check";
 import { pencil } from "@/assets/icons/pencil";
-import { StorageContext } from "@/context/StorageContext";
 import {
   DECORATION_COLOR,
   FORM_CONTROL_SIZE,
@@ -10,52 +9,44 @@ import {
   SPACING_SM,
 } from "@/src/constants/style-constants";
 import { Deck } from "@/src/models/Deck";
-import { useCallback, useContext, useState } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  View,
-  ViewStyle,
-} from "react-native";
+import { useCallback, useState } from "react";
+import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import SVG from "../SVG";
 import WrappedTextInput from "../WrappedTextInput";
 
 type DeckTitlebarProps = {
-  currentDeck: Deck;
+  deck: Deck;
+  saveDeckCallback: (name: string) => Promise<void>;
 };
 
-export default function DeckTitlebar({ currentDeck }: DeckTitlebarProps) {
-  const { updateDeck } = useContext(StorageContext);
+export default function DeckTitlebar({
+  deck,
+  saveDeckCallback,
+}: DeckTitlebarProps) {
+  const [editingDeckName, setEditingDeckName] = useState(deck.name === "");
 
-  const [editingDeckName, setEditingDeckName] = useState(
-    currentDeck.name === "",
-  );
-
-  const [workingDeckName, setWorkingDeckName] = useState(currentDeck.name);
+  const [workingDeckName, setWorkingDeckName] = useState(deck.name);
   const [deckNameErrorMessage, setDeckNameErrorMessage] = useState("");
 
   const updateDeckName = useCallback(
-    (name: string) => {
+    async (name: string) => {
       if (name.trim() === "") {
         setDeckNameErrorMessage("Deck name cannot be empty");
 
         return;
       }
 
-      const updatedDeck = new Deck(
-        name.trim(),
-        [...currentDeck.cards],
-        currentDeck.id,
-      );
+      try {
+        await saveDeckCallback(name);
+        setEditingDeckName(false);
+      } catch (e: any) {
+        console.error(e);
 
-      updateDeck(currentDeck.id, updatedDeck);
-      setEditingDeckName(false);
-
-      ToastAndroid.show("Name Saved", ToastAndroid.SHORT);
+        console.log("HERE! setting error message to", e.message);
+        setDeckNameErrorMessage(e.message);
+      }
     },
-    [currentDeck, updateDeck],
+    [saveDeckCallback],
   );
 
   if (editingDeckName) {
@@ -86,7 +77,7 @@ export default function DeckTitlebar({ currentDeck }: DeckTitlebarProps) {
 
   return (
     <View style={styles.actionsWrapper}>
-      <Text style={[globalStyles.textLg, { flex: 1 }]}>{currentDeck.name}</Text>
+      <Text style={[globalStyles.textLg, { flex: 1 }]}>{deck.name}</Text>
 
       <Pressable
         role="button"

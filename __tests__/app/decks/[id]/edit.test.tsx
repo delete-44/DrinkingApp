@@ -4,7 +4,12 @@ import { StorageContext } from "@/context/StorageContext";
 import DEFAULT_DECK from "@/src/constants/default-deck";
 import { Deck } from "@/src/models/Deck";
 import { BaseMockStorageContext } from "@/test-utils";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react-native";
 import React from "react";
 
 describe("Edit", () => {
@@ -93,7 +98,7 @@ describe("Edit", () => {
       expect(errorMessage).toBeNull();
     });
 
-    it("trims whitespace from card contents", () => {
+    it("trims whitespace from card contents", async () => {
       const input = screen.getByLabelText("Card Content");
       fireEvent.changeText(input, " Drink up!  ");
 
@@ -107,7 +112,9 @@ describe("Edit", () => {
         new Deck(testDeck.name, ["Drink up!"], testDeck.id),
       );
 
-      expect(input).toHaveProp("value", "");
+      await waitFor(() => {
+        expect(input).toHaveProp("value", "");
+      });
     });
   });
 

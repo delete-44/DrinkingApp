@@ -1,5 +1,10 @@
 import PlayerList from "@/components/PlayerList";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react-native";
 import React from "react";
 
 describe("PlayerList", () => {
@@ -77,7 +82,7 @@ describe("PlayerList", () => {
       expect(errorMessage).toBeNull();
     });
 
-    it("trims whitespace from player names", () => {
+    it("trims whitespace from player names", async () => {
       render(<PlayerList />);
 
       const input = screen.getByLabelText("Name");
@@ -87,7 +92,9 @@ describe("PlayerList", () => {
       fireEvent.press(addButton);
 
       expect(mockSavePlayers).toHaveBeenCalledWith(["Alice"]);
-      expect(input).toHaveProp("value", "");
+      await waitFor(() => {
+        expect(input).toHaveProp("value", "");
+      });
     });
   });
 

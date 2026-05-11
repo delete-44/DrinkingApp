@@ -31,7 +31,7 @@ export default function PlayerList() {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const addPlayer = useCallback(
-    (name: string) => {
+    async (name: string) => {
       if (!name.trim()) {
         setErrorMessage("Player name cannot be empty");
         return;
@@ -44,7 +44,7 @@ export default function PlayerList() {
 
       const newPlayers = [...players, name.trim()];
 
-      savePlayers(newPlayers);
+      await savePlayers(newPlayers);
 
       setNewPlayer("");
     },
@@ -52,10 +52,10 @@ export default function PlayerList() {
   );
 
   const removePlayerAt = useCallback(
-    (playerIndex: number) => {
+    async (playerIndex: number) => {
       const newPlayers = players.filter((_, idx) => idx !== playerIndex);
 
-      savePlayers(newPlayers);
+      await savePlayers(newPlayers);
     },
     [players, savePlayers],
   );

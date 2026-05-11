@@ -107,8 +107,8 @@ export default function DeckSelector() {
               <PressableListItem
                 label={item.name}
                 idx={index}
-                onPressItem={(idx: number) => {
-                  saveSelectedDeckIdx(idx);
+                onPressItem={async (idx: number) => {
+                  await saveSelectedDeckIdx(idx);
                   setIsModalVisible(false);
                 }}
               />

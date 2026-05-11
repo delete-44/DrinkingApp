@@ -35,11 +35,19 @@ export default function Edit() {
   const { updateDeck } = useContext(StorageContext);
   const currentDeck = useDeckFromLayout();
 
+  const saveDeck = useCallback(
+    async (name: string) => {
+      const newDeck = new Deck(name, currentDeck.cards, currentDeck.id);
+      await updateDeck(currentDeck.id, newDeck);
+    },
+    [currentDeck, updateDeck],
+  );
+
   // Callback for adding multiple cards to the deck; currently
   // used for inserting the default deck from the empty screen;
   // longer term could be useful for downloading/importing decks
   const addCards = useCallback(
-    (newCards: string[]) => {
+    async (newCards: string[]) => {
       const modifiedCards = [...currentDeck.cards, ...newCards];
 
       let modifiedDeck = new Deck(
@@ -47,13 +55,13 @@ export default function Edit() {
         modifiedCards,
         currentDeck.id,
       );
-      updateDeck(currentDeck.id, modifiedDeck);
+      await updateDeck(currentDeck.id, modifiedDeck);
     },
     [currentDeck, updateDeck],
   );
 
   const addCard = useCallback(
-    (newCard: string) => {
+    async (newCard: string) => {
       if (!newCard.trim()) {
         setErrorMessage("Card cannot be empty");
 
@@ -67,7 +75,7 @@ export default function Edit() {
         modifiedCards,
         currentDeck.id,
       );
-      updateDeck(currentDeck.id, modifiedDeck);
+      await updateDeck(currentDeck.id, modifiedDeck);
 
       setNewCard("");
     },
@@ -75,7 +83,7 @@ export default function Edit() {
   );
 
   const removeCardAt = useCallback(
-    (cardIndex: number) => {
+    async (cardIndex: number) => {
       const modifiedCards = currentDeck.cards.filter(
         (_, idx) => idx !== cardIndex,
       );
@@ -85,14 +93,14 @@ export default function Edit() {
         modifiedCards,
         currentDeck.id,
       );
-      updateDeck(currentDeck.id, modifiedDeck);
+      await updateDeck(currentDeck.id, modifiedDeck);
     },
     [currentDeck, updateDeck],
   );
 
   return (
     <SafeAreaView style={globalStyles.backgroundGradient}>
-      <DeckTitlebar currentDeck={currentDeck} />
+      <DeckTitlebar deck={currentDeck} saveDeckCallback={saveDeck} />
 
       <View style={styles.listContainer}>
         <FlatList

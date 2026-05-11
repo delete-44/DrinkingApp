@@ -1,17 +1,16 @@
 import DeckTitlebar from "@/components/decks/DeckTitlebar";
-import { StorageContext } from "@/context/StorageContext";
 import { Deck } from "@/src/models/Deck";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react-native";
 import React from "react";
-import { BaseMockStorageContext, BaseTestDeck } from "../../test-utils";
+import { BaseTestDeck } from "../../test-utils";
 
 describe("DeckTitlebar", () => {
-  const mockUpdateDeck = jest.fn();
-
-  const mockStorageContext = {
-    ...BaseMockStorageContext,
-    updateDeck: mockUpdateDeck,
-  };
+  const mockSaveDeckCallback = jest.fn();
 
   const assertInert = () => {
     expect(screen.getByRole("button", { name: "Rename Deck" })).toBeVisible();
@@ -35,9 +34,7 @@ describe("DeckTitlebar", () => {
     const newDeck = new Deck("", []);
 
     render(
-      <StorageContext.Provider value={mockStorageContext}>
-        <DeckTitlebar currentDeck={newDeck} />
-      </StorageContext.Provider>,
+      <DeckTitlebar deck={newDeck} saveDeckCallback={mockSaveDeckCallback} />,
     );
 
     assertActive();
@@ -46,9 +43,10 @@ describe("DeckTitlebar", () => {
   describe("when deck name is populated", () => {
     beforeEach(() => {
       render(
-        <StorageContext.Provider value={mockStorageContext}>
-          <DeckTitlebar currentDeck={BaseTestDeck} />
-        </StorageContext.Provider>,
+        <DeckTitlebar
+          deck={BaseTestDeck}
+          saveDeckCallback={mockSaveDeckCallback}
+        />,
       );
     });
 
@@ -68,7 +66,23 @@ describe("DeckTitlebar", () => {
       fireEvent.press(screen.getByRole("button", { name: "Confirm Change" }));
 
       expect(screen.getByText("Deck name cannot be empty")).toBeVisible();
-      expect(mockUpdateDeck).not.toHaveBeenCalled();
+      expect(mockSaveDeckCallback).not.toHaveBeenCalled();
+
+      assertActive();
+    });
+
+    it("shows errors from the update callback in UI", async () => {
+      mockSaveDeckCallback.mockRejectedValue(new Error("test error"));
+
+      fireEvent.press(screen.getByRole("button", { name: "Rename Deck" }));
+
+      fireEvent.changeText(screen.getByLabelText("Deck Name"), "Renamed Deck");
+
+      fireEvent.press(screen.getByRole("button", { name: "Confirm Change" }));
+
+      await waitFor(() => {
+        expect(screen.getByText("test error")).toBeVisible();
+      });
 
       assertActive();
     });
@@ -81,24 +95,26 @@ describe("DeckTitlebar", () => {
       fireEvent.press(screen.getByRole("button", { name: "Confirm Change" }));
 
       expect(screen.getByText("Deck name cannot be empty")).toBeVisible();
-      expect(mockUpdateDeck).not.toHaveBeenCalled();
+      expect(mockSaveDeckCallback).not.toHaveBeenCalled();
 
       fireEvent.changeText(screen.getByLabelText("Deck Name"), "T");
 
       expect(screen.queryByText("Deck name cannot be empty")).toBeNull();
     });
 
-    it("returns to inert state + commits the updated deck on save", () => {
+    it("returns to inert state + commits the updated deck on save", async () => {
       fireEvent.press(screen.getByRole("button", { name: "Rename Deck" }));
 
       fireEvent.changeText(screen.getByLabelText("Deck Name"), "Renamed Deck");
 
       fireEvent.press(screen.getByRole("button", { name: "Confirm Change" }));
 
-      expect(mockUpdateDeck).toHaveBeenCalledWith(BaseTestDeck.id, {
-        cards: BaseTestDeck.cards,
-        id: BaseTestDeck.id,
-        name: "Renamed Deck",
+      expect(mockSaveDeckCallback).toHaveBeenCalledWith("Renamed Deck");
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "Rename Deck" }),
+        ).toBeVisible();
       });
 
       assertInert();

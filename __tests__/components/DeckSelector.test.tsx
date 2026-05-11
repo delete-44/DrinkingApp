@@ -122,7 +122,7 @@ describe("DeckSelector", () => {
       assertModalHidden();
     });
 
-    it("opens the selection modal on click", () => {
+    it("opens the selection modal on click", async () => {
       render(<DeckSelector />);
 
       assertModalHidden();
@@ -140,6 +140,10 @@ describe("DeckSelector", () => {
       fireEvent.press(screen.getByRole("button", { name: "Test 2" }));
 
       expect(mockSaveSelectedDeckIdx).toHaveBeenCalledWith(1);
+
+      await waitFor(() => {
+        expect(screen.queryByText("Select Deck")).toBeNull();
+      });
 
       assertModalHidden();
     });
