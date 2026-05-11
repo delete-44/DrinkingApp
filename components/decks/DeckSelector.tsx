@@ -28,7 +28,7 @@ import SVG from "../SVG";
 
 export default function DeckSelector() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { selectedDeck, saveSelectedDeckIdx, decks, createDeck, isLoading } =
+  const { selectedDeck, saveSelectedDeckIdx, decks, isLoading } =
     useContext(StorageContext);
 
   if (isLoading) {
@@ -79,13 +79,8 @@ export default function DeckSelector() {
           <Pressable
             role="button"
             style={globalStyles.buttonSm}
-            onPress={async () => {
-              const newDeck = await createDeck();
-
-              router.navigate({
-                pathname: "/decks/[id]/edit",
-                params: { id: newDeck.id },
-              });
+            onPress={() => {
+              router.navigate("/decks/new");
             }}
           >
             <SVG icon={plus} width={24} height={24} />

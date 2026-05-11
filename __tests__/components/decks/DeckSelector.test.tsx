@@ -17,7 +17,6 @@ jest.mock("expo-router", () => ({
 
 describe("DeckSelector", () => {
   const testDeck = new Deck("Default", ["Card 1"], "1");
-  const mockCreateDeck = jest.fn();
 
   it("renders loading spinner when fetching data", () => {
     jest.spyOn(React, "useContext").mockReturnValueOnce({
@@ -39,7 +38,6 @@ describe("DeckSelector", () => {
       jest.spyOn(React, "useContext").mockReturnValueOnce({
         decks: [testDeck],
         selectedDeck: testDeck,
-        createDeck: mockCreateDeck,
         isLoading: false,
       });
     });
@@ -63,20 +61,13 @@ describe("DeckSelector", () => {
       });
     });
 
-    it("creates an empty deck & navigates to the edit page for it when create clicked", async () => {
-      const secondDeck = new Deck("", []);
-      mockCreateDeck.mockResolvedValueOnce(secondDeck);
-
+    it("navigates to create page when new clicked", async () => {
       render(<DeckSelector />);
 
       fireEvent.press(screen.getByRole("button", { name: "New Deck" }));
-      expect(mockCreateDeck).toHaveBeenCalledWith();
 
       await waitFor(() =>
-        expect(router.navigate).toHaveBeenCalledWith({
-          params: { id: secondDeck.id },
-          pathname: "/decks/[id]/edit",
-        }),
+        expect(router.navigate).toHaveBeenCalledWith("/decks/new"),
       );
     });
   });
@@ -102,7 +93,6 @@ describe("DeckSelector", () => {
       jest.spyOn(React, "useContext").mockReturnValue({
         decks: [testDeck, deck2, deck3],
         selectedDeck: deck3,
-        createDeck: mockCreateDeck,
         saveSelectedDeckIdx: mockSaveSelectedDeckIdx,
         isLoading: false,
       });
