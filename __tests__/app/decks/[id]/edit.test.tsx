@@ -9,18 +9,14 @@ import React from "react";
 
 describe("Edit", () => {
   const testDeck = new Deck("Test Deck", [], "abc123");
-  const mockSaveDeck = jest.fn();
+  const mockUpdateDeck = jest.fn();
 
   const mockStorageContext = {
     ...BaseMockStorageContext,
     selectedDeck: testDeck,
     decks: [testDeck],
-    saveDeck: mockSaveDeck,
+    updateDeck: mockUpdateDeck,
   };
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
 
   describe("with no cards initialised", () => {
     beforeEach(() => {
@@ -48,10 +44,9 @@ describe("Edit", () => {
         screen.getByRole("button", { name: "Load Default Cards" }),
       );
 
-      expect(mockSaveDeck).toHaveBeenCalledWith(
-        testDeck.id,
-        new Deck(testDeck.name, DEFAULT_DECK.cards, testDeck.id),
-      );
+      expect(mockUpdateDeck).toHaveBeenCalledWith(testDeck.id, {
+        cards: DEFAULT_DECK.cards,
+      });
     });
 
     it("prevents user adding empty cards", () => {
@@ -62,7 +57,7 @@ describe("Edit", () => {
       const addButton = screen.getByRole("button", { name: "Add Card" });
       fireEvent.press(addButton);
 
-      expect(mockSaveDeck).not.toHaveBeenCalled();
+      expect(mockUpdateDeck).not.toHaveBeenCalled();
       expect(input).toHaveProp("value", "");
 
       errorMessage = screen.getByText("Card cannot be empty");
@@ -77,7 +72,7 @@ describe("Edit", () => {
       const addButton = screen.getByRole("button", { name: "Add Card" });
       fireEvent.press(addButton);
 
-      expect(mockSaveDeck).not.toHaveBeenCalled();
+      expect(mockUpdateDeck).not.toHaveBeenCalled();
       expect(input).toHaveProp("value", "");
 
       errorMessage = screen.getByText("Card cannot be empty");
@@ -96,10 +91,9 @@ describe("Edit", () => {
       const addButton = screen.getByRole("button", { name: "Add Card" });
       fireEvent.press(addButton);
 
-      expect(mockSaveDeck).toHaveBeenCalledWith(
-        testDeck.id,
-        new Deck(testDeck.name, ["Drink up!"], testDeck.id),
-      );
+      expect(mockUpdateDeck).toHaveBeenCalledWith(testDeck.id, {
+        cards: ["Drink up!"],
+      });
 
       expect(input).toHaveProp("value", "");
     });
@@ -133,10 +127,9 @@ describe("Edit", () => {
       });
 
       fireEvent.press(removeCardButton);
-      expect(mockSaveDeck).toHaveBeenCalledWith(
-        testDeck.id,
-        new Deck(testDeck.name, ["Drink up!", "Go for a walk"], testDeck.id),
-      );
+      expect(mockUpdateDeck).toHaveBeenCalledWith(testDeck.id, {
+        cards: ["Drink up!", "Go for a walk"],
+      });
     });
   });
 });
