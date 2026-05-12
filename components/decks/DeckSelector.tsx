@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  FlatList,
   Image,
   Pressable,
   StyleSheet,
@@ -21,15 +20,12 @@ import {
 } from "@/src/constants/style-constants";
 import { router } from "expo-router";
 import { useContext, useState } from "react";
-import HorizontalDivider from "../HorizontalDivider";
-import ModalContainer from "../ModalContainer";
-import PressableListItem from "../PressableListItem";
 import SVG from "../SVG";
+import DeckSelectorModal from "./DeckSelectorModal";
 
 export default function DeckSelector() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { selectedDeck, saveSelectedDeckIdx, decks, isLoading } =
-    useContext(StorageContext);
+  const { selectedDeck, isLoading } = useContext(StorageContext);
 
   if (isLoading) {
     return (
@@ -90,29 +86,10 @@ export default function DeckSelector() {
       </View>
 
       {isModalVisible && (
-        <ModalContainer
-          title="Select Deck"
+        <DeckSelectorModal
           isVisible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
-        >
-          <View style={styles.modalBody}>
-            <FlatList
-              data={decks}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item, index }) => (
-                <PressableListItem
-                  label={item.name}
-                  idx={index}
-                  onPressItem={async (idx: number) => {
-                    await saveSelectedDeckIdx(idx);
-                    setIsModalVisible(false);
-                  }}
-                />
-              )}
-              ItemSeparatorComponent={HorizontalDivider}
-            />
-          </View>
-        </ModalContainer>
+          setIsVisible={setIsModalVisible}
+        />
       )}
     </>
   );
@@ -141,9 +118,5 @@ const styles = StyleSheet.create({
     gap: SPACING_SM,
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  modalBody: {
-    padding: SPACING_SM,
-    flex: 1, // To prevent long lists from overflowing out of the modal body
   },
 });

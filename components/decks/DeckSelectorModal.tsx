@@ -1,0 +1,52 @@
+import { StorageContext } from "@/context/StorageContext";
+import { SPACING_SM } from "@/src/constants/style-constants";
+import { useContext } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import HorizontalDivider from "../HorizontalDivider";
+import ModalContainer from "../ModalContainer";
+import PressableListItem from "../PressableListItem";
+
+type DeckSelectorModalProps = {
+  isVisible: boolean;
+  setIsVisible: (isVisible: boolean) => void;
+};
+
+export default function DeckSelectorModal({
+  isVisible,
+  setIsVisible,
+}: DeckSelectorModalProps) {
+  const { saveSelectedDeckIdx, decks } = useContext(StorageContext);
+
+  return (
+    <ModalContainer
+      title="Select Deck"
+      isVisible={isVisible}
+      onClose={() => setIsVisible(false)}
+    >
+      <View style={styles.modalBody}>
+        <FlatList
+          data={decks}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <PressableListItem
+              label={item.name}
+              idx={index}
+              onPressItem={async (idx: number) => {
+                await saveSelectedDeckIdx(idx);
+                setIsVisible(false);
+              }}
+            />
+          )}
+          ItemSeparatorComponent={HorizontalDivider}
+        />
+      </View>
+    </ModalContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  modalBody: {
+    padding: SPACING_SM,
+    flex: 1, // To prevent long lists from overflowing out of the modal body
+  },
+});
