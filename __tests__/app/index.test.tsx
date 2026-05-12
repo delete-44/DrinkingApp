@@ -58,6 +58,29 @@ describe("Index", () => {
         expect(screen.queryByRole("button", { name: "Edit Deck" })).toBeNull();
       });
 
+      it("resets the warning timeout on repeated clicks so it lasts 3000ms after the last click", async () => {
+        render(<Index />);
+
+        const getStartedButton = screen.getByRole("button", {
+          name: "Get Started!",
+        });
+
+        fireEvent.press(getStartedButton); // t0
+        expect(screen.getByText("No Deck selected")).toBeVisible();
+
+        act(() => jest.advanceTimersByTime(1000)); // t0 + 1000ms
+        expect(screen.getByText("No Deck selected")).toBeVisible();
+
+        fireEvent.press(getStartedButton); // t1 = t0 + 1000ms (restarts timer)
+
+        act(() => jest.advanceTimersByTime(2999)); // t1 + 2999ms (still visible)
+        expect(screen.getByText("No Deck selected")).toBeVisible();
+
+        act(() => jest.advanceTimersByTime(1)); // t1 + 3000ms => should disappear
+
+        expect(screen.queryByText("No Deck selected")).toBeNull();
+      });
+
       it("shows a warning if user tries to start the game", async () => {
         render(<Index />);
 
@@ -70,12 +93,9 @@ describe("Index", () => {
         expect(screen.getByText("No Deck selected")).toBeVisible();
         expect(router.navigate).not.toHaveBeenCalled();
 
-        // Fast-forward time to let the timer complete
-        jest.runAllTimers();
+        act(() => jest.runAllTimers());
 
-        await waitFor(() => {
-          expect(screen.queryByText("No Deck selected")).toBeNull();
-        });
+        expect(screen.queryByText("No Deck selected")).toBeNull();
       });
     });
 
@@ -109,11 +129,9 @@ describe("Index", () => {
         expect(screen.getByText("Selected Deck has no Cards")).toBeVisible();
         expect(router.navigate).not.toHaveBeenCalled();
 
-        jest.runAllTimers();
+        act(() => jest.runAllTimers());
 
-        await waitFor(() => {
-          expect(screen.queryByText("Selected Deck has no Cards")).toBeNull();
-        });
+        expect(screen.queryByText("Selected Deck has no Cards")).toBeNull();
       });
     });
 
@@ -140,11 +158,9 @@ describe("Index", () => {
         expect(screen.getByText("No Players added")).toBeVisible();
         expect(router.navigate).not.toHaveBeenCalled();
 
-        jest.runAllTimers();
+        act(() => jest.runAllTimers());
 
-        await waitFor(() => {
-          expect(screen.queryByText("No Players added")).toBeNull();
-        });
+        expect(screen.queryByText("No Players added")).toBeNull();
       });
     });
 

@@ -26,13 +26,15 @@ import {
   SPACING_SM,
 } from "@/src/constants/style-constants";
 import { router } from "expo-router";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const { selectedDeck, players, isLoading } = useContext(StorageContext);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [warningMessage, setWarningMessage] = useState("");
+
+  const inflightTimerId = useRef<number | null>(null);
 
   useEffect(() => {
     const showListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -61,9 +63,13 @@ export default function Index() {
 
   const prepareGame = useCallback(() => {
     const setTimedWarning = (message: string) => {
+      if (inflightTimerId.current) {
+        clearTimeout(inflightTimerId.current);
+      }
+
       // Remove warning after a delay since user can't
       // remove it themselves
-      setTimeout(() => {
+      inflightTimerId.current = setTimeout(() => {
         setWarningMessage("");
       }, 3000);
 
