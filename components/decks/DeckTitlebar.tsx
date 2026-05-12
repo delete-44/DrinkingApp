@@ -1,5 +1,6 @@
 import globalStyles from "@/assets/global-styles";
 import { check } from "@/assets/icons/check";
+import { cross } from "@/assets/icons/cross";
 import { pencil } from "@/assets/icons/pencil";
 import {
   DECORATION_COLOR,
@@ -13,6 +14,7 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import SVG from "../SVG";
 import WrappedTextInput from "../WrappedTextInput";
+import DeleteDeckModal from "./DeleteDeckModal";
 
 type DeckTitlebarProps = {
   deck: Deck;
@@ -24,6 +26,7 @@ export default function DeckTitlebar({
   saveDeckCallback,
 }: DeckTitlebarProps) {
   const [editingDeckName, setEditingDeckName] = useState(deck.name === "");
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   const [workingDeckName, setWorkingDeckName] = useState(deck.name);
   const [deckNameErrorMessage, setDeckNameErrorMessage] = useState("");
@@ -75,18 +78,37 @@ export default function DeckTitlebar({
   }
 
   return (
-    <View style={styles.actionsWrapper}>
-      <Text style={[globalStyles.textLg, { flex: 1 }]}>{deck.name}</Text>
+    <>
+      <View style={styles.actionsWrapper}>
+        <Text style={[globalStyles.textLg, { flex: 1 }]}>{deck.name}</Text>
 
-      <Pressable
-        role="button"
-        accessibilityLabel="Rename Deck"
-        style={globalStyles.button}
-        onPress={() => setEditingDeckName(true)}
-      >
-        <SVG icon={pencil} width={24} height={24} />
-      </Pressable>
-    </View>
+        <Pressable
+          role="button"
+          accessibilityLabel="Rename Deck"
+          style={globalStyles.button}
+          onPress={() => setEditingDeckName(true)}
+        >
+          <SVG icon={pencil} width={24} height={24} />
+        </Pressable>
+
+        <Pressable
+          role="button"
+          accessibilityLabel="Delete Deck"
+          style={globalStyles.buttonDanger}
+          onPress={() => setIsDeleteModalVisible(true)}
+        >
+          <SVG icon={cross} width={24} height={24} />
+        </Pressable>
+      </View>
+
+      {isDeleteModalVisible && (
+        <DeleteDeckModal
+          isVisible={isDeleteModalVisible}
+          setIsVisible={setIsDeleteModalVisible}
+          deck={deck}
+        />
+      )}
+    </>
   );
 }
 

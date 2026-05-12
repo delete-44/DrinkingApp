@@ -85,6 +85,10 @@ export default StyleSheet.create({
     ...baseButton,
     backgroundColor: HIGHLIGHT_COLOR,
   },
+  buttonDanger: {
+    ...baseButton,
+    backgroundColor: DANGER_COLOR,
+  },
   buttonPlain: {
     ...baseButton,
     backgroundColor: "transparent",
