@@ -14,26 +14,24 @@ import SVG from "../SVG";
 
 export default function DeckSelectorEmptyState() {
   return (
-    <>
-      <View style={styles.deckSelectorWrapper}>
-        <Logo />
+    <View style={styles.deckSelectorWrapper}>
+      <Logo />
 
-        <Text style={globalStyles.textMd}>Add a Deck to get started:</Text>
+      <Text style={globalStyles.textMd}>Add a Deck to get started:</Text>
 
-        <Pressable
-          role="button"
-          style={globalStyles.buttonHighlight}
-          onPress={() => {
-            router.navigate("/decks/new");
-          }}
-        >
-          <SVG icon={plus} width={24} height={24} />
-          <Text style={[globalStyles.buttonText, { fontSize: FONT_SIZE_MD }]}>
-            New Deck
-          </Text>
-        </Pressable>
-      </View>
-    </>
+      <Pressable
+        role="button"
+        style={globalStyles.buttonHighlight}
+        onPress={() => {
+          router.navigate("/decks/new");
+        }}
+      >
+        <SVG icon={plus} width={24} height={24} />
+        <Text style={[globalStyles.buttonText, { fontSize: FONT_SIZE_MD }]}>
+          New Deck
+        </Text>
+      </Pressable>
+    </View>
   );
 }
 

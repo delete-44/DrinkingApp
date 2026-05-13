@@ -12,6 +12,7 @@ import {
   FORM_CONTROL_SIZE,
   HIGHLIGHT_COLOR,
   SPACING_SM,
+  WARNING_COLOR,
 } from "../src/constants/style-constants";
 
 const baseBackground = {
@@ -61,10 +62,10 @@ export default StyleSheet.create({
     ...baseText,
     fontSize: FONT_SIZE_SM,
   },
-  textDanger: {
+  textWarning: {
     ...baseText,
     fontSize: FONT_SIZE_SM,
-    color: DANGER_COLOR,
+    color: WARNING_COLOR,
   },
   textInput: {
     fontFamily: "JockeyOne",

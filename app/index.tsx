@@ -18,12 +18,12 @@ import SVG from "@/components/SVG";
 import { StorageContext } from "@/context/StorageContext";
 import {
   BACKGROUND_COLOR,
-  DANGER_COLOR,
   DECORATION_COLOR,
   FORM_LABEL_HEIGHT,
   SPACING_LG,
   SPACING_MD,
   SPACING_SM,
+  WARNING_COLOR,
 } from "@/src/constants/style-constants";
 import { router } from "expo-router";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -122,12 +122,12 @@ export default function Index() {
               <>
                 <SVG
                   icon={circleAlert}
-                  color={DANGER_COLOR}
+                  color={WARNING_COLOR}
                   width={18}
                   height={18}
                 />
                 <Text
-                  style={globalStyles.textDanger}
+                  style={globalStyles.textWarning}
                   role="alert"
                   accessibilityLiveRegion="polite"
                 >
