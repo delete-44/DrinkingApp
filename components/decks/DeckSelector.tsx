@@ -1,7 +1,5 @@
 import {
   ActivityIndicator,
-  FlatList,
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -21,15 +19,13 @@ import {
 } from "@/src/constants/style-constants";
 import { router } from "expo-router";
 import { useContext, useState } from "react";
-import HorizontalDivider from "../HorizontalDivider";
-import ModalContainer from "../ModalContainer";
-import PressableListItem from "../PressableListItem";
+import Logo from "../Logo";
 import SVG from "../SVG";
+import DeckSelectorModal from "./DeckSelectorModal";
 
 export default function DeckSelector() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { selectedDeck, saveSelectedDeckIdx, decks, isLoading } =
-    useContext(StorageContext);
+  const { selectedDeck, isLoading } = useContext(StorageContext);
 
   if (isLoading) {
     return (
@@ -40,9 +36,7 @@ export default function DeckSelector() {
   return (
     <>
       <View style={styles.deckSelectorWrapper}>
-        <View style={styles.logoBackground}>
-          <Image source={require("../../assets/icons/deck.png")} alt="" />
-        </View>
+        <Logo />
 
         <Pressable
           style={[globalStyles.buttonPlain, styles.actionsContainer]}
@@ -64,7 +58,7 @@ export default function DeckSelector() {
         <View style={styles.actionsContainer}>
           <Pressable
             role="button"
-            style={globalStyles.buttonSm}
+            style={globalStyles.button}
             onPress={() =>
               router.navigate({
                 pathname: "/decks/[id]/edit",
@@ -78,7 +72,7 @@ export default function DeckSelector() {
 
           <Pressable
             role="button"
-            style={globalStyles.buttonSm}
+            style={globalStyles.button}
             onPress={() => {
               router.navigate("/decks/new");
             }}
@@ -90,38 +84,16 @@ export default function DeckSelector() {
       </View>
 
       {isModalVisible && (
-        <ModalContainer
-          title="Select Deck"
+        <DeckSelectorModal
           isVisible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
-        >
-          <FlatList
-            data={decks}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-              <PressableListItem
-                label={item.name}
-                idx={index}
-                onPressItem={async (idx: number) => {
-                  await saveSelectedDeckIdx(idx);
-                  setIsModalVisible(false);
-                }}
-              />
-            )}
-            ItemSeparatorComponent={HorizontalDivider}
-          />
-        </ModalContainer>
+          setIsVisible={setIsModalVisible}
+        />
       )}
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  logoBackground: {
-    backgroundColor: CONTENT_COLOR,
-    borderRadius: 99,
-    padding: SPACING_MD,
-  },
   deckSelectorWrapper: {
     padding: SPACING_MD,
     marginInline: "auto",

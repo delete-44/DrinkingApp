@@ -5,6 +5,7 @@ export const CONTENT_COLOR_HIGHLIGHT = "#bcbcbc";
 export const HIGHLIGHT_COLOR = "#F49907";
 export const DECORATION_COLOR = "#000000";
 export const DANGER_COLOR = "#fb5555";
+export const WARNING_COLOR = "#ffe346";
 
 export const CONTENT_BACKDROP = "rgba(0, 0, 0, 0.4)";
 

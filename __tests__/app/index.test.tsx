@@ -22,6 +22,7 @@ describe("Index", () => {
     jest.spyOn(React, "useContext").mockReturnValue({
       selectedDeck: testDeck,
       decks: [testDeck],
+      players: ["Sally"],
       isLoading: true,
     });
 
@@ -33,63 +34,202 @@ describe("Index", () => {
 
   describe("once loaded", () => {
     beforeEach(() => {
-      const testDeck = new Deck("Default", ["Card 1"], "abc123");
-      jest.spyOn(React, "useContext").mockReturnValue({
-        selectedDeck: testDeck,
-        decks: [testDeck],
-        isLoading: false,
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    describe("when no deck is available", () => {
+      beforeEach(() => {
+        jest.spyOn(React, "useContext").mockReturnValue({
+          selectedDeck: null,
+          decks: [],
+          players: ["Sally"],
+          isLoading: false,
+        });
+      });
+
+      it("renders DeckSelectorEmptyState", () => {
+        render(<Index />);
+
+        expect(screen.getByText("Add a Deck to get started:")).toBeVisible();
+        expect(screen.queryByRole("button", { name: "Edit Deck" })).toBeNull();
+      });
+
+      it("resets the warning timeout on repeated clicks so it lasts 3000ms after the last click", async () => {
+        render(<Index />);
+
+        const getStartedButton = screen.getByRole("button", {
+          name: "Get Started!",
+        });
+
+        fireEvent.press(getStartedButton); // t0
+        expect(screen.getByText("No Deck selected")).toBeVisible();
+
+        act(() => jest.advanceTimersByTime(1000)); // t0 + 1000ms
+        expect(screen.getByText("No Deck selected")).toBeVisible();
+
+        fireEvent.press(getStartedButton); // t1 = t0 + 1000ms (restarts timer)
+
+        act(() => jest.advanceTimersByTime(2999)); // t1 + 2999ms (still visible)
+        expect(screen.getByText("No Deck selected")).toBeVisible();
+
+        act(() => jest.advanceTimersByTime(1)); // t1 + 3000ms => should disappear
+
+        expect(screen.queryByText("No Deck selected")).toBeNull();
+      });
+
+      it("shows a warning if user tries to start the game", async () => {
+        render(<Index />);
+
+        const getStartedButton = screen.getByRole("button", {
+          name: "Get Started!",
+        });
+
+        fireEvent.press(getStartedButton);
+
+        expect(screen.getByText("No Deck selected")).toBeVisible();
+        expect(router.navigate).not.toHaveBeenCalled();
+
+        act(() => jest.runAllTimers());
+
+        expect(screen.queryByText("No Deck selected")).toBeNull();
       });
     });
 
-    it("hides DeckSelector when keyboard shows", async () => {
-      render(<Index />);
-
-      await waitFor(() => expect(screen.getByText("Default")).toBeVisible());
-
-      // Simulate keyboard show
-      act(() => {
-        DeviceEventEmitter.emit("keyboardDidShow");
+    describe("when deck has no cards", () => {
+      beforeEach(() => {
+        const testDeck = new Deck("Default", [], "abc123");
+        jest.spyOn(React, "useContext").mockReturnValue({
+          selectedDeck: testDeck,
+          decks: [testDeck],
+          players: ["Sally"],
+          isLoading: false,
+        });
       });
 
-      await waitFor(() => {
-        expect(screen.queryByText("Default")).toBeNull();
+      it("shows full deck selector", () => {
+        render(<Index />);
+
+        expect(screen.queryByText("Add a Deck to get started:")).toBeNull();
+        expect(screen.getByRole("button", { name: "Edit Deck" })).toBeVisible();
+      });
+
+      it("shows a warning if user tries to start the game", async () => {
+        render(<Index />);
+
+        const getStartedButton = screen.getByRole("button", {
+          name: "Get Started!",
+        });
+
+        fireEvent.press(getStartedButton);
+
+        expect(screen.getByText("Selected Deck has no Cards")).toBeVisible();
+        expect(router.navigate).not.toHaveBeenCalled();
+
+        act(() => jest.runAllTimers());
+
+        expect(screen.queryByText("Selected Deck has no Cards")).toBeNull();
       });
     });
 
-    it("shows DeckSelector when keyboard hides", async () => {
-      render(<Index />);
-
-      await waitFor(() => expect(screen.getByText("Default")).toBeVisible());
-
-      act(() => {
-        DeviceEventEmitter.emit("keyboardDidShow");
+    describe("when missing players", () => {
+      beforeEach(() => {
+        const testDeck = new Deck("Default", ["Test Card"], "abc123");
+        jest.spyOn(React, "useContext").mockReturnValue({
+          selectedDeck: testDeck,
+          decks: [testDeck],
+          players: [],
+          isLoading: false,
+        });
       });
 
-      await waitFor(() => {
-        expect(screen.queryByText("Default")).toBeNull();
-      });
+      it("shows a warning if user tries to start the game", async () => {
+        render(<Index />);
 
-      act(() => {
-        DeviceEventEmitter.emit("keyboardDidHide");
-      });
+        const getStartedButton = screen.getByRole("button", {
+          name: "Get Started!",
+        });
 
-      await waitFor(() => {
-        expect(screen.getByText("Default")).toBeVisible();
+        fireEvent.press(getStartedButton);
+
+        expect(screen.getByText("No Players added")).toBeVisible();
+        expect(router.navigate).not.toHaveBeenCalled();
+
+        act(() => jest.runAllTimers());
+
+        expect(screen.queryByText("No Players added")).toBeNull();
       });
     });
 
-    it("navigates to game screen on Get Started! press", () => {
-      render(<Index />);
-
-      const getStartedButton = screen.getByRole("button", {
-        name: "Get Started!",
+    describe("with a valid game state", () => {
+      beforeEach(() => {
+        const testDeck = new Deck("Default", ["Card 1"], "abc123");
+        jest.spyOn(React, "useContext").mockReturnValue({
+          selectedDeck: testDeck,
+          decks: [testDeck],
+          players: ["Sally"],
+          isLoading: false,
+        });
       });
-      expect(getStartedButton).toBeVisible();
 
-      fireEvent.press(getStartedButton);
-      expect(router.navigate).toHaveBeenCalledWith({
-        params: { id: "abc123" },
-        pathname: "/decks/[id]/play",
+      it("hides DeckSelector when keyboard shows", async () => {
+        render(<Index />);
+
+        await waitFor(() => expect(screen.getByText("Default")).toBeVisible());
+
+        // Simulate keyboard show
+        act(() => {
+          DeviceEventEmitter.emit("keyboardDidShow");
+        });
+
+        await waitFor(() => {
+          expect(screen.queryByText("Default")).toBeNull();
+        });
+      });
+
+      it("shows DeckSelector when keyboard hides", async () => {
+        render(<Index />);
+
+        await waitFor(() => expect(screen.getByText("Default")).toBeVisible());
+
+        act(() => {
+          DeviceEventEmitter.emit("keyboardDidShow");
+        });
+
+        await waitFor(() => {
+          expect(screen.queryByText("Default")).toBeNull();
+        });
+
+        act(() => {
+          DeviceEventEmitter.emit("keyboardDidHide");
+        });
+
+        await waitFor(() => {
+          expect(screen.getByText("Default")).toBeVisible();
+        });
+      });
+
+      it("navigates to game screen on Get Started! press", () => {
+        render(<Index />);
+
+        const getStartedButton = screen.getByRole("button", {
+          name: "Get Started!",
+        });
+        expect(getStartedButton).toBeVisible();
+
+        fireEvent.press(getStartedButton);
+
+        expect(screen.queryByText("No Deck selected")).toBeNull();
+        expect(screen.queryByText("Selected Deck has no Cards")).toBeNull();
+        expect(screen.queryByText("No Players added")).toBeNull();
+
+        expect(router.navigate).toHaveBeenCalledWith({
+          params: { id: "abc123" },
+          pathname: "/decks/[id]/play",
+        });
       });
     });
   });

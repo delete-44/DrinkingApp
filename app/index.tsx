@@ -9,24 +9,32 @@ import {
 } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
+import { circleAlert } from "@/assets/icons/circleAlert";
 import DeckSelector from "@/components/decks/DeckSelector";
+import DeckSelectorEmptyState from "@/components/decks/DeckSelectorEmptyState";
 import PlayerList from "@/components/PlayerList";
 import LoadingScreen from "@/components/status/LoadingScreen";
+import SVG from "@/components/SVG";
 import { StorageContext } from "@/context/StorageContext";
 import {
   BACKGROUND_COLOR,
   DECORATION_COLOR,
+  FORM_LABEL_HEIGHT,
   SPACING_LG,
   SPACING_MD,
   SPACING_SM,
+  WARNING_COLOR,
 } from "@/src/constants/style-constants";
 import { router } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const { selectedDeck, isLoading } = useContext(StorageContext);
+  const { selectedDeck, players, isLoading } = useContext(StorageContext);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
+
+  const inflightTimerId = useRef<number | null>(null);
 
   useEffect(() => {
     const showListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -42,6 +50,55 @@ export default function Index() {
     };
   }, []);
 
+  const renderDeckSelector = () => {
+    // Hide selectors when keyboard present to save space
+    if (isKeyboardVisible) return;
+
+    if (selectedDeck) {
+      return <DeckSelector />;
+    }
+
+    return <DeckSelectorEmptyState />;
+  };
+
+  const prepareGame = useCallback(() => {
+    const setTimedWarning = (message: string) => {
+      if (inflightTimerId.current) {
+        clearTimeout(inflightTimerId.current);
+      }
+
+      // Remove warning after a delay since user can't
+      // remove it themselves
+      inflightTimerId.current = setTimeout(() => {
+        setWarningMessage("");
+      }, 3000);
+
+      setWarningMessage(message);
+    };
+
+    if (!selectedDeck) {
+      setTimedWarning("No Deck selected");
+      return;
+    }
+
+    if (selectedDeck.cards.length === 0) {
+      setTimedWarning("Selected Deck has no Cards");
+      return;
+    }
+
+    if (players.length === 0) {
+      setTimedWarning("No Players added");
+      return;
+    }
+
+    setWarningMessage("");
+
+    router.navigate({
+      pathname: "/decks/[id]/play",
+      params: { id: selectedDeck.id },
+    });
+  }, [players.length, selectedDeck]);
+
   if (isLoading) {
     return <LoadingScreen label="Loading Decks" />;
   }
@@ -53,21 +110,37 @@ export default function Index() {
         resizeMode="repeat"
         style={styles.backgroundImage}
       />
-      {!isKeyboardVisible && <DeckSelector />}
+
+      {renderDeckSelector()}
 
       <PlayerList />
 
       <KeyboardAvoidingView behavior="padding">
         <View style={styles.heroButtonWrapper}>
+          <View style={styles.warningMessageWrapper}>
+            {warningMessage && (
+              <>
+                <SVG
+                  icon={circleAlert}
+                  color={WARNING_COLOR}
+                  width={18}
+                  height={18}
+                />
+                <Text
+                  style={globalStyles.textWarning}
+                  role="alert"
+                  accessibilityLiveRegion="polite"
+                >
+                  {warningMessage}
+                </Text>
+              </>
+            )}
+          </View>
+
           <Pressable
             style={styles.heroButton}
             role="button"
-            onPress={() =>
-              router.navigate({
-                pathname: "/decks/[id]/play",
-                params: { id: selectedDeck.id },
-              })
-            }
+            onPress={prepareGame}
           >
             <Text style={styles.heroButtonText}>Get Started!</Text>
           </Pressable>
@@ -86,13 +159,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     height: "100%",
+    zIndex: -1,
   },
   heroButtonWrapper: {
     borderTopWidth: 5,
     borderTopColor: DECORATION_COLOR,
     backgroundColor: BACKGROUND_COLOR,
-    padding: SPACING_SM,
+    paddingBottom: SPACING_SM, // Only pad at bottom - we add space for a warning message at top to prevent UI jumps
     justifyContent: "flex-start",
+    alignItems: "center",
   },
   heroButton: {
     ...globalStyles.buttonHighlight,
@@ -103,5 +178,11 @@ const styles = StyleSheet.create({
   heroButtonText: {
     ...globalStyles.buttonText,
     fontSize: 32,
+  },
+  warningMessageWrapper: {
+    height: FORM_LABEL_HEIGHT,
+    gap: SPACING_SM,
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

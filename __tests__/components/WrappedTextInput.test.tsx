@@ -1,5 +1,5 @@
 import WrappedTextInput from "@/components/WrappedTextInput";
-import { DANGER_COLOR } from "@/src/constants/style-constants";
+import { WARNING_COLOR } from "@/src/constants/style-constants";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 describe("WrappedTextInput", () => {
@@ -37,7 +37,7 @@ describe("WrappedTextInput", () => {
     const errorMessage = screen.getByText("Something went wrong :(");
 
     expect(errorMessage).toBeVisible();
-    expect(errorMessage).toHaveStyle({ color: DANGER_COLOR });
+    expect(errorMessage).toHaveStyle({ color: WARNING_COLOR });
   });
 
   it("responds to change callback", () => {
