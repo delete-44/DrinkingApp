@@ -1,7 +1,7 @@
-import DEFAULT_DECK from "@/src/constants/default-deck";
 import { Deck } from "@/src/models/Deck";
 import { StorageContextProps, StorageProviderProps } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
+import { useSQLiteContext } from "expo-sqlite";
 import { createContext, useEffect, useMemo, useState } from "react";
 
 export const StorageContext = createContext({} as StorageContextProps);
@@ -39,6 +39,8 @@ export async function saveResourceImpl<T>(
 }
 
 export function StorageProvider({ children }: StorageProviderProps) {
+  const db = useSQLiteContext();
+
   const [selectedDeckIdx, setSelectedDeckIdx] = useState<number>(0);
   const [decks, setDecks] = useState<Deck[]>([]);
   const [players, setPlayers] = useState<string[]>([]);
@@ -49,19 +51,19 @@ export function StorageProvider({ children }: StorageProviderProps) {
       const [loadedSelectedDeckIdx, loadedDecks, loadedPlayers] =
         await Promise.all([
           loadResourceImpl(SELECTED_DECK_KEY, 0),
-          loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
+          Deck.index(db),
           loadResourceImpl(PLAYER_KEY, [] as string[]),
         ]);
 
       setSelectedDeckIdx(loadedSelectedDeckIdx);
-      setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
+      setDecks(loadedDecks);
       setPlayers(loadedPlayers);
 
       setIsLoading(false);
     };
 
     fetchData();
-  }, []);
+  }, [db]);
 
   const selectedDeck = useMemo(() => {
     return decks[selectedDeckIdx] || decks[0];
@@ -72,7 +74,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     setSelectedDeckIdx(idx);
   };
 
-  const fetchDeck = (id: string) => {
+  const fetchDeck = (id: number) => {
     return decks.find((d) => d.id === id) || null;
   };
 
@@ -86,7 +88,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     return newDeck;
   };
 
-  const updateDeck = async (id: string, patch: Partial<Deck>) => {
+  const updateDeck = async (id: number, patch: Partial<Deck>) => {
     const existing = decks.find((deck) => deck.id === id);
 
     if (!existing) throw new Error(`Deck ${id} not found`);
@@ -102,7 +104,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     setDecks(newDecks);
   };
 
-  const destroyDeck = async (id: string) => {
+  const destroyDeck = async (id: number) => {
     const deckExists = decks.some((deck) => deck.id === id);
 
     if (!deckExists) throw new Error(`Deck ${id} not found`);

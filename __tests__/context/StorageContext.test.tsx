@@ -4,7 +4,7 @@ import {
   StorageContext,
   StorageProvider,
 } from "@/context/StorageContext";
-import { Deck, TDeckData } from "@/src/models/Deck";
+import { Deck } from "@/src/models/Deck";
 import { renderHook, waitFor } from "@testing-library/react-native";
 import * as SecureStore from "expo-secure-store";
 import { act, useContext } from "react";
@@ -22,6 +22,10 @@ const mockSetItemAsync = jest.fn(async (key: string, value: string) => {
 
 const storageKey = "players";
 const fallbackValue = [] as any;
+
+jest.mock("expo-sqlite", () => ({
+  useSQLiteContext: jest.fn(),
+}));
 
 describe("StorageContext", () => {
   beforeEach(() => {
@@ -89,11 +93,13 @@ describe("StorageContext", () => {
 
   describe("StorageProvider", () => {
     const decks = [
-      { id: "1", name: "Default", cards: ["Test card"] },
-      { id: "2", name: "Second Deck", cards: ["Test 2"] },
-    ] as TDeckData[];
+      { id: 1, name: "Default", cards: ["Test card"] },
+      { id: 2, name: "Second Deck", cards: ["Test 2"] },
+    ] as Deck[];
 
     beforeEach(() => {
+      jest.spyOn(Deck, "index").mockResolvedValueOnce(decks);
+
       mockStore["decks"] = JSON.stringify(decks);
 
       mockSetItemAsync.mockResolvedValueOnce();
@@ -144,7 +150,7 @@ describe("StorageContext", () => {
       it("returns null if not", async () => {
         const storageContext = await renderStorageContext();
 
-        expect(storageContext.current.fetchDeck("FAKE ID")).toBeNull();
+        expect(storageContext.current.fetchDeck(-1)).toBeNull();
       });
     });
 
@@ -189,12 +195,12 @@ describe("StorageContext", () => {
 
         try {
           await act(async () => {
-            await storageContext.current.updateDeck("INVALID_ID", {
+            await storageContext.current.updateDeck(-1, {
               cards: ["Updated"],
             });
           });
         } catch (e: any) {
-          expect(e.message).toEqual("Deck INVALID_ID not found");
+          expect(e.message).toEqual("Deck -1 not found");
         }
 
         expect(mockSetItemAsync).toHaveBeenCalledTimes(0);
@@ -281,7 +287,7 @@ describe("StorageContext", () => {
 
         await act(async () => {
           await storageContext.current.updateDeck(decks[0].id, {
-            id: "INVALID ID",
+            id: 1000,
           });
         });
 
@@ -308,10 +314,10 @@ describe("StorageContext", () => {
 
         try {
           await act(async () => {
-            await storageContext.current.destroyDeck("INVALID_ID");
+            await storageContext.current.destroyDeck(-1);
           });
         } catch (e: any) {
-          expect(e.message).toEqual("Deck INVALID_ID not found");
+          expect(e.message).toEqual("Deck -1 not found");
         }
 
         expect(mockSetItemAsync).toHaveBeenCalledTimes(0);
