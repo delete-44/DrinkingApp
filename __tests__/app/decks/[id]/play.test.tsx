@@ -14,7 +14,7 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("Play", () => {
-  const testDeck = new Deck("Test Deck", ["Card 1", "Card 2"], "abc123");
+  const testDeck = new Deck("Test Deck", ["Card 1", "Card 2"], 1);
 
   const mockStorageContext = {
     ...BaseMockStorageContext,

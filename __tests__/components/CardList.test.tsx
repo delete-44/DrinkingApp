@@ -12,7 +12,7 @@ import {
 import React from "react";
 
 describe("CardList", () => {
-  const testDeck = new Deck("Test Deck", [], "abc123");
+  const testDeck = new Deck("Test Deck", [], 1);
   const mockUpdateDeck = jest.fn();
 
   const mockStorageContext = {
@@ -113,7 +113,7 @@ describe("CardList", () => {
     const testDeck = new Deck(
       "Test Deck",
       ["Drink up!", "Do a flip", "Go for a walk"],
-      "abc123",
+      1,
     );
 
     beforeEach(() => {

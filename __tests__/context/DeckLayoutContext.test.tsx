@@ -30,7 +30,7 @@ describe("DeckLayoutContext / useDeckFromLayout", () => {
   });
 
   it("returns the deck when provided via provider", () => {
-    const mockDeck = new Deck("Test Deck", [], "abc123");
+    const mockDeck = new Deck("Test Deck", [], 1);
 
     render(
       <DeckLayoutContext.Provider value={mockDeck}>

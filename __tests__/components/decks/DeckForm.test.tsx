@@ -9,7 +9,7 @@ import {
 import React from "react";
 
 describe("DeckForm", () => {
-  const testDeck = new Deck("Test Deck", [], "abc123");
+  const testDeck = new Deck("Test Deck", [], 1);
   const mockSaveDeck = jest.fn();
 
   beforeEach(() => {

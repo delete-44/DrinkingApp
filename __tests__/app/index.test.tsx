@@ -18,7 +18,7 @@ jest.mock("expo-router", () => ({
 
 describe("Index", () => {
   it("shows loading spinner whilst fetching data", () => {
-    const testDeck = new Deck("Default", ["Card 1"], "abc123");
+    const testDeck = new Deck("Default", ["Card 1"], 1);
     jest.spyOn(React, "useContext").mockReturnValue({
       selectedDeck: testDeck,
       decks: [testDeck],
@@ -101,7 +101,7 @@ describe("Index", () => {
 
     describe("when deck has no cards", () => {
       beforeEach(() => {
-        const testDeck = new Deck("Default", [], "abc123");
+        const testDeck = new Deck("Default", [], 1);
         jest.spyOn(React, "useContext").mockReturnValue({
           selectedDeck: testDeck,
           decks: [testDeck],
@@ -137,7 +137,7 @@ describe("Index", () => {
 
     describe("when missing players", () => {
       beforeEach(() => {
-        const testDeck = new Deck("Default", ["Test Card"], "abc123");
+        const testDeck = new Deck("Default", ["Test Card"], 1);
         jest.spyOn(React, "useContext").mockReturnValue({
           selectedDeck: testDeck,
           decks: [testDeck],
@@ -166,7 +166,7 @@ describe("Index", () => {
 
     describe("with a valid game state", () => {
       beforeEach(() => {
-        const testDeck = new Deck("Default", ["Card 1"], "abc123");
+        const testDeck = new Deck("Default", ["Card 1"], 1);
         jest.spyOn(React, "useContext").mockReturnValue({
           selectedDeck: testDeck,
           decks: [testDeck],
@@ -227,7 +227,7 @@ describe("Index", () => {
         expect(screen.queryByText("No Players added")).toBeNull();
 
         expect(router.navigate).toHaveBeenCalledWith({
-          params: { id: "abc123" },
+          params: { id: 1 },
           pathname: "/decks/[id]/play",
         });
       });

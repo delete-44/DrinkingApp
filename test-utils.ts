@@ -1,7 +1,7 @@
 import { Deck } from "@/src/models/Deck";
 import { SQLiteDatabase } from "expo-sqlite";
 
-export const BaseTestDeck = new Deck("Test Deck", ["Card 1"], "abc123");
+export const BaseTestDeck = new Deck("Test Deck", ["Card 1"], 1);
 
 export const BaseTestPlayers = ["Sally", "Alice"];
 

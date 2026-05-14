@@ -12,11 +12,11 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("DecksLayout", () => {
-  const testDeck = new Deck("Test Deck", [], "abc123");
+  const testDeck = new Deck("Test Deck", [], 1);
   const mockUseLocalSearchParams = useLocalSearchParams as jest.Mock;
 
   beforeEach(() => {
-    mockUseLocalSearchParams.mockReturnValue({ id: "abc123" });
+    mockUseLocalSearchParams.mockReturnValue({ id: 1 });
   });
 
   it("renders a loading state", () => {

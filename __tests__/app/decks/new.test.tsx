@@ -23,7 +23,7 @@ describe("New", () => {
     isLoading: true,
   };
 
-  const testDeck = new Deck("Created Deck", [], "abc123");
+  const testDeck = new Deck("Created Deck", [], 1);
 
   it("shows loading state whilst initialising data", async () => {
     render(
@@ -93,7 +93,7 @@ describe("New", () => {
       // Fast-forward time to let the promise resolve
       jest.runAllTimers();
 
-      await waitFor(() => expect(mockFetchDeck).toHaveBeenCalledWith("abc123"));
+      await waitFor(() => expect(mockFetchDeck).toHaveBeenCalledWith(1));
 
       jest.useRealTimers();
     });
@@ -107,7 +107,7 @@ describe("New", () => {
 
       expect(mockCreateDeck).toHaveBeenCalledWith("Test Deck");
 
-      await waitFor(() => expect(mockFetchDeck).toHaveBeenCalledWith("abc123"));
+      await waitFor(() => expect(mockFetchDeck).toHaveBeenCalledWith(1));
 
       await screen.findByText(testDeck.name);
 
@@ -122,7 +122,7 @@ describe("New", () => {
       fireEvent.press(screen.getByRole("button", { name: "Confirm Change" }));
 
       // Fetches the live deck from storage to use as source of truth
-      await waitFor(() => expect(mockFetchDeck).toHaveBeenCalledWith("abc123"));
+      await waitFor(() => expect(mockFetchDeck).toHaveBeenCalledWith(1));
 
       await screen.findByText(testDeck.name);
 
@@ -137,7 +137,7 @@ describe("New", () => {
 
       await waitFor(() => expect(mockCreateDeck).toHaveBeenCalledTimes(1));
       await waitFor(() =>
-        expect(mockUpdateDeck).toHaveBeenCalledWith("abc123", {
+        expect(mockUpdateDeck).toHaveBeenCalledWith(1, {
           name: "Updated Deck",
         }),
       );

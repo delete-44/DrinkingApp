@@ -12,7 +12,7 @@ import {
 import React from "react";
 
 describe("Edit", () => {
-  const testDeck = new Deck("Test Deck", [], "abc123");
+  const testDeck = new Deck("Test Deck", [], 1);
   const mockUpdateDeck = jest.fn();
 
   const mockStorageContext = {
@@ -51,7 +51,7 @@ describe("Edit", () => {
 
     fireEvent.press(screen.getByRole("button", { name: "Confirm Change" }));
 
-    expect(mockUpdateDeck).toHaveBeenCalledWith("abc123", {
+    expect(mockUpdateDeck).toHaveBeenCalledWith(1, {
       name: "Renamed Deck",
     });
 
