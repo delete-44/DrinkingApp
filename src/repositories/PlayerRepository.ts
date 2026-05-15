@@ -1,23 +1,11 @@
-import { SQLiteDatabase } from "expo-sqlite";
 import { Player } from "../models/Player";
-import { TPlayerData } from "../types";
+import { TPlayerData, TRepositoryResponse } from "../types";
+import { BaseRepository } from "./BaseRepository";
 
 export type PlayerPermittedFields = Pick<TPlayerData, "name">;
 
-type Result = {
-  ok: boolean;
-  payload?: Partial<Player> | Partial<Player>[];
-  message?: string;
-};
-
-export class PlayerRepository {
-  private static db: SQLiteDatabase;
-
-  static initialise(database: SQLiteDatabase) {
-    this.db = database;
-  }
-
-  static async index(): Promise<Result> {
+export class PlayerRepository extends BaseRepository {
+  static async index(): Promise<TRepositoryResponse<Player>> {
     try {
       const result: TPlayerData[] = await this.db.getAllAsync(
         "SELECT * FROM players",
@@ -37,7 +25,9 @@ export class PlayerRepository {
     }
   }
 
-  static async create({ name }: PlayerPermittedFields): Promise<Result> {
+  static async create({
+    name,
+  }: PlayerPermittedFields): Promise<TRepositoryResponse<Player>> {
     try {
       const result = await this.db.runAsync(
         `INSERT INTO players ("name") VALUES (?)`,
@@ -61,7 +51,7 @@ export class PlayerRepository {
     }
   }
 
-  static async delete(id: number): Promise<Result> {
+  static async delete(id: number): Promise<TRepositoryResponse<Player>> {
     try {
       const result = await this.db.runAsync(
         `DELETE FROM players WHERE id=?`,
