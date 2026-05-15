@@ -7,7 +7,7 @@ export default function PlayerListEmptyState() {
     <View style={styles.container}>
       <Image
         style={styles.image}
-        source={require("../../assets/images/decorative/arrow-up.png")}
+        source={require("../../../assets/images/decorative/arrow-up.png")}
         alt=""
       />
       <Text style={globalStyles.textMd}>Add Players here!</Text>

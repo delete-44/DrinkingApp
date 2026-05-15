@@ -1,5 +1,5 @@
-import DeleteDeckModal from "@/components/decks/DeleteDeckModal";
 import { StorageContext } from "@/context/StorageContext";
+import DeleteDeckModal from "@/src/components/decks/DeleteDeckModal";
 import {
   fireEvent,
   render,

@@ -1,5 +1,5 @@
 import globalStyles from "@/assets/global-styles";
-import DeckTitlebar from "@/components/decks/DeckTitlebar";
+import DeckTitlebar from "@/src/components/decks/DeckTitlebar";
 import { Deck } from "@/src/models/Deck";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardList from "../CardList";

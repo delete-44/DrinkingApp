@@ -4,7 +4,11 @@ import { Image, StyleSheet, View } from "react-native";
 export default function Logo() {
   return (
     <View style={styles.logoBackground}>
-      <Image source={require("../assets/icons/deck.png")} alt="" role="img" />
+      <Image
+        source={require("../../assets/icons/deck.png")}
+        alt=""
+        role="img"
+      />
     </View>
   );
 }

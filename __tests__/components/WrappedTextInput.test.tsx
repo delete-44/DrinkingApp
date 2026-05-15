@@ -1,4 +1,4 @@
-import WrappedTextInput from "@/components/WrappedTextInput";
+import WrappedTextInput from "@/src/components/WrappedTextInput";
 import { WARNING_COLOR } from "@/src/constants/style-constants";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 

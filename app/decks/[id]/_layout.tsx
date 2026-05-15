@@ -1,7 +1,7 @@
-import ErrorScreen from "@/components/status/ErrorScreen";
-import LoadingScreen from "@/components/status/LoadingScreen";
 import { DeckLayoutContext } from "@/context/DeckLayoutContext";
 import { StorageContext } from "@/context/StorageContext";
+import ErrorScreen from "@/src/components/status/ErrorScreen";
+import LoadingScreen from "@/src/components/status/LoadingScreen";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useContext, useMemo, useState } from "react";
 

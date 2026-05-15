@@ -1,4 +1,4 @@
-import DeckForm from "@/components/decks/DeckForm";
+import DeckForm from "@/src/components/decks/DeckForm";
 import { Deck } from "@/src/models/Deck";
 import {
   fireEvent,

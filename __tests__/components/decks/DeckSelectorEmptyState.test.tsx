@@ -1,4 +1,4 @@
-import DeckSelectorEmptyState from "@/components/decks/DeckSelectorEmptyState";
+import DeckSelectorEmptyState from "@/src/components/decks/DeckSelectorEmptyState";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { router } from "expo-router";
 import React from "react";

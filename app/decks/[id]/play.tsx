@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
-import ErrorScreen from "@/components/status/ErrorScreen";
 import { useDeckFromLayout } from "@/context/DeckLayoutContext";
 import { StorageContext } from "@/context/StorageContext";
+import ErrorScreen from "@/src/components/status/ErrorScreen";
 import { SPACING_MD } from "@/src/constants/style-constants";
 import { Game } from "@/src/models/Game";
 import { GameState } from "@/src/types";

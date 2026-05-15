@@ -1,4 +1,4 @@
-import DeckSelector from "@/components/decks/DeckSelector";
+import DeckSelector from "@/src/components/decks/DeckSelector";
 import { Deck } from "@/src/models/Deck";
 import {
   fireEvent,

@@ -26,7 +26,7 @@ export default function CardListEmptyState({
 
       <Image
         style={styles.image}
-        source={require("../../assets/images/decorative/arrow-up.png")}
+        source={require("../../../assets/images/decorative/arrow-up.png")}
         alt=""
       />
     </View>

@@ -1,4 +1,4 @@
-import CardListEmptyState from "@/components/status/CardListEmptyState";
+import CardListEmptyState from "@/src/components/status/CardListEmptyState";
 import DEFAULT_DECK from "@/src/constants/default-deck";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 

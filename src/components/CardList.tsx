@@ -8,12 +8,12 @@ import {
 
 import globalStyles from "@/assets/global-styles";
 import { plus } from "@/assets/icons/plus";
-import HorizontalDivider from "@/components/HorizontalDivider";
-import RemovableListItem from "@/components/RemovableListItem";
-import CardListEmptyState from "@/components/status/CardListEmptyState";
-import SVG from "@/components/SVG";
-import WrappedTextInput from "@/components/WrappedTextInput";
 import { StorageContext } from "@/context/StorageContext";
+import HorizontalDivider from "@/src/components/HorizontalDivider";
+import RemovableListItem from "@/src/components/RemovableListItem";
+import CardListEmptyState from "@/src/components/status/CardListEmptyState";
+import SVG from "@/src/components/SVG";
+import WrappedTextInput from "@/src/components/WrappedTextInput";
 import {
   BACKGROUND_COLOR_HIGHLIGHT,
   DECORATION_COLOR,

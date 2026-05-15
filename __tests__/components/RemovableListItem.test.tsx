@@ -1,4 +1,4 @@
-import RemovableListItem from "@/components/RemovableListItem";
+import RemovableListItem from "@/src/components/RemovableListItem";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 describe("RemovableListItem", () => {

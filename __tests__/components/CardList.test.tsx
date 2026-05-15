@@ -1,5 +1,5 @@
-import CardList from "@/components/CardList";
 import { StorageContext } from "@/context/StorageContext";
+import CardList from "@/src/components/CardList";
 import DEFAULT_DECK from "@/src/constants/default-deck";
 import { Deck } from "@/src/models/Deck";
 import { BaseMockStorageContext } from "@/test-utils";

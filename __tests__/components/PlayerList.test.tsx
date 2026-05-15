@@ -1,4 +1,4 @@
-import PlayerList from "@/components/PlayerList";
+import PlayerList from "@/src/components/PlayerList";
 import {
   fireEvent,
   render,

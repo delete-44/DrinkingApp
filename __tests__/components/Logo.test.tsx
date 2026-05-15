@@ -1,4 +1,4 @@
-import Logo from "@/components/Logo";
+import Logo from "@/src/components/Logo";
 import { render, screen } from "@testing-library/react-native";
 
 describe("Logo", () => {

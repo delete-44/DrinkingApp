@@ -1,4 +1,4 @@
-import PressableListItem from "@/components/PressableListItem";
+import PressableListItem from "@/src/components/PressableListItem";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 describe("PressableListItem", () => {

@@ -10,12 +10,12 @@ import {
 
 import globalStyles from "@/assets/global-styles";
 import { circleAlert } from "@/assets/icons/circleAlert";
-import DeckSelector from "@/components/decks/DeckSelector";
-import DeckSelectorEmptyState from "@/components/decks/DeckSelectorEmptyState";
-import PlayerList from "@/components/PlayerList";
-import LoadingScreen from "@/components/status/LoadingScreen";
-import SVG from "@/components/SVG";
 import { StorageContext } from "@/context/StorageContext";
+import DeckSelector from "@/src/components/decks/DeckSelector";
+import DeckSelectorEmptyState from "@/src/components/decks/DeckSelectorEmptyState";
+import PlayerList from "@/src/components/PlayerList";
+import LoadingScreen from "@/src/components/status/LoadingScreen";
+import SVG from "@/src/components/SVG";
 import {
   BACKGROUND_COLOR,
   DECORATION_COLOR,

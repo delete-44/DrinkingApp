@@ -1,4 +1,4 @@
-import ModalContainer from "@/components/ModalContainer";
+import ModalContainer from "@/src/components/ModalContainer";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 
