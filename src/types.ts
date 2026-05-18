@@ -2,9 +2,15 @@
 
 import { Deck } from "./models/Deck";
 
-export type TRepositoryResponse<T> = {
+export type TPayloadResponse<T> = {
   ok: boolean;
   payload?: Partial<T> | Partial<T>[];
+  message?: string;
+};
+
+export type TPatchResponse = {
+  ok: boolean;
+  changes?: number;
   message?: string;
 };
 

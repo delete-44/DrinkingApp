@@ -1,11 +1,11 @@
 import { Player } from "../models/Player";
-import { TPlayerData, TRepositoryResponse } from "../types";
+import { TPatchResponse, TPayloadResponse, TPlayerData } from "../types";
 import { BaseRepository } from "./BaseRepository";
 
 export type PlayerPermittedFields = Pick<TPlayerData, "name">;
 
 export class PlayerRepository extends BaseRepository {
-  static async index(): Promise<TRepositoryResponse<Player>> {
+  static async index(): Promise<TPayloadResponse<Player>> {
     try {
       const result: TPlayerData[] = await this.db.getAllAsync(
         "SELECT * FROM players",
@@ -27,7 +27,7 @@ export class PlayerRepository extends BaseRepository {
 
   static async create({
     name,
-  }: PlayerPermittedFields): Promise<TRepositoryResponse<Player>> {
+  }: PlayerPermittedFields): Promise<TPayloadResponse<Player>> {
     try {
       const result = await this.db.runAsync(
         `INSERT INTO players ("name") VALUES (?)`,
@@ -51,18 +51,24 @@ export class PlayerRepository extends BaseRepository {
     }
   }
 
-  static async delete(id: number): Promise<TRepositoryResponse<Player>> {
+  static async delete(id: number): Promise<TPatchResponse> {
     try {
       const result = await this.db.runAsync(
         `DELETE FROM players WHERE id=?`,
         id,
       );
 
+      if (result.changes === 0) {
+        return {
+          ok: false,
+          message: `Player ${id} not found`,
+          changes: result.changes,
+        };
+      }
+
       return {
         ok: true,
-        payload: {
-          id: result.lastInsertRowId,
-        },
+        changes: result.changes,
       };
     } catch (e: any) {
       console.log("Error deleting Player:", e.message);
@@ -70,6 +76,7 @@ export class PlayerRepository extends BaseRepository {
       return {
         ok: false,
         message: "Error deleting Player",
+        changes: 0,
       };
     }
   }

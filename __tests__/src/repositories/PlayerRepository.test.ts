@@ -28,12 +28,12 @@ describe("PlayerRepository", () => {
       expect(result.payload).toEqual(undefined);
     });
 
-    it("errors out on index", async () => {
+    it("errors out on delete", async () => {
       const result = await PlayerRepository.delete(1);
 
       expect(result.ok).toEqual(false);
       expect(result.message).toEqual("Error deleting Player");
-      expect(result.payload).toEqual(undefined);
+      expect(result.changes).toEqual(0);
     });
   });
 
@@ -63,14 +63,14 @@ describe("PlayerRepository", () => {
         expect(result.payload).toEqual(undefined);
       });
 
-      it("errors out on index", async () => {
+      it("errors out on delete", async () => {
         mockRunAsync.mockRejectedValueOnce(new Error("test error"));
 
         const result = await PlayerRepository.delete(1);
 
         expect(result.ok).toEqual(false);
         expect(result.message).toEqual("Error deleting Player");
-        expect(result.payload).toEqual(undefined);
+        expect(result.changes).toEqual(0);
       });
     });
 
@@ -106,19 +106,36 @@ describe("PlayerRepository", () => {
         expect(result.payload).toEqual({ id: 4, name: "Agnes" });
       });
 
-      it("#delete returns the deleted players id", async () => {
-        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 1 });
+      describe("#delete", () => {
+        it("shows a friendlier error message if the player is not found", async () => {
+          mockRunAsync.mockResolvedValueOnce({ changes: 0 });
 
-        const result = await PlayerRepository.delete(1);
+          const result = await PlayerRepository.delete(1);
 
-        expect(mockRunAsync).toHaveBeenCalledWith(
-          "DELETE FROM players WHERE id=?",
-          1,
-        );
+          expect(mockRunAsync).toHaveBeenCalledWith(
+            "DELETE FROM players WHERE id=?",
+            1,
+          );
 
-        expect(result.ok).toEqual(true);
-        expect(result.message).toEqual(undefined);
-        expect(result.payload).toEqual({ id: 1 });
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Player 1 not found");
+          expect(result.changes).toEqual(0);
+        });
+
+        it("returns the number of deleted players", async () => {
+          mockRunAsync.mockResolvedValueOnce({ changes: 1 });
+
+          const result = await PlayerRepository.delete(1);
+
+          expect(mockRunAsync).toHaveBeenCalledWith(
+            "DELETE FROM players WHERE id=?",
+            1,
+          );
+
+          expect(result.ok).toEqual(true);
+          expect(result.message).toEqual(undefined);
+          expect(result.changes).toEqual(1);
+        });
       });
     });
   });
