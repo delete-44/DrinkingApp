@@ -2,16 +2,25 @@
 
 import { Deck } from "./models/Deck";
 
-export type TPayloadResponse<T> = {
+type ResponseMeta = {
   ok: boolean;
-  payload?: Partial<T> | Partial<T>[];
   message?: string;
 };
 
-export type TPatchResponse = {
-  ok: boolean;
+export type TItemResponse<T> = ResponseMeta & {
+  payload?: T;
+};
+
+export type TCollectionResponse<T> = ResponseMeta & {
+  payload?: T[];
+};
+
+export type TPartialResponse<T> = ResponseMeta & {
+  payload?: Partial<T>;
+};
+
+export type TPatchResponse = ResponseMeta & {
   changes?: number;
-  message?: string;
 };
 
 export type TDeckData = {

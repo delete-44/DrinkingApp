@@ -1,11 +1,16 @@
 import { Player } from "../models/Player";
-import { TPatchResponse, TPayloadResponse, TPlayerData } from "../types";
+import {
+  TCollectionResponse,
+  TPartialResponse,
+  TPatchResponse,
+  TPlayerData,
+} from "../types";
 import { BaseRepository } from "./BaseRepository";
 
 export type PlayerPermittedFields = Pick<TPlayerData, "name">;
 
 export class PlayerRepository extends BaseRepository {
-  static async index(): Promise<TPayloadResponse<Player>> {
+  static async index(): Promise<TCollectionResponse<Player>> {
     try {
       const result: TPlayerData[] = await this.db.getAllAsync(
         "SELECT * FROM players",
@@ -13,7 +18,7 @@ export class PlayerRepository extends BaseRepository {
 
       return {
         ok: true,
-        payload: result,
+        payload: result.map((p) => Player.fromJson(p)),
       };
     } catch (e: any) {
       console.log("Error loading Players:", e.message);
@@ -27,7 +32,7 @@ export class PlayerRepository extends BaseRepository {
 
   static async create({
     name,
-  }: PlayerPermittedFields): Promise<TPayloadResponse<Player>> {
+  }: PlayerPermittedFields): Promise<TPartialResponse<Player>> {
     try {
       const result = await this.db.runAsync(
         `INSERT INTO players ("name") VALUES (?)`,

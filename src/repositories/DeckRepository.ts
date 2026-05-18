@@ -1,11 +1,17 @@
 import { Deck } from "../models/Deck";
-import { TDeckData, TPatchResponse, TPayloadResponse } from "../types";
+import {
+  TCollectionResponse,
+  TDeckData,
+  TItemResponse,
+  TPartialResponse,
+  TPatchResponse,
+} from "../types";
 import { BaseRepository } from "./BaseRepository";
 
 export type DeckPermittedFields = Pick<TDeckData, "name" | "updated_at">;
 
 export class DeckRepository extends BaseRepository {
-  static async index(): Promise<TPayloadResponse<Deck>> {
+  static async index(): Promise<TCollectionResponse<Deck>> {
     try {
       const result: TDeckData[] = await this.db.getAllAsync(
         "SELECT * FROM decks",
@@ -13,7 +19,7 @@ export class DeckRepository extends BaseRepository {
 
       return {
         ok: true,
-        payload: result,
+        payload: result.map((d) => Deck.fromJson(d)),
       };
     } catch (e: any) {
       console.log("Error loading Decks:", e.message);
@@ -25,7 +31,7 @@ export class DeckRepository extends BaseRepository {
     }
   }
 
-  static async find(id: number): Promise<TPayloadResponse<Deck>> {
+  static async find(id: number): Promise<TItemResponse<Deck>> {
     try {
       const result: TDeckData | null = await this.db.getFirstAsync(
         "SELECT * FROM decks WHERE id=?",
@@ -41,7 +47,7 @@ export class DeckRepository extends BaseRepository {
 
       return {
         ok: true,
-        payload: result,
+        payload: Deck.fromJson(result),
       };
     } catch (e: any) {
       console.log("Error loading Decks:", e.message);
@@ -55,7 +61,7 @@ export class DeckRepository extends BaseRepository {
 
   static async create({
     name,
-  }: DeckPermittedFields): Promise<TPayloadResponse<Deck>> {
+  }: DeckPermittedFields): Promise<TPartialResponse<Deck>> {
     try {
       const result = await this.db.runAsync(
         `INSERT INTO decks ("name") VALUES (?)`,

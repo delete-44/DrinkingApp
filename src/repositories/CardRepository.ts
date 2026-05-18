@@ -1,11 +1,16 @@
 import { Card } from "../models/Card";
-import { TCardData, TPatchResponse, TPayloadResponse } from "../types";
+import {
+  TCardData,
+  TCollectionResponse,
+  TPartialResponse,
+  TPatchResponse,
+} from "../types";
 import { BaseRepository } from "./BaseRepository";
 
 export type CardPermittedFields = Pick<TCardData, "content">;
 
 export class CardRepository extends BaseRepository {
-  static async index(deckId: number): Promise<TPayloadResponse<Card>> {
+  static async index(deckId: number): Promise<TCollectionResponse<Card>> {
     try {
       const result: TCardData[] = await this.db.getAllAsync(
         "SELECT * FROM cards WHERE deck_id=?",
@@ -14,7 +19,7 @@ export class CardRepository extends BaseRepository {
 
       return {
         ok: true,
-        payload: result,
+        payload: result.map((c) => Card.fromJson(c)),
       };
     } catch (e: any) {
       console.log("Error loading Cards:", e.message);
@@ -29,7 +34,7 @@ export class CardRepository extends BaseRepository {
   static async create(
     deckId: number,
     { content }: CardPermittedFields,
-  ): Promise<TPayloadResponse<Card>> {
+  ): Promise<TPartialResponse<Card>> {
     try {
       const result = await this.db.runAsync(
         `INSERT INTO cards ("deck_id", "content") VALUES (?, ?)`,

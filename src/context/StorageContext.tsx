@@ -4,6 +4,7 @@ import { StorageContextProps, StorageProviderProps } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
 import { useSQLiteContext } from "expo-sqlite";
 import { createContext, useEffect, useMemo, useState } from "react";
+import { CardRepository } from "../repositories/CardRepository";
 import { DeckRepository } from "../repositories/DeckRepository";
 import { PlayerRepository } from "../repositories/PlayerRepository";
 
@@ -68,6 +69,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     const init = () => {
       PlayerRepository.initialise(db);
       DeckRepository.initialise(db);
+      CardRepository.initialise(db);
     };
 
     fetchData();
