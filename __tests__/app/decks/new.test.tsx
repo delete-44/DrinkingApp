@@ -107,7 +107,7 @@ describe("New", () => {
       fireEvent.changeText(screen.getByLabelText("Deck Name"), "Test Deck");
       fireEvent.press(screen.getByRole("button", { name: "Confirm Change" }));
 
-      expect(mockCreateDeck).toHaveBeenCalledWith("Test Deck");
+      expect(mockCreateDeck).toHaveBeenCalledWith({ name: "Test Deck" });
 
       await waitFor(() =>
         expect(mockFetchDeck).toHaveBeenCalledWith(testDeck.id),
@@ -132,7 +132,7 @@ describe("New", () => {
 
       await screen.findByText(testDeck.name);
 
-      expect(mockCreateDeck).toHaveBeenCalledWith("Test Deck");
+      expect(mockCreateDeck).toHaveBeenCalledWith({ name: "Test Deck" });
       expect(mockUpdateDeck).not.toHaveBeenCalled();
 
       // Return to active state for second edit

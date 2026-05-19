@@ -39,7 +39,7 @@ export default function PlayerList() {
       }
 
       try {
-        await createPlayer(name.trim());
+        await createPlayer({ name: name.trim() });
         setNewPlayer("");
       } catch (e: any) {
         setErrorMessage(e.message);

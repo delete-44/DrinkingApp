@@ -144,7 +144,7 @@ describe("StorageContext", () => {
 
         try {
           await act(async () => {
-            await storageContext.current.createDeck(deck.name);
+            await storageContext.current.createDeck({ name: deck.name });
           });
         } catch (e: any) {
           expect(e.message).toEqual("test error");
@@ -169,7 +169,7 @@ describe("StorageContext", () => {
         expect(storageContext.current.decks).toEqual([]);
 
         await act(async () => {
-          await storageContext.current.createDeck(deck.name);
+          await storageContext.current.createDeck({ name: deck.name });
         });
 
         expect(DeckRepository.create).toHaveBeenCalledTimes(1);
@@ -361,7 +361,7 @@ describe("StorageContext", () => {
 
         try {
           await act(async () => {
-            await storageContext.current.createPlayer(player.name);
+            await storageContext.current.createPlayer({ name: player.name });
           });
         } catch (e: any) {
           expect(e.message).toEqual("test error");
@@ -386,7 +386,7 @@ describe("StorageContext", () => {
         expect(storageContext.current.players).toEqual([]);
 
         await act(async () => {
-          await storageContext.current.createPlayer(player.name);
+          await storageContext.current.createPlayer({ name: player.name });
         });
 
         expect(PlayerRepository.create).toHaveBeenCalledTimes(1);

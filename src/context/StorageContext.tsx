@@ -9,7 +9,10 @@ import {
   DeckPermittedFields,
   DeckRepository,
 } from "../repositories/DeckRepository";
-import { PlayerRepository } from "../repositories/PlayerRepository";
+import {
+  PlayerPermittedFields,
+  PlayerRepository,
+} from "../repositories/PlayerRepository";
 
 export const StorageContext = createContext({} as StorageContextProps);
 
@@ -91,8 +94,8 @@ export function StorageProvider({ children }: StorageProviderProps) {
     return decks.find((d) => d.id === id) || null;
   };
 
-  const createDeck = async (name: string): Promise<Deck> => {
-    const resp = await DeckRepository.create({ name });
+  const createDeck = async (patch: DeckPermittedFields): Promise<Deck> => {
+    const resp = await DeckRepository.create(patch);
 
     if (!resp.ok || !resp.payload) {
       throw new Error(resp.message);
@@ -131,8 +134,8 @@ export function StorageProvider({ children }: StorageProviderProps) {
     setDecks(newDecks);
   };
 
-  const createPlayer = async (name: string) => {
-    const resp = await PlayerRepository.create({ name });
+  const createPlayer = async (patch: PlayerPermittedFields) => {
+    const resp = await PlayerRepository.create(patch);
 
     if (!resp.ok || !resp.payload) {
       throw new Error(resp.message);
