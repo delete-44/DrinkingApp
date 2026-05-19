@@ -4,6 +4,7 @@ import { StorageContextProps, StorageProviderProps } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
 import { useSQLiteContext } from "expo-sqlite";
 import { createContext, useEffect, useMemo, useState } from "react";
+import { Player } from "../models/Player";
 import { CardRepository } from "../repositories/CardRepository";
 import { DeckRepository } from "../repositories/DeckRepository";
 import { PlayerRepository } from "../repositories/PlayerRepository";
@@ -12,7 +13,6 @@ export const StorageContext = createContext({} as StorageContextProps);
 
 const SELECTED_DECK_KEY = "selected_deck_idx";
 const DECK_KEY = "decks";
-const PLAYER_KEY = "players";
 
 export async function loadResourceImpl<T>(
   storageKey: string,
@@ -45,35 +45,35 @@ export async function saveResourceImpl<T>(
 export function StorageProvider({ children }: StorageProviderProps) {
   const [selectedDeckIdx, setSelectedDeckIdx] = useState<number>(0);
   const [decks, setDecks] = useState<Deck[]>([]);
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const db = useSQLiteContext();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const [loadedSelectedDeckIdx, loadedDecks, loadedPlayers] =
-        await Promise.all([
-          loadResourceImpl(SELECTED_DECK_KEY, 0),
-          loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
-          loadResourceImpl(PLAYER_KEY, [] as string[]),
-        ]);
-
-      setSelectedDeckIdx(loadedSelectedDeckIdx);
-      setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
-      setPlayers(loadedPlayers);
-
-      setIsLoading(false);
-    };
-
     const init = () => {
       PlayerRepository.initialise(db);
       DeckRepository.initialise(db);
       CardRepository.initialise(db);
     };
 
-    fetchData();
+    const fetchData = async () => {
+      const [loadedSelectedDeckIdx, loadedDecks, loadedPlayers] =
+        await Promise.all([
+          loadResourceImpl(SELECTED_DECK_KEY, 0),
+          loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
+          PlayerRepository.index(),
+        ]);
+
+      setSelectedDeckIdx(loadedSelectedDeckIdx);
+      setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
+      setPlayers(loadedPlayers.payload || []);
+
+      setIsLoading(false);
+    };
+
     init();
+    fetchData();
   }, [db]);
 
   const selectedDeck = useMemo(() => {
@@ -126,8 +126,27 @@ export function StorageProvider({ children }: StorageProviderProps) {
     setDecks(newDecks);
   };
 
-  const savePlayers = async (newPlayers: string[]) => {
-    await saveResourceImpl(PLAYER_KEY, newPlayers);
+  const createPlayer = async (name: string) => {
+    const resp = await PlayerRepository.create({ name });
+
+    if (!resp.ok || !resp.payload) {
+      throw new Error(resp.message);
+    }
+
+    const newPlayers = [...players, resp.payload!];
+
+    setPlayers(newPlayers);
+  };
+
+  const deletePlayer = async (id: number) => {
+    const resp = await PlayerRepository.delete(id);
+
+    if (resp.changes === 0 || !resp.ok) {
+      throw new Error(resp.message);
+    }
+
+    const newPlayers = players.filter((player) => player.id !== id);
+
     setPlayers(newPlayers);
   };
 
@@ -140,7 +159,8 @@ export function StorageProvider({ children }: StorageProviderProps) {
     updateDeck,
     destroyDeck,
     players,
-    savePlayers,
+    createPlayer,
+    deletePlayer,
     isLoading,
   };
 

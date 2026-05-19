@@ -1,6 +1,10 @@
 import { DeckFactory } from "./factories/models/DeckFactory";
+import { PlayerFactory } from "./factories/models/PlayerFactory";
 
-export const BaseTestPlayers = ["Sally", "Alice"];
+export const BaseTestPlayers = [
+  PlayerFactory({ id: 1, name: "Sally" }),
+  PlayerFactory({ id: 2, name: "Alice" }),
+];
 
 const _deck = DeckFactory();
 
@@ -13,6 +17,7 @@ export const BaseMockStorageContext = {
   updateDeck: jest.fn(),
   destroyDeck: jest.fn(),
   players: BaseTestPlayers,
-  savePlayers: jest.fn(),
+  createPlayer: jest.fn(),
+  deletePlayer: jest.fn(),
   isLoading: false,
 };

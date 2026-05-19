@@ -51,7 +51,7 @@ export default function Play() {
         accessibilityLabel="Tap to draw next Card"
       >
         <Text style={[globalStyles.textLg, styles.screenTextMixin]}>
-          {currentCard.player}&apos;s Turn
+          {currentCard.player.name}&apos;s Turn
         </Text>
         <View style={styles.cardWrapper}>
           <Text style={[globalStyles.textHero, styles.screenTextMixin]}>
