@@ -33,7 +33,8 @@ export default function CardList({ deck }: CardListProps) {
   const [newCard, setNewCard] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { updateDeck, deckCards, createCard } = useContext(StorageContext);
+  const { updateDeck, deckCards, createCard, deleteCard } =
+    useContext(StorageContext);
 
   // Callback for adding multiple cards to the deck; currently
   // used for inserting the default deck from the empty screen;
@@ -64,12 +65,16 @@ export default function CardList({ deck }: CardListProps) {
     [createCard, deck.id],
   );
 
-  const removeCardAt = useCallback(
-    async (cardIndex: number) => {
-      // const modifiedCards = deck.cards.filter((_, idx) => idx !== cardIndex);
-      // await updateDeck(deck.id, { cards: modifiedCards });
+  const removeCard = useCallback(
+    async (cardId: number) => {
+      try {
+        await deleteCard(cardId);
+        setNewCard("");
+      } catch (e: any) {
+        setErrorMessage(e.message);
+      }
     },
-    [deck, updateDeck],
+    [deleteCard],
   );
 
   return (
@@ -77,10 +82,10 @@ export default function CardList({ deck }: CardListProps) {
       <View style={styles.listContainer}>
         <FlatList
           data={deckCards}
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <RemovableListItem
               label={item.content}
-              removeItemCb={() => removeCardAt(index)}
+              removeItemCb={() => removeCard(item.id)}
             />
           )}
           ListEmptyComponent={<CardListEmptyState addCards={addCards} />}

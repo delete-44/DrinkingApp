@@ -168,6 +168,17 @@ export function StorageProvider({ children }: StorageProviderProps) {
     setDeckCards(newDeckCards);
   };
 
+  const deleteCard = async (id: number) => {
+    const resp = await CardRepository.delete(id);
+
+    if (resp.changes === 0 || !resp.ok) {
+      throw new Error(resp.message);
+    }
+
+    const newCards = deckCards.filter((card) => card.id !== id);
+    setDeckCards(newCards);
+  };
+
   // createCard
   // destroyCard
   // create many cards
@@ -205,6 +216,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     destroyDeck,
     deckCards,
     createCard,
+    deleteCard,
     players,
     createPlayer,
     deletePlayer,

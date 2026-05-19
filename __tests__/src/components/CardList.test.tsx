@@ -15,6 +15,7 @@ import React from "react";
 describe("CardList", () => {
   const testDeck = DeckFactory({ cards: [] });
   const mockCreateCard = jest.fn();
+  const mockDeleteCard = jest.fn();
   const mockUpdateDeck = jest.fn();
 
   const mockStorageContext = {
@@ -23,6 +24,7 @@ describe("CardList", () => {
     decks: [testDeck],
     updateDeck: mockUpdateDeck,
     createCard: mockCreateCard,
+    deleteCard: mockDeleteCard,
   };
 
   describe("with no cards initialised", () => {
@@ -148,6 +150,7 @@ describe("CardList", () => {
       deckCards: [card1, card2, card3],
       updateDeck: mockUpdateDeck,
       createCard: mockCreateCard,
+      deleteCard: mockDeleteCard,
     };
 
     beforeEach(() => {
@@ -164,15 +167,32 @@ describe("CardList", () => {
       expect(screen.getByText(card3.content)).toBeVisible();
     });
 
-    it.skip("allows user to remove cards", () => {
+    it("surfaces errors from StorageContext on delete", async () => {
+      mockDeleteCard.mockRejectedValueOnce(new Error("test error"));
+
+      let errorMessage = screen.queryByText("test error");
+      expect(errorMessage).toBeNull();
+
       const removeCardButton = screen.getByRole("button", {
-        name: "Remove Do a flip",
+        name: `Remove ${card2.content}`,
       });
 
       fireEvent.press(removeCardButton);
-      expect(mockUpdateDeck).toHaveBeenCalledWith(testDeck.id, {
-        cards: ["Drink up!", "Go for a walk"],
+
+      expect(mockDeleteCard).toHaveBeenCalledWith(card2.id);
+
+      await waitFor(() => {
+        expect(screen.getByText("test error")).toBeVisible();
       });
+    });
+
+    it("allows user to remove cards", () => {
+      const removeCardButton = screen.getByRole("button", {
+        name: `Remove ${card3.content}`,
+      });
+
+      fireEvent.press(removeCardButton);
+      expect(mockDeleteCard).toHaveBeenCalledWith(card3.id);
     });
   });
 });

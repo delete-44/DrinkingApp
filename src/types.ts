@@ -74,6 +74,7 @@ export type StorageContextProps = {
   destroyDeck: (id: number) => Promise<void>;
   deckCards: Card[];
   createCard: (deckId: number, patch: CardPermittedFields) => Promise<void>;
+  deleteCard: (id: number) => Promise<void>;
   players: Player[];
   createPlayer: (patch: PlayerPermittedFields) => Promise<void>;
   deletePlayer: (id: number) => Promise<void>;

@@ -447,6 +447,59 @@ describe("StorageContext", () => {
           expect(storageContext.current.deckCards).toEqual([card]);
         });
       });
+
+      describe("#deleteCard", () => {
+        const card = CardFactory();
+
+        beforeEach(() => {
+          jest
+            .spyOn(CardRepository, "index")
+            .mockReturnValueOnce({ ok: true, payload: [card] });
+        });
+
+        it("surfaces errors on unsuccessful response", async () => {
+          jest.spyOn(CardRepository, "delete").mockResolvedValueOnce({
+            ok: true,
+            changes: 0,
+            message: "test error",
+          });
+
+          const storageContext = await renderStorageContext();
+
+          try {
+            await act(async () => {
+              await storageContext.current.deleteCard(card.id);
+            });
+          } catch (e: any) {
+            expect(e.message).toEqual("test error");
+          }
+
+          expect(CardRepository.delete).toHaveBeenCalledTimes(1);
+          expect(CardRepository.delete).toHaveBeenCalledWith(card.id);
+
+          // Assert context state has not updated
+          expect(storageContext.current.deckCards).toEqual([card]);
+        });
+
+        it("deletes card using the repository and updates context", async () => {
+          jest
+            .spyOn(CardRepository, "delete")
+            .mockResolvedValueOnce({ ok: true, changes: 1 });
+
+          const storageContext = await renderStorageContext();
+
+          expect(storageContext.current.deckCards).toEqual([card]);
+
+          await act(async () => {
+            await storageContext.current.deleteCard(card.id);
+          });
+
+          expect(CardRepository.delete).toHaveBeenCalledTimes(1);
+          expect(CardRepository.delete).toHaveBeenCalledWith(card.id);
+
+          expect(storageContext.current.deckCards).toEqual([]);
+        });
+      });
     });
 
     describe("#createPlayer", () => {
