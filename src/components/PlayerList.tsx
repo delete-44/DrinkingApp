@@ -25,7 +25,8 @@ import SVG from "./SVG";
 import WrappedTextInput from "./WrappedTextInput";
 
 export default function PlayerList() {
-  const { players, savePlayers, isLoading } = useContext(StorageContext);
+  const { players, createPlayer, deletePlayer, isLoading } =
+    useContext(StorageContext);
 
   const [newPlayer, setNewPlayer] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -37,27 +38,29 @@ export default function PlayerList() {
         return;
       }
 
-      if (players.includes(name.trim())) {
-        setErrorMessage("Player already exists");
-        return;
+      try {
+        await createPlayer(name.trim());
+        setNewPlayer("");
+      } catch (e: any) {
+        console.log("HERE! setting error");
+        setErrorMessage(e.message);
       }
-
-      const newPlayers = [...players, name.trim()];
-
-      await savePlayers(newPlayers);
-
-      setNewPlayer("");
     },
-    [players, savePlayers],
+    [createPlayer],
   );
 
-  const removePlayerAt = useCallback(
-    async (playerIndex: number) => {
-      const newPlayers = players.filter((_, idx) => idx !== playerIndex);
-
-      await savePlayers(newPlayers);
+  const removePlayer = useCallback(
+    async (playerId: number) => {
+      console.log("HERE!", playerId);
+      try {
+        console.log("HERE2. delete...");
+        await deletePlayer(playerId);
+        setNewPlayer("");
+      } catch (e: any) {
+        setErrorMessage(e.message);
+      }
     },
-    [players, savePlayers],
+    [deletePlayer],
   );
 
   return (
@@ -87,9 +90,8 @@ export default function PlayerList() {
         data={players}
         renderItem={({ item, index }) => (
           <RemovableListItem
-            label={item}
-            idx={index}
-            removeItemAt={removePlayerAt}
+            label={item.name}
+            removeItemCb={() => removePlayer(item.id)}
           />
         )}
         ListEmptyComponent={

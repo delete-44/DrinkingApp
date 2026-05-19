@@ -1,4 +1,7 @@
+import { PlayerFactory } from "@/factories/models/PlayerFactory";
 import PlayerList from "@/src/components/PlayerList";
+import { StorageContext } from "@/src/context/StorageContext";
+import { BaseMockStorageContext } from "@/test-utils";
 import {
   fireEvent,
   render,
@@ -8,39 +11,54 @@ import {
 import React from "react";
 
 describe("PlayerList", () => {
-  const mockSavePlayers = jest.fn();
+  const mockCreatePlayer = jest.fn();
+  const mockDeletePlayer = jest.fn();
 
   it("renders a loading state", () => {
-    jest.spyOn(React, "useContext").mockReturnValueOnce({
+    const mockStorageContext = {
+      ...BaseMockStorageContext,
+      createPlayer: mockCreatePlayer,
+      deletePlayer: mockDeletePlayer,
       players: [],
-      savePlayers: mockSavePlayers,
       isLoading: true,
-    });
+    };
 
-    render(<PlayerList />);
+    render(
+      <StorageContext.Provider value={mockStorageContext}>
+        <PlayerList />
+      </StorageContext.Provider>,
+    );
 
     expect(screen.queryByText("Add Players here!")).toBeNull();
     expect(screen.getByLabelText("Loading Players")).toBeVisible();
   });
 
   describe("with no players initialised", () => {
-    beforeEach(() => {
-      jest.spyOn(React, "useContext").mockReturnValue({
-        players: [],
-        savePlayers: mockSavePlayers,
-        isLoading: false,
-      });
-    });
+    const mockStorageContext = {
+      ...BaseMockStorageContext,
+      createPlayer: mockCreatePlayer,
+      deletePlayer: mockDeletePlayer,
+      players: [],
+      isLoading: false,
+    };
 
     it("renders an empty state when no players provided", () => {
-      render(<PlayerList />);
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
 
       expect(screen.getByText("Add Players here!")).toBeVisible();
       expect(screen.queryByLabelText("Loading Players")).toBeNull();
     });
 
     it("prevents user adding empty names", () => {
-      render(<PlayerList />);
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
 
       let errorMessage = screen.queryByText("Player name cannot be empty");
       expect(errorMessage).toBeNull();
@@ -49,15 +67,46 @@ describe("PlayerList", () => {
       const addButton = screen.getByRole("button", { name: "Add Player" });
       fireEvent.press(addButton);
 
-      expect(mockSavePlayers).not.toHaveBeenCalled();
+      expect(mockCreatePlayer).not.toHaveBeenCalled();
       expect(input).toHaveProp("value", "");
 
       errorMessage = screen.getByText("Player name cannot be empty");
       expect(errorMessage).toBeVisible();
     });
 
+    it("surfaces errors from StorageContext on create", async () => {
+      mockCreatePlayer.mockRejectedValueOnce(new Error("test error"));
+
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
+
+      let errorMessage = screen.queryByText("test error");
+      expect(errorMessage).toBeNull();
+
+      const input = screen.getByLabelText("Name");
+      fireEvent.changeText(input, "Alice");
+
+      const addButton = screen.getByRole("button", { name: "Add Player" });
+
+      fireEvent.press(addButton);
+
+      expect(mockCreatePlayer).toHaveBeenCalledWith("Alice");
+      expect(input).toHaveProp("value", "Alice");
+
+      await waitFor(() => {
+        expect(screen.getByText("test error")).toBeVisible();
+      });
+    });
+
     it("clears error message on new input", () => {
-      render(<PlayerList />);
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
 
       let errorMessage = screen.queryByText("Player name cannot be empty");
       expect(errorMessage).toBeNull();
@@ -66,7 +115,7 @@ describe("PlayerList", () => {
       const addButton = screen.getByRole("button", { name: "Add Player" });
       fireEvent.press(addButton);
 
-      expect(mockSavePlayers).not.toHaveBeenCalled();
+      expect(mockCreatePlayer).not.toHaveBeenCalled();
       expect(input).toHaveProp("value", "");
 
       errorMessage = screen.getByText("Player name cannot be empty");
@@ -79,7 +128,11 @@ describe("PlayerList", () => {
     });
 
     it("trims whitespace from player names", async () => {
-      render(<PlayerList />);
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
 
       const input = screen.getByLabelText("Name");
       fireEvent.changeText(input, " Alice  ");
@@ -87,7 +140,7 @@ describe("PlayerList", () => {
       const addButton = screen.getByRole("button", { name: "Add Player" });
       fireEvent.press(addButton);
 
-      expect(mockSavePlayers).toHaveBeenCalledWith(["Alice"]);
+      expect(mockCreatePlayer).toHaveBeenCalledWith("Alice");
       await waitFor(() => {
         expect(input).toHaveProp("value", "");
       });
@@ -95,49 +148,69 @@ describe("PlayerList", () => {
   });
 
   describe("with existing players", () => {
-    beforeEach(() => {
-      jest.spyOn(React, "useContext").mockReturnValue({
-        players: ["Alice", "Rincewind"],
-        savePlayers: mockSavePlayers,
-        isLoading: false,
-      });
-    });
+    const player1 = PlayerFactory({ id: 1, name: "Alice" });
+    const player2 = PlayerFactory({ id: 2, name: "Rincewind" });
+
+    const mockStorageContext = {
+      ...BaseMockStorageContext,
+      createPlayer: mockCreatePlayer,
+      deletePlayer: mockDeletePlayer,
+      players: [player1, player2],
+      isLoading: false,
+    };
 
     it("renders a list of players from storage", () => {
-      render(<PlayerList />);
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
 
-      expect(screen.getByText("Alice")).toBeVisible();
-      expect(screen.getByText("Rincewind")).toBeVisible();
+      expect(screen.getByText(player1.name)).toBeVisible();
+      expect(screen.getByText(player2.name)).toBeVisible();
     });
 
-    it("prevents duplicate players from being added", () => {
-      render(<PlayerList />);
+    it("surfaces errors from StorageContext on delete", async () => {
+      mockDeletePlayer.mockRejectedValueOnce(new Error("test error"));
 
-      let errorMessage = screen.queryByText("Player already exists");
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
+
+      let errorMessage = screen.queryByText("test error");
       expect(errorMessage).toBeNull();
 
-      const input = screen.getByLabelText("Name");
-      fireEvent.changeText(input, "Alice");
-
-      const addButton = screen.getByRole("button", { name: "Add Player" });
-      fireEvent.press(addButton);
-
-      expect(mockSavePlayers).not.toHaveBeenCalled();
-      expect(input).toHaveProp("value", "Alice");
-
-      errorMessage = screen.getByText("Player already exists");
-      expect(errorMessage).toBeVisible();
-    });
-
-    it("allows user to remove players", () => {
-      render(<PlayerList />);
-
       const removePlayerButton = screen.getByRole("button", {
-        name: "Remove Rincewind",
+        name: `Remove ${player1.name}`,
       });
 
       fireEvent.press(removePlayerButton);
-      expect(mockSavePlayers).toHaveBeenCalledWith(["Alice"]);
+
+      expect(mockDeletePlayer).toHaveBeenCalledWith(player1.id);
+
+      await waitFor(() => {
+        expect(screen.getByText("test error")).toBeVisible();
+      });
+    });
+
+    it("allows user to remove players", () => {
+      mockDeletePlayer.mockResolvedValueOnce(undefined);
+
+      render(
+        <StorageContext.Provider value={mockStorageContext}>
+          <PlayerList />
+        </StorageContext.Provider>,
+      );
+
+      const removePlayerButton = screen.getByRole("button", {
+        name: `Remove ${player1.name}`,
+      });
+
+      fireEvent.press(removePlayerButton);
+
+      expect(mockDeletePlayer).toHaveBeenCalledWith(player1.id);
     });
   });
 });
