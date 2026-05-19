@@ -65,7 +65,7 @@ export type StorageContextProps = {
   saveSelectedDeckIdx: (idx: number) => Promise<void>;
   decks: Deck[];
   fetchDeck: (id: number) => Deck | null;
-  createDeck: (name?: string) => Promise<Deck>;
+  createDeck: (name: string) => Promise<Deck>;
   updateDeck: (id: number, patch: Partial<Deck>) => Promise<void>;
   destroyDeck: (id: number) => Promise<void>;
   players: Player[];

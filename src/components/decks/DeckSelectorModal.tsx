@@ -26,7 +26,7 @@ export default function DeckSelectorModal({
       <View style={styles.modalBody}>
         <FlatList
           data={decks}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => `${item.id}`}
           renderItem={({ item, index }) => (
             <PressableListItem
               label={item.name}

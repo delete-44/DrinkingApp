@@ -1,4 +1,3 @@
-import DEFAULT_DECK from "@/src/constants/default-deck";
 import { Deck } from "@/src/models/Deck";
 import { StorageContextProps, StorageProviderProps } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
@@ -61,12 +60,12 @@ export function StorageProvider({ children }: StorageProviderProps) {
       const [loadedSelectedDeckIdx, loadedDecks, loadedPlayers] =
         await Promise.all([
           loadResourceImpl(SELECTED_DECK_KEY, 0),
-          loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
+          DeckRepository.index(),
           PlayerRepository.index(),
         ]);
 
       setSelectedDeckIdx(loadedSelectedDeckIdx);
-      setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
+      setDecks(loadedDecks.payload || []);
       setPlayers(loadedPlayers.payload || []);
 
       setIsLoading(false);
@@ -89,14 +88,18 @@ export function StorageProvider({ children }: StorageProviderProps) {
     return decks.find((d) => d.id === id) || null;
   };
 
-  const createDeck = async (name = "" as string): Promise<Deck> => {
-    const newDeck = new Deck({ name });
-    const newDecks = [...decks, newDeck];
+  const createDeck = async (name: string): Promise<Deck> => {
+    const resp = await DeckRepository.create({ name });
 
-    await saveResourceImpl(DECK_KEY, newDecks);
+    if (!resp.ok || !resp.payload) {
+      throw new Error(resp.message);
+    }
+
+    const newDecks = [...decks, resp.payload!];
+
     setDecks(newDecks);
 
-    return newDeck;
+    return resp.payload;
   };
 
   const updateDeck = async (id: number, patch: Partial<Deck>) => {
