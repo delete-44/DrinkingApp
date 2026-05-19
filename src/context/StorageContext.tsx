@@ -13,7 +13,6 @@ export const StorageContext = createContext({} as StorageContextProps);
 
 const SELECTED_DECK_KEY = "selected_deck_idx";
 const DECK_KEY = "decks";
-const PLAYER_KEY = "players";
 
 export async function loadResourceImpl<T>(
   storageKey: string,
@@ -46,8 +45,7 @@ export async function saveResourceImpl<T>(
 export function StorageProvider({ children }: StorageProviderProps) {
   const [selectedDeckIdx, setSelectedDeckIdx] = useState<number>(0);
   const [decks, setDecks] = useState<Deck[]>([]);
-  const [players, setPlayers] = useState<string[]>([]);
-  const [nplayers, nsetPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const db = useSQLiteContext();
@@ -69,7 +67,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
 
       setSelectedDeckIdx(loadedSelectedDeckIdx);
       setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
-      nsetPlayers(loadedPlayers.payload || []);
+      setPlayers(loadedPlayers.payload || []);
 
       setIsLoading(false);
     };
@@ -135,9 +133,9 @@ export function StorageProvider({ children }: StorageProviderProps) {
       throw new Error(resp.message);
     }
 
-    const newPlayers = [...nplayers, resp.payload!];
+    const newPlayers = [...players, resp.payload!];
 
-    nsetPlayers(newPlayers);
+    setPlayers(newPlayers);
   };
 
   const deletePlayer = async (id: number) => {
@@ -147,9 +145,9 @@ export function StorageProvider({ children }: StorageProviderProps) {
       throw new Error(resp.message);
     }
 
-    const newPlayers = nplayers.filter((player) => player.id !== id);
+    const newPlayers = players.filter((player) => player.id !== id);
 
-    nsetPlayers(newPlayers);
+    setPlayers(newPlayers);
   };
 
   const value = {
@@ -160,7 +158,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     createDeck,
     updateDeck,
     destroyDeck,
-    players: nplayers,
+    players,
     createPlayer,
     deletePlayer,
     isLoading,
