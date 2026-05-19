@@ -1,6 +1,7 @@
 import { DeckFactory } from "@/factories/models/DeckFactory";
+import { PlayerFactory } from "@/factories/models/PlayerFactory";
 import { Game } from "@/src/models/Game";
-import { TPlayers } from "@/src/types";
+import { Player } from "@/src/models/Player";
 
 describe("Game", () => {
   beforeEach(() => {
@@ -9,7 +10,7 @@ describe("Game", () => {
 
   it("throws an error if deck is empty upon instantiation", () => {
     const deck = DeckFactory({ cards: [] });
-    const players = ["Sally"];
+    const players = [PlayerFactory({ name: "Sally" })];
 
     try {
       new Game(deck, players);
@@ -20,7 +21,7 @@ describe("Game", () => {
 
   it("throws an error if player list is empty upon instantiation", () => {
     const deck = DeckFactory();
-    const players = [] as TPlayers;
+    const players = [] as Player[];
 
     try {
       new Game(deck, players);
@@ -31,18 +32,26 @@ describe("Game", () => {
 
   it("shuffles players once it reaches the end of the list", () => {
     const deck = DeckFactory({ cards: ["Card", "Card 2", "Card 3", "Card 4"] });
-    const players = ["Sally", "Alice"];
+    const players = [
+      PlayerFactory({ id: 1, name: "Sally" }),
+      PlayerFactory({ id: 2, name: "Alice" }),
+    ];
 
     const game = new Game(deck, players);
 
-    expect(game.drawCard().player).toEqual("Sally");
-    expect(game.drawCard().player).toEqual("Alice");
-    expect(game.drawCard().player).toEqual("Sally");
+    expect(game.drawCard().player).toEqual(players[0]);
+    expect(game.drawCard().player).toEqual(players[1]);
+    expect(game.drawCard().player).toEqual(players[0]);
   });
 
   it("shuffles deck once it reaches the end of the list", () => {
     const deck = DeckFactory({ cards: ["Card", "Card 2"] });
-    const players = ["Sally", "Alice", "Rincewind", "The Dean"];
+    const players = [
+      PlayerFactory({ id: 1, name: "Sally" }),
+      PlayerFactory({ id: 2, name: "Alice" }),
+      PlayerFactory({ id: 3, name: "Rincewind" }),
+      PlayerFactory({ id: 4, name: "Agnes" }),
+    ];
 
     const game = new Game(deck, players);
 

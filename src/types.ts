@@ -49,11 +49,9 @@ export type TPlayerData = {
   updated_at: string;
 };
 
-export type TPlayers = string[];
-
 export type GameState = {
   card: string;
-  player: string;
+  player: Player;
 };
 
 // StorageContext types
