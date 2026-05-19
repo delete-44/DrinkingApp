@@ -205,10 +205,43 @@ describe("StorageContext", () => {
       });
 
       describe("#saveSelectedDeckIdx", () => {
+        const deck1Cards = [
+          CardFactory({ id: 1, deck_id: deck1.id, content: "Deck 1 Card 1" }),
+          CardFactory({ id: 1, deck_id: deck1.id, content: "Deck 1 Card 1" }),
+        ];
+
+        const deck2Cards = [
+          CardFactory({ id: 1, deck_id: deck2.id, content: "Deck 2 Card 1" }),
+          CardFactory({ id: 1, deck_id: deck2.id, content: "Deck 2 Card 1" }),
+        ];
+
+        beforeEach(() => {
+          jest
+            .spyOn(CardRepository, "index")
+            .mockImplementation((id: number) => {
+              if (id === deck1.id) {
+                return {
+                  ok: true,
+                  payload: deck1Cards,
+                };
+              }
+
+              return {
+                ok: true,
+                payload: deck2Cards,
+              };
+            });
+        });
+
+        afterEach(() => {
+          CardRepository.index.mockRestore();
+        });
+
         it("saves current deck idx to SecureStore and updates context", async () => {
           const storageContext = await renderStorageContext();
 
           expect(storageContext.current.selectedDeck).toEqual(decks[0]);
+          expect(storageContext.current.deckCards).toEqual(deck1Cards);
 
           await act(async () => {
             await storageContext.current.saveSelectedDeckIdx(1);
@@ -222,7 +255,19 @@ describe("StorageContext", () => {
 
           // Assert context state updated
           expect(storageContext.current.selectedDeck).toEqual(decks[1]);
+          expect(storageContext.current.deckCards).toEqual(deck2Cards);
         });
+      });
+
+      it("provides a safe fallback if loading deckCards fails", async () => {
+        jest.spyOn(CardRepository, "index").mockImplementationOnce(() => {
+          throw new Error("test error");
+        });
+
+        const storageContext = await renderStorageContext();
+
+        expect(storageContext.current.selectedDeck).toEqual(decks[0]);
+        expect(storageContext.current.deckCards).toEqual([]);
       });
 
       describe("#fetchDeck", () => {
