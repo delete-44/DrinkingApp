@@ -2,6 +2,7 @@
 
 import { Deck } from "./models/Deck";
 import { Player } from "./models/Player";
+import { DeckPermittedFields } from "./repositories/DeckRepository";
 
 type ResponseMeta = {
   ok: boolean;
@@ -66,7 +67,7 @@ export type StorageContextProps = {
   decks: Deck[];
   fetchDeck: (id: number) => Deck | null;
   createDeck: (name: string) => Promise<Deck>;
-  updateDeck: (id: number, patch: Partial<Deck>) => Promise<void>;
+  updateDeck: (id: number, patch: DeckPermittedFields) => Promise<void>;
   destroyDeck: (id: number) => Promise<void>;
   players: Player[];
   createPlayer: (name: string) => Promise<void>;

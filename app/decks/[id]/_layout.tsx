@@ -13,7 +13,7 @@ export default function DecksLayout() {
   const currentDeck = useMemo(() => {
     if (isLoading) return undefined;
 
-    const loadedDeck = fetchDeck(id);
+    const loadedDeck = fetchDeck(parseInt(id));
 
     if (!loadedDeck?.cards) {
       setPageLoadError("Failed to load Deck.");

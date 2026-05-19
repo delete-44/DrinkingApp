@@ -7,7 +7,7 @@ import {
 } from "../types";
 import { BaseRepository } from "./BaseRepository";
 
-export type DeckPermittedFields = Pick<TDeckData, "name" | "updated_at">;
+export type DeckPermittedFields = Pick<TDeckData, "name">;
 
 export class DeckRepository extends BaseRepository {
   static async index(): Promise<TCollectionResponse<Deck>> {

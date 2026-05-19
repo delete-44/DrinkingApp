@@ -241,129 +241,63 @@ describe("StorageContext", () => {
       });
 
       describe("#updateDeck", () => {
-        it("throws an error if deck is not found", async () => {
+        it("surfaces errors from the repository", async () => {
+          jest.spyOn(DeckRepository, "update").mockResolvedValueOnce({
+            ok: false,
+            changes: 0,
+            message: "test error",
+          });
+
           const storageContext = await renderStorageContext();
 
           try {
             await act(async () => {
               await storageContext.current.updateDeck(-1, {
-                cards: ["Updated"],
+                name: "Updated",
               });
             });
           } catch (e: any) {
-            expect(e.message).toEqual("Deck -1 not found");
+            expect(e.message).toEqual("test error");
           }
 
-          expect(mockSetItemAsync).toHaveBeenCalledTimes(0);
+          expect(DeckRepository.update).toHaveBeenCalledTimes(1);
+          expect(DeckRepository.update).toHaveBeenCalledWith(-1, {
+            name: "Updated",
+          });
 
           // Assert context state not updated
           expect(storageContext.current.decks).toEqual(decks);
         });
 
-        it("saves complete deck to SecureStore and updates context", async () => {
-          const storageContext = await renderStorageContext();
-
-          const updatedDeck = DeckFactory({
-            name: decks[0].name,
-            cards: ["Test card updated"],
-            id: decks[0].id,
-          });
-
-          await act(async () => {
-            await storageContext.current.updateDeck(decks[0].id, updatedDeck);
-          });
-
-          expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
-          expect(mockSetItemAsync).toHaveBeenCalledWith(
-            "decks",
-            JSON.stringify([updatedDeck, decks[1]]),
-          );
-
-          // Assert context state updated
-          expect(storageContext.current.decks).toEqual([updatedDeck, decks[1]]);
-        });
-
         it("permits a partial update of just name", async () => {
+          jest.spyOn(DeckRepository, "update").mockResolvedValueOnce({
+            ok: true,
+            changes: 1,
+          });
+
           const storageContext = await renderStorageContext();
 
           await act(async () => {
             await storageContext.current.updateDeck(decks[1].id, {
-              name: "Updated deck",
+              name: "Updated",
             });
           });
 
           const expectedDeck = DeckFactory({
-            name: "Updated deck",
+            name: "Updated",
             cards: decks[1].cards,
             id: decks[1].id,
           });
 
-          expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
-          expect(mockSetItemAsync).toHaveBeenCalledWith(
-            "decks",
-            JSON.stringify([decks[0], expectedDeck]),
-          );
+          expect(DeckRepository.update).toHaveBeenCalledTimes(1);
+          expect(DeckRepository.update).toHaveBeenCalledWith(decks[1].id, {
+            name: "Updated",
+          });
 
           // Assert context state updated
           expect(storageContext.current.decks).toEqual([
             decks[0],
             expectedDeck,
-          ]);
-        });
-
-        it("permits a partial update of just cards", async () => {
-          const storageContext = await renderStorageContext();
-
-          await act(async () => {
-            await storageContext.current.updateDeck(decks[0].id, {
-              cards: ["Test card updated"],
-            });
-          });
-
-          const expectedDeck = DeckFactory({
-            name: decks[0].name,
-            cards: ["Test card updated"],
-            id: decks[0].id,
-          });
-
-          expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
-          expect(mockSetItemAsync).toHaveBeenCalledWith(
-            "decks",
-            JSON.stringify([expectedDeck, decks[1]]),
-          );
-
-          // Assert context state updated
-          expect(storageContext.current.decks).toEqual([
-            expectedDeck,
-            decks[1],
-          ]);
-        });
-
-        it("ignores id in update", async () => {
-          const storageContext = await renderStorageContext();
-
-          await act(async () => {
-            await storageContext.current.updateDeck(decks[0].id, {
-              id: -1,
-            });
-          });
-
-          const expectedDeck = DeckFactory({
-            name: decks[0].name,
-            cards: decks[0].cards,
-            id: decks[0].id,
-          });
-
-          expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
-          expect(mockSetItemAsync).toHaveBeenCalledWith(
-            "decks",
-            JSON.stringify([expectedDeck, decks[1]]),
-          );
-
-          // Assert context state updated
-          expect(storageContext.current.decks).toEqual([
-            expectedDeck,
-            decks[1],
           ]);
         });
       });

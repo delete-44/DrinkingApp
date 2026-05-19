@@ -5,7 +5,10 @@ import { useSQLiteContext } from "expo-sqlite";
 import { createContext, useEffect, useMemo, useState } from "react";
 import { Player } from "../models/Player";
 import { CardRepository } from "../repositories/CardRepository";
-import { DeckRepository } from "../repositories/DeckRepository";
+import {
+  DeckPermittedFields,
+  DeckRepository,
+} from "../repositories/DeckRepository";
 import { PlayerRepository } from "../repositories/PlayerRepository";
 
 export const StorageContext = createContext({} as StorageContextProps);
@@ -102,18 +105,17 @@ export function StorageProvider({ children }: StorageProviderProps) {
     return resp.payload;
   };
 
-  const updateDeck = async (id: number, patch: Partial<Deck>) => {
-    const existing = decks.find((deck) => deck.id === id);
+  const updateDeck = async (id: number, patch: DeckPermittedFields) => {
+    const resp = await DeckRepository.update(id, patch);
 
-    if (!existing) throw new Error(`Deck ${id} not found`);
+    if (resp.changes === 0 || !resp.ok) {
+      throw new Error(resp.message);
+    }
 
-    const merged = new Deck({
-      name: patch.name ?? existing.name,
-      cards: patch.cards ?? existing.cards,
-      id: existing.id,
-    });
+    const newDecks = decks.map((deck) =>
+      deck.id === id ? new Deck({ ...deck, ...patch }) : deck,
+    );
 
-    const newDecks = decks.map((deck) => (deck.id === id ? merged : deck));
     await saveResourceImpl(DECK_KEY, newDecks);
     setDecks(newDecks);
   };
