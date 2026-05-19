@@ -1,6 +1,7 @@
 // Game logic types
 
 import { Deck } from "./models/Deck";
+import { Player } from "./models/Player";
 
 type ResponseMeta = {
   ok: boolean;
@@ -69,7 +70,8 @@ export type StorageContextProps = {
   createDeck: (name?: string) => Promise<Deck>;
   updateDeck: (id: number, patch: Partial<Deck>) => Promise<void>;
   destroyDeck: (id: number) => Promise<void>;
-  players: string[];
-  savePlayers: (newPlayers: string[]) => Promise<void>;
+  players: Player[];
+  createPlayer: (name: string) => Promise<void>;
+  deletePlayer: (id: number) => Promise<void>;
   isLoading: boolean;
 };
