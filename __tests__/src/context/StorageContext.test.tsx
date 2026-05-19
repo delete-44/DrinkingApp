@@ -369,35 +369,44 @@ describe("StorageContext", () => {
       });
 
       describe("#destroyDeck", () => {
-        it("throws an error if deck is not found", async () => {
+        it("surfaces errors from the repository", async () => {
+          jest.spyOn(DeckRepository, "delete").mockResolvedValueOnce({
+            ok: false,
+            changes: 0,
+            message: "test error",
+          });
+
           const storageContext = await renderStorageContext();
 
           try {
             await act(async () => {
-              await storageContext.current.destroyDeck(-1);
+              await storageContext.current.destroyDeck(decks[1].id);
             });
           } catch (e: any) {
-            expect(e.message).toEqual("Deck -1 not found");
+            expect(e.message).toEqual("test error");
           }
 
-          expect(mockSetItemAsync).toHaveBeenCalledTimes(0);
+          expect(DeckRepository.delete).toHaveBeenCalledTimes(1);
+          expect(DeckRepository.delete).toHaveBeenCalledWith(decks[1].id);
 
           // Assert context state not updated
           expect(storageContext.current.decks).toEqual(decks);
         });
 
         it("saves new deck list to SecureStore and updates context", async () => {
+          jest.spyOn(DeckRepository, "delete").mockResolvedValueOnce({
+            ok: true,
+            changes: 1,
+          });
+
           const storageContext = await renderStorageContext();
 
           await act(async () => {
             await storageContext.current.destroyDeck(decks[1].id);
           });
 
-          expect(mockSetItemAsync).toHaveBeenCalledTimes(1);
-          expect(mockSetItemAsync).toHaveBeenCalledWith(
-            "decks",
-            JSON.stringify([decks[0]]),
-          );
+          expect(DeckRepository.delete).toHaveBeenCalledTimes(1);
+          expect(DeckRepository.delete).toHaveBeenCalledWith(decks[1].id);
 
           // Assert context state updated
           expect(storageContext.current.decks).toEqual([decks[0]]);

@@ -119,13 +119,13 @@ export function StorageProvider({ children }: StorageProviderProps) {
   };
 
   const destroyDeck = async (id: number) => {
-    const deckExists = decks.some((deck) => deck.id === id);
+    const resp = await DeckRepository.delete(id);
 
-    if (!deckExists) throw new Error(`Deck ${id} not found`);
+    if (resp.changes === 0 || !resp.ok) {
+      throw new Error(resp.message);
+    }
 
     const newDecks = decks.filter((deck) => deck.id !== id);
-
-    await saveResourceImpl(DECK_KEY, newDecks);
     setDecks(newDecks);
   };
 
@@ -149,7 +149,6 @@ export function StorageProvider({ children }: StorageProviderProps) {
     }
 
     const newPlayers = players.filter((player) => player.id !== id);
-
     setPlayers(newPlayers);
   };
 
