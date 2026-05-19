@@ -4,19 +4,19 @@ import SQLiteDatabaseFactory from "@/factories/SQLiteDatabaseFactory";
 import { CardRepository } from "@/src/repositories/CardRepository";
 
 describe("CardRepository", () => {
-  const mockGetAllAsync = jest.fn();
+  const mockGetAllSync = jest.fn();
   const mockRunAsync = jest.fn();
 
   const deck = DeckFactory();
 
   const db = SQLiteDatabaseFactory({
-    getAllAsync: mockGetAllAsync,
+    getAllSync: mockGetAllSync,
     runAsync: mockRunAsync,
   });
 
   describe("before initialisation", () => {
-    it("errors out on index", async () => {
-      const result = await CardRepository.index(deck.id);
+    it("errors out on index", () => {
+      const result = CardRepository.index(deck.id);
 
       expect(result.ok).toEqual(false);
       expect(result.message).toEqual("Error loading Cards");
@@ -49,9 +49,9 @@ describe("CardRepository", () => {
 
     describe("when db call fails", () => {
       it("errors out on index", async () => {
-        mockGetAllAsync.mockRejectedValueOnce(new Error("test error"));
+        mockGetAllSync.mockImplementationOnce(() => new Error("test error"));
 
-        const result = await CardRepository.index(deck.id);
+        const result = CardRepository.index(deck.id);
 
         expect(result.ok).toEqual(false);
         expect(result.message).toEqual("Error loading Cards");
@@ -86,12 +86,12 @@ describe("CardRepository", () => {
       const card2 = CardFactory({ id: 2, content: "Drink twice" });
       const card3 = CardFactory({ id: 3, content: "Drink thrice" });
 
-      it("#index returns a collection of cards", async () => {
-        mockGetAllAsync.mockResolvedValueOnce([card1, card2, card3]);
+      it("#index returns a collection of cards", () => {
+        mockGetAllSync.mockReturnValueOnce([card1, card2, card3]);
 
-        const result = await CardRepository.index(deck.id);
+        const result = CardRepository.index(deck.id);
 
-        expect(mockGetAllAsync).toHaveBeenCalledWith(
+        expect(mockGetAllSync).toHaveBeenCalledWith(
           "SELECT * FROM cards WHERE deck_id=?",
           deck.id,
         );

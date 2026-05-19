@@ -26,10 +26,8 @@ export class Deck {
     this.updated_at = updated_at;
   }
 
-  // For consideration - make this sync instead?
-  // What are the risks of this?
-  async fetchCards() {
-    const resp = await CardRepository.index(this.id);
+  ncards() {
+    const resp = CardRepository.index(this.id);
 
     return resp.payload;
   }

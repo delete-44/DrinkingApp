@@ -5,8 +5,8 @@ import { CardRepository } from "@/src/repositories/CardRepository";
 import { TDeckData } from "@/src/types";
 
 describe("Deck", () => {
-  describe("#fetchCards", () => {
-    it("loads cards associated with this deck", async () => {
+  describe("#ncards", () => {
+    it("loads cards associated with this deck", () => {
       const deck = DeckFactory();
       const card1 = CardFactory({ id: 1, deck_id: deck.id });
       const card2 = CardFactory({ id: 2, deck_id: deck.id });
@@ -14,9 +14,9 @@ describe("Deck", () => {
 
       jest
         .spyOn(CardRepository, "index")
-        .mockResolvedValueOnce({ ok: true, payload: [card1, card2, card3] });
+        .mockReturnValueOnce({ ok: true, payload: [card1, card2, card3] });
 
-      const res = await deck.fetchCards();
+      const res = deck.ncards();
 
       expect(res).toEqual([card1, card2, card3]);
     });

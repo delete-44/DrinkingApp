@@ -10,9 +10,9 @@ import { BaseRepository } from "./BaseRepository";
 export type CardPermittedFields = Pick<TCardData, "content">;
 
 export class CardRepository extends BaseRepository {
-  static async index(deckId: number): Promise<TCollectionResponse<Card>> {
+  static index(deckId: number): TCollectionResponse<Card> {
     try {
-      const result: TCardData[] = await this.db.getAllAsync(
+      const result: TCardData[] = this.db.getAllSync(
         "SELECT * FROM cards WHERE deck_id=?",
         deckId,
       );
