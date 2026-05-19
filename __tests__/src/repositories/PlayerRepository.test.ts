@@ -4,10 +4,12 @@ import { PlayerRepository } from "@/src/repositories/PlayerRepository";
 
 describe("PlayerRepository", () => {
   const mockGetAllAsync = jest.fn();
+  const mockGetFirstAsync = jest.fn();
   const mockRunAsync = jest.fn();
 
   const db = SQLiteDatabaseFactory({
     getAllAsync: mockGetAllAsync,
+    getFirstAsync: mockGetFirstAsync,
     runAsync: mockRunAsync,
   });
 
@@ -53,14 +55,27 @@ describe("PlayerRepository", () => {
         expect(result.payload).toEqual(undefined);
       });
 
-      it("errors out on create", async () => {
-        mockRunAsync.mockRejectedValueOnce(new Error("test error"));
+      describe("#create", () => {
+        it("errors out on create request", async () => {
+          mockRunAsync.mockRejectedValueOnce(new Error("test error"));
 
-        const result = await PlayerRepository.create({ name: "Alice" });
+          const result = await PlayerRepository.create({ name: "Alice" });
 
-        expect(result.ok).toEqual(false);
-        expect(result.message).toEqual("Error creating Player");
-        expect(result.payload).toEqual(undefined);
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Error creating Player");
+          expect(result.payload).toEqual(undefined);
+        });
+
+        it("errors out on find request", async () => {
+          mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 1 });
+          mockGetFirstAsync.mockRejectedValueOnce(new Error("test error"));
+
+          const result = await PlayerRepository.create({ name: "Alice" });
+
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Error creating Player");
+          expect(result.payload).toEqual(undefined);
+        });
       });
 
       it("errors out on delete", async () => {
@@ -91,19 +106,25 @@ describe("PlayerRepository", () => {
         expect(result.payload).toEqual([player1, player2, player3]);
       });
 
-      it("#create returns the new players id + name", async () => {
-        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 4 });
+      it("#create creates the new player & fetches it", async () => {
+        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: player3.id });
+        mockGetFirstAsync.mockResolvedValueOnce(player3);
 
-        const result = await PlayerRepository.create({ name: "Agnes" });
+        const result = await PlayerRepository.create({ name: player3.name });
 
         expect(mockRunAsync).toHaveBeenCalledWith(
           'INSERT INTO players ("name") VALUES (?)',
-          "Agnes",
+          player3.name,
+        );
+
+        expect(mockGetFirstAsync).toHaveBeenCalledWith(
+          "SELECT * FROM players WHERE id=?",
+          player3.id,
         );
 
         expect(result.ok).toEqual(true);
         expect(result.message).toEqual(undefined);
-        expect(result.payload).toEqual({ id: 4, name: "Agnes" });
+        expect(result.payload).toEqual(player3);
       });
 
       describe("#delete", () => {

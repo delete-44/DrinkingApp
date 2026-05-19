@@ -1,7 +1,7 @@
 import { Player } from "../models/Player";
 import {
   TCollectionResponse,
-  TPartialResponse,
+  TItemResponse,
   TPatchResponse,
   TPlayerData,
 } from "../types";
@@ -32,19 +32,30 @@ export class PlayerRepository extends BaseRepository {
 
   static async create({
     name,
-  }: PlayerPermittedFields): Promise<TPartialResponse<Player>> {
+  }: PlayerPermittedFields): Promise<TItemResponse<Player>> {
     try {
-      const result = await this.db.runAsync(
+      const created = await this.db.runAsync(
         `INSERT INTO players ("name") VALUES (?)`,
         name,
       );
 
+      console.log("HERE! created", created);
+
+      const result: TPlayerData | null = await this.db.getFirstAsync(
+        "SELECT * FROM players WHERE id=?",
+        created.lastInsertRowId,
+      );
+
+      if (!result) {
+        return {
+          ok: false,
+          message: `Player not found`,
+        };
+      }
+
       return {
         ok: true,
-        payload: {
-          id: result.lastInsertRowId,
-          name,
-        },
+        payload: Player.fromJson(result),
       };
     } catch (e: any) {
       console.log("Error creating Player:", e.message);
