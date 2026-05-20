@@ -1,16 +1,16 @@
 import { GameState } from "../types";
-import { Deck } from "./Deck";
+import { Card } from "./Card";
 import { Player } from "./Player";
 
 export class Game {
-  private readonly cards: string[];
+  private readonly cards: Card[];
   private readonly players: Player[];
 
-  private currentCards: string[];
+  private currentCards: Card[];
   private currentPlayers: Player[];
 
-  constructor(startingDeck: Deck, startingPlayers: Player[]) {
-    if ((startingDeck.cards || []).length === 0) {
+  constructor(startingCards: Card[], startingPlayers: Player[]) {
+    if (startingCards.length === 0) {
       throw TypeError("Deck has no Cards");
     }
 
@@ -18,8 +18,8 @@ export class Game {
       throw TypeError("Game has no Players");
     }
 
-    this.cards = startingDeck.cards || [];
-    this.currentCards = [...(startingDeck.cards || [])];
+    this.cards = startingCards;
+    this.currentCards = [...startingCards];
 
     this.players = startingPlayers;
     this.currentPlayers = [...startingPlayers];

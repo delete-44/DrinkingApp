@@ -1,7 +1,7 @@
 import DeckForm from "@/src/components/decks/DeckForm";
 import LoadingScreen from "@/src/components/status/LoadingScreen";
+import { CardProvider } from "@/src/context/CardContext";
 import { StorageContext } from "@/src/context/StorageContext";
-import { Deck } from "@/src/models/Deck";
 import { useCallback, useContext, useRef, useState } from "react";
 
 export default function New() {
@@ -14,12 +14,6 @@ export default function New() {
 
   const isSaving = useRef(false);
 
-  const workingDeck = new Deck({
-    name: workingDeckName,
-    cards: [],
-    id: currentDeckId || undefined,
-  });
-
   const saveDeck = useCallback(
     async (name: string) => {
       if (isSaving.current) return;
@@ -30,7 +24,7 @@ export default function New() {
         if (currentDeckId) {
           await updateDeck(currentDeckId, { name });
         } else {
-          const newDeck = await createDeck(name);
+          const newDeck = await createDeck({ name });
 
           setWorkingDeckName(name);
           setCurrentDeckId(newDeck.id);
@@ -50,8 +44,23 @@ export default function New() {
 
   // Before deck is created
   if (!currentDeckId || !currentDeck) {
-    return <DeckForm deck={workingDeck} saveDeckCallback={saveDeck} />;
+    return (
+      <CardProvider deck={null}>
+        <DeckForm
+          // We provide a stub Deck object containing just the WIP name
+          // This is to prevent the UI flickering in the split-second where
+          // we commit the deck to the DB. Therefore:
+          // @ts-expect-error
+          deck={{ name: workingDeckName }}
+          saveDeckCallback={saveDeck}
+        />
+      </CardProvider>
+    );
   }
 
-  return <DeckForm deck={currentDeck} saveDeckCallback={saveDeck} />;
+  return (
+    <CardProvider deck={currentDeck}>
+      <DeckForm deck={currentDeck} saveDeckCallback={saveDeck} />
+    </CardProvider>
+  );
 }

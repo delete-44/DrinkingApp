@@ -1,4 +1,3 @@
-import DEFAULT_DECK from "@/src/constants/default-deck";
 import { Deck } from "@/src/models/Deck";
 import { StorageContextProps, StorageProviderProps } from "@/src/types";
 import * as SecureStore from "expo-secure-store";
@@ -6,8 +5,14 @@ import { useSQLiteContext } from "expo-sqlite";
 import { createContext, useEffect, useMemo, useState } from "react";
 import { Player } from "../models/Player";
 import { CardRepository } from "../repositories/CardRepository";
-import { DeckRepository } from "../repositories/DeckRepository";
-import { PlayerRepository } from "../repositories/PlayerRepository";
+import {
+  DeckPermittedFields,
+  DeckRepository,
+} from "../repositories/DeckRepository";
+import {
+  PlayerPermittedFields,
+  PlayerRepository,
+} from "../repositories/PlayerRepository";
 
 export const StorageContext = createContext({} as StorageContextProps);
 
@@ -61,13 +66,13 @@ export function StorageProvider({ children }: StorageProviderProps) {
       const [loadedSelectedDeckIdx, loadedDecks, loadedPlayers] =
         await Promise.all([
           loadResourceImpl(SELECTED_DECK_KEY, 0),
-          loadResourceImpl(DECK_KEY, [DEFAULT_DECK]),
+          DeckRepository.index(),
           PlayerRepository.index(),
         ]);
 
       setSelectedDeckIdx(loadedSelectedDeckIdx);
-      setDecks(loadedDecks.map((deckData) => Deck.fromJson(deckData)));
-      setPlayers(loadedPlayers.payload || []);
+      setDecks(loadedDecks.payload);
+      setPlayers(loadedPlayers.payload);
 
       setIsLoading(false);
     };
@@ -89,45 +94,52 @@ export function StorageProvider({ children }: StorageProviderProps) {
     return decks.find((d) => d.id === id) || null;
   };
 
-  const createDeck = async (name = "" as string): Promise<Deck> => {
-    const newDeck = new Deck({ name });
-    const newDecks = [...decks, newDeck];
+  const createDeck = async (patch: DeckPermittedFields): Promise<Deck> => {
+    const resp = await DeckRepository.create(patch);
 
-    await saveResourceImpl(DECK_KEY, newDecks);
+    if (!resp.ok || !resp.payload) {
+      throw new Error(resp.message);
+    }
+
+    const newDecks = [...decks, resp.payload!];
+
     setDecks(newDecks);
 
-    return newDeck;
+    return resp.payload;
   };
 
-  const updateDeck = async (id: number, patch: Partial<Deck>) => {
-    const existing = decks.find((deck) => deck.id === id);
+  const updateDeck = async (id: number, patch: DeckPermittedFields) => {
+    const resp = await DeckRepository.update(id, patch);
 
-    if (!existing) throw new Error(`Deck ${id} not found`);
+    if (resp.changes === 0 || !resp.ok) {
+      throw new Error(resp.message);
+    }
 
-    const merged = new Deck({
-      name: patch.name ?? existing.name,
-      cards: patch.cards ?? existing.cards,
-      id: existing.id,
-    });
+    const newDecks = decks.map((deck) =>
+      deck.id === id ? new Deck({ ...deck, ...patch }) : deck,
+    );
 
-    const newDecks = decks.map((deck) => (deck.id === id ? merged : deck));
     await saveResourceImpl(DECK_KEY, newDecks);
     setDecks(newDecks);
   };
 
   const destroyDeck = async (id: number) => {
-    const deckExists = decks.some((deck) => deck.id === id);
+    const resp = await DeckRepository.delete(id);
 
-    if (!deckExists) throw new Error(`Deck ${id} not found`);
+    if (resp.changes === 0 || !resp.ok) {
+      throw new Error(resp.message);
+    }
 
     const newDecks = decks.filter((deck) => deck.id !== id);
-
-    await saveResourceImpl(DECK_KEY, newDecks);
     setDecks(newDecks);
   };
 
-  const createPlayer = async (name: string) => {
-    const resp = await PlayerRepository.create({ name });
+  // createCard
+  // destroyCard
+  // create many cards
+
+  const createPlayer = async (patch: PlayerPermittedFields) => {
+    const resp = await PlayerRepository.create(patch);
 
     if (!resp.ok || !resp.payload) {
       throw new Error(resp.message);
@@ -146,7 +158,6 @@ export function StorageProvider({ children }: StorageProviderProps) {
     }
 
     const newPlayers = players.filter((player) => player.id !== id);
-
     setPlayers(newPlayers);
   };
 

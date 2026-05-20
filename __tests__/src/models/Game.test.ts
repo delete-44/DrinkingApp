@@ -1,43 +1,50 @@
-import { DeckFactory } from "@/factories/models/DeckFactory";
+import { CardFactory } from "@/factories/models/CardFactory";
 import { PlayerFactory } from "@/factories/models/PlayerFactory";
+import { Card } from "@/src/models/Card";
 import { Game } from "@/src/models/Game";
 import { Player } from "@/src/models/Player";
 
 describe("Game", () => {
   beforeEach(() => {
+    // @ts-expect-error
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
   });
 
   it("throws an error if deck is empty upon instantiation", () => {
-    const deck = DeckFactory({ cards: [] });
+    const cards = [] as Card[];
     const players = [PlayerFactory({ name: "Sally" })];
 
     try {
-      new Game(deck, players);
+      new Game(cards, players);
     } catch (e: any) {
       expect(e.message).toEqual("Deck has no Cards");
     }
   });
 
   it("throws an error if player list is empty upon instantiation", () => {
-    const deck = DeckFactory();
+    const cards = [CardFactory()];
     const players = [] as Player[];
 
     try {
-      new Game(deck, players);
+      new Game(cards, players);
     } catch (e: any) {
       expect(e.message).toEqual("Game has no Players");
     }
   });
 
   it("shuffles players once it reaches the end of the list", () => {
-    const deck = DeckFactory({ cards: ["Card", "Card 2", "Card 3", "Card 4"] });
+    const cards = [
+      CardFactory({ id: 1, content: "Card" }),
+      CardFactory({ id: 2, content: "Card 2" }),
+      CardFactory({ id: 3, content: "Card 3" }),
+      CardFactory({ id: 4, content: "Card 4" }),
+    ];
     const players = [
       PlayerFactory({ id: 1, name: "Sally" }),
       PlayerFactory({ id: 2, name: "Alice" }),
     ];
 
-    const game = new Game(deck, players);
+    const game = new Game(cards, players);
 
     expect(game.drawCard().player).toEqual(players[0]);
     expect(game.drawCard().player).toEqual(players[1]);
@@ -45,7 +52,10 @@ describe("Game", () => {
   });
 
   it("shuffles deck once it reaches the end of the list", () => {
-    const deck = DeckFactory({ cards: ["Card", "Card 2"] });
+    const cards = [
+      CardFactory({ id: 1, content: "Card" }),
+      CardFactory({ id: 2, content: "Card 2" }),
+    ];
     const players = [
       PlayerFactory({ id: 1, name: "Sally" }),
       PlayerFactory({ id: 2, name: "Alice" }),
@@ -53,10 +63,10 @@ describe("Game", () => {
       PlayerFactory({ id: 4, name: "Agnes" }),
     ];
 
-    const game = new Game(deck, players);
+    const game = new Game(cards, players);
 
-    expect(game.drawCard().card).toEqual("Card");
-    expect(game.drawCard().card).toEqual("Card 2");
-    expect(game.drawCard().card).toEqual("Card");
+    expect(game.drawCard().card).toEqual(cards[0]);
+    expect(game.drawCard().card).toEqual(cards[1]);
+    expect(game.drawCard().card).toEqual(cards[0]);
   });
 });

@@ -2,7 +2,7 @@ import { Card } from "../models/Card";
 import {
   TCardData,
   TCollectionResponse,
-  TPartialResponse,
+  TItemResponse,
   TPatchResponse,
 } from "../types";
 import { BaseRepository } from "./BaseRepository";
@@ -10,9 +10,9 @@ import { BaseRepository } from "./BaseRepository";
 export type CardPermittedFields = Pick<TCardData, "content">;
 
 export class CardRepository extends BaseRepository {
-  static async index(deckId: number): Promise<TCollectionResponse<Card>> {
+  static index(deckId: number): TCollectionResponse<Card> {
     try {
-      const result: TCardData[] = await this.db.getAllAsync(
+      const result: TCardData[] = this.db.getAllSync(
         "SELECT * FROM cards WHERE deck_id=?",
         deckId,
       );
@@ -27,6 +27,7 @@ export class CardRepository extends BaseRepository {
       return {
         ok: false,
         message: "Error loading Cards",
+        payload: [],
       };
     }
   }
@@ -34,20 +35,29 @@ export class CardRepository extends BaseRepository {
   static async create(
     deckId: number,
     { content }: CardPermittedFields,
-  ): Promise<TPartialResponse<Card>> {
+  ): Promise<TItemResponse<Card>> {
     try {
-      const result = await this.db.runAsync(
+      const created = await this.db.runAsync(
         `INSERT INTO cards ("deck_id", "content") VALUES (?, ?)`,
         deckId,
         content,
       );
 
+      const result: TCardData | null = await this.db.getFirstAsync(
+        "SELECT * FROM cards WHERE id=?",
+        created.lastInsertRowId,
+      );
+
+      if (!result) {
+        return {
+          ok: false,
+          message: `Card not found`,
+        };
+      }
+
       return {
         ok: true,
-        payload: {
-          id: result.lastInsertRowId,
-          content,
-        },
+        payload: Card.fromJson(result),
       };
     } catch (e: any) {
       console.log("Error creating Card:", e.message);
@@ -55,6 +65,39 @@ export class CardRepository extends BaseRepository {
       return {
         ok: false,
         message: "Error creating Card",
+      };
+    }
+  }
+
+  static async createMany(
+    deckId: number,
+    patches: CardPermittedFields[],
+  ): Promise<TPatchResponse> {
+    try {
+      let changes = 0;
+      await this.db.withTransactionAsync(async () => {
+        for (const patch of patches) {
+          await this.db.runAsync(
+            `INSERT INTO cards ("deck_id", "content") VALUES (?, ?)`,
+            deckId,
+            patch.content,
+          );
+
+          changes++;
+        }
+      });
+
+      return {
+        ok: true,
+        changes,
+      };
+    } catch (e: any) {
+      console.log("Error creating Cards:", e.message);
+
+      return {
+        ok: false,
+        message: "Error creating Cards",
+        changes: 0,
       };
     }
   }

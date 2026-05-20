@@ -93,7 +93,7 @@ describe("PlayerList", () => {
 
       fireEvent.press(addButton);
 
-      expect(mockCreatePlayer).toHaveBeenCalledWith("Alice");
+      expect(mockCreatePlayer).toHaveBeenCalledWith({ name: "Alice" });
       expect(input).toHaveProp("value", "Alice");
 
       await waitFor(() => {
@@ -140,7 +140,7 @@ describe("PlayerList", () => {
       const addButton = screen.getByRole("button", { name: "Add Player" });
       fireEvent.press(addButton);
 
-      expect(mockCreatePlayer).toHaveBeenCalledWith("Alice");
+      expect(mockCreatePlayer).toHaveBeenCalledWith({ name: "Alice" });
       await waitFor(() => {
         expect(input).toHaveProp("value", "");
       });

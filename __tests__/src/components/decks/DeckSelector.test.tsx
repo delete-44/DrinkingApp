@@ -73,8 +73,8 @@ describe("DeckSelector", () => {
   });
 
   describe("selecting decks", () => {
-    const testDeck2 = DeckFactory({ name: "Test 2" });
-    const testDeck3 = DeckFactory({ name: "Test 3" });
+    const testDeck2 = DeckFactory({ id: 2, name: "Test 2" });
+    const testDeck3 = DeckFactory({ id: 3, name: "Test 3" });
     const mockSaveSelectedDeckIdx = jest.fn();
 
     const assertModalHidden = () => {

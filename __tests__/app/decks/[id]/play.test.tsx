@@ -1,6 +1,7 @@
 import Play from "@/app/decks/[id]/play";
-import { DeckFactory } from "@/factories/models/DeckFactory";
-import { DeckLayoutContext } from "@/src/context/DeckLayoutContext";
+import { CardContextFactory } from "@/factories/context/CardContextFactory";
+import { CardFactory } from "@/factories/models/CardFactory";
+import { CardContext } from "@/src/context/CardContext";
 import { StorageContext } from "@/src/context/StorageContext";
 import { BaseMockStorageContext } from "@/test-utils";
 import { fireEvent, render, screen } from "@testing-library/react-native";
@@ -14,27 +15,61 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("Play", () => {
-  const testDeck = DeckFactory({
-    name: "Test Deck",
-    cards: ["Card 1", "Card 2"],
-  });
+  const cards = [
+    CardFactory({ id: 1, content: "Card 1" }),
+    CardFactory({ id: 2, content: "Card 2" }),
+  ];
 
   const mockStorageContext = {
     ...BaseMockStorageContext,
     players: [],
   };
 
+  const mockCardContext = CardContextFactory({ cards });
+
   beforeEach(() => {
+    // @ts-expect-error
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
+  });
+
+  it("shows a loading spinner if storage context is loading", () => {
+    const mockStorageContext = {
+      ...BaseMockStorageContext,
+      isLoading: true,
+    };
+
+    render(
+      <CardContext.Provider value={mockCardContext}>
+        <StorageContext.Provider value={mockStorageContext}>
+          <Play />
+        </StorageContext.Provider>
+      </CardContext.Provider>,
+    );
+
+    expect(screen.getByLabelText("Loading Game")).toBeVisible();
+  });
+
+  it("shows a loading spinner if card context is loading", () => {
+    const mockCardContext = CardContextFactory({ isLoading: true });
+
+    render(
+      <CardContext.Provider value={mockCardContext}>
+        <StorageContext.Provider value={mockStorageContext}>
+          <Play />
+        </StorageContext.Provider>
+      </CardContext.Provider>,
+    );
+
+    expect(screen.getByLabelText("Loading Game")).toBeVisible();
   });
 
   it("shows a CTA to return home if the initialisation fails", () => {
     render(
-      <DeckLayoutContext.Provider value={testDeck}>
+      <CardContext.Provider value={mockCardContext}>
         <StorageContext.Provider value={mockStorageContext}>
           <Play />
         </StorageContext.Provider>
-      </DeckLayoutContext.Provider>,
+      </CardContext.Provider>,
     );
 
     expect(screen.getByText("Error: Game has no Players")).toBeVisible();
@@ -50,11 +85,11 @@ describe("Play", () => {
   describe("with a valid game", () => {
     beforeEach(() => {
       render(
-        <DeckLayoutContext.Provider value={testDeck}>
+        <CardContext.Provider value={mockCardContext}>
           <StorageContext.Provider value={BaseMockStorageContext}>
             <Play />
           </StorageContext.Provider>
-        </DeckLayoutContext.Provider>,
+        </CardContext.Provider>,
       );
     });
 

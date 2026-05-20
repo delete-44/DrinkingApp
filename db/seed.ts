@@ -1,4 +1,4 @@
-import DEFAULT_DECK from "@/src/constants/default-deck";
+import DEFAULT_DECK, { DEFAULT_CARDS } from "@/src/constants/default-deck";
 import { SQLiteDatabase } from "expo-sqlite";
 
 export async function seed(db: SQLiteDatabase) {
@@ -10,10 +10,10 @@ export async function seed(db: SQLiteDatabase) {
       DEFAULT_DECK.name,
     );
 
-    for (const card of DEFAULT_DECK.cards) {
+    for (const card of DEFAULT_CARDS) {
       await db.runAsync("INSERT INTO cards (deck_id, content) VALUES (?, ?)", [
         result.lastInsertRowId,
-        card,
+        card.content,
       ]);
     }
   });

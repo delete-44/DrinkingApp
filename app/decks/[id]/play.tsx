@@ -2,8 +2,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
 import ErrorScreen from "@/src/components/status/ErrorScreen";
+import LoadingScreen from "@/src/components/status/LoadingScreen";
 import { SPACING_MD } from "@/src/constants/style-constants";
-import { useDeckFromLayout } from "@/src/context/DeckLayoutContext";
+import { CardContext } from "@/src/context/CardContext";
 import { StorageContext } from "@/src/context/StorageContext";
 import { Game } from "@/src/models/Game";
 import { GameState } from "@/src/types";
@@ -14,26 +15,35 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Play() {
   useKeepAwake();
 
-  const { players, isLoading } = useContext(StorageContext);
+  const { players, isLoading: isStorageContextLoading } =
+    useContext(StorageContext);
+  const { cards, isLoading: isCardContextLoading } = useContext(CardContext);
 
   const [game, setGame] = useState<Game>();
-  const [currentCard, setCurrentCard] = useState<GameState>();
+  const [gameState, setGameState] = useState<GameState>();
   const [errorMessage, setErrorMessage] = useState<string>("");
-
-  const currentDeck = useDeckFromLayout();
 
   useEffect(() => {
     try {
-      const newGame = new Game(currentDeck, players);
+      if (isStorageContextLoading || isCardContextLoading) {
+        return;
+      }
+
+      const newGame = new Game(cards, players);
       setGame(newGame);
-      setCurrentCard(newGame.drawCard());
+      setGameState(newGame.drawCard());
     } catch (e: any) {
       setErrorMessage(e.message);
     }
-  }, [isLoading, currentDeck, players]);
+  }, [cards, isCardContextLoading, isStorageContextLoading, players]);
+
+  // Loading screen
+  if (isStorageContextLoading || isCardContextLoading) {
+    return <LoadingScreen label={"Loading Game"} />;
+  }
 
   // Error screen
-  if (!game || !currentCard || errorMessage) {
+  if (!game || !gameState || errorMessage) {
     return (
       <ErrorScreen message={errorMessage || "Game not properly initialized"} />
     );
@@ -45,17 +55,17 @@ export default function Play() {
       <Pressable
         style={styles.buttonWrapper}
         onPress={() => {
-          setCurrentCard(game.drawCard());
+          setGameState(game.drawCard());
         }}
         role="button"
         accessibilityLabel="Tap to draw next Card"
       >
         <Text style={[globalStyles.textLg, styles.screenTextMixin]}>
-          {currentCard.player.name}&apos;s Turn
+          {gameState.player.name}&apos;s Turn
         </Text>
         <View style={styles.cardWrapper}>
           <Text style={[globalStyles.textHero, styles.screenTextMixin]}>
-            {currentCard.card}
+            {gameState.card.content}
           </Text>
         </View>
       </Pressable>

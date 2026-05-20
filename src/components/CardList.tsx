@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Pressable,
@@ -21,70 +22,82 @@ import {
   SPACING_LG,
   SPACING_SM,
 } from "@/src/constants/style-constants";
-import { StorageContext } from "@/src/context/StorageContext";
-import { Deck } from "@/src/models/Deck";
 import { useCallback, useContext, useState } from "react";
+import { CardContext } from "../context/CardContext";
+import { CardPermittedFields } from "../repositories/CardRepository";
 
-type CardListProps = {
-  deck: Deck;
-};
-
-export default function CardList({ deck }: CardListProps) {
+export default function CardList() {
   const [newCard, setNewCard] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { updateDeck } = useContext(StorageContext);
+  const { isLoading, cards, createCard, createManyCards, deleteCard } =
+    useContext(CardContext);
 
   // Callback for adding multiple cards to the deck; currently
   // used for inserting the default deck from the empty screen;
   // longer term could be useful for downloading/importing decks
   const addCards = useCallback(
-    async (newCards: string[]) => {
-      const modifiedCards = [...deck.cards, ...newCards];
-
-      await updateDeck(deck.id, { cards: modifiedCards });
+    async (newCards: CardPermittedFields[]) => {
+      try {
+        await createManyCards(newCards);
+      } catch (e: any) {
+        setErrorMessage(e.message);
+      }
     },
-    [deck, updateDeck],
+    [createManyCards],
   );
 
   const addCard = useCallback(
-    async (newCard: string) => {
-      if (!newCard.trim()) {
+    async (content: string) => {
+      if (!content.trim()) {
         setErrorMessage("Card cannot be empty");
 
         return;
       }
 
-      const modifiedCards = [...deck.cards, newCard.trim()];
-
-      await updateDeck(deck.id, { cards: modifiedCards });
-
-      setNewCard("");
+      try {
+        await createCard({ content: content.trim() });
+        setNewCard("");
+      } catch (e: any) {
+        setErrorMessage(e.message);
+      }
     },
-    [deck, updateDeck],
+    [createCard],
   );
 
-  const removeCardAt = useCallback(
-    async (cardIndex: number) => {
-      const modifiedCards = deck.cards.filter((_, idx) => idx !== cardIndex);
-
-      await updateDeck(deck.id, { cards: modifiedCards });
+  const removeCard = useCallback(
+    async (cardId: number) => {
+      try {
+        await deleteCard(cardId);
+        setNewCard("");
+      } catch (e: any) {
+        setErrorMessage(e.message);
+      }
     },
-    [deck, updateDeck],
+    [deleteCard],
   );
 
   return (
     <>
       <View style={styles.listContainer}>
         <FlatList
-          data={deck.cards}
-          renderItem={({ item, index }) => (
+          data={cards}
+          renderItem={({ item }) => (
             <RemovableListItem
-              label={item}
-              removeItemCb={() => removeCardAt(index)}
+              label={item.content}
+              removeItemCb={() => removeCard(item.id)}
             />
           )}
-          ListEmptyComponent={<CardListEmptyState addCards={addCards} />}
+          ListEmptyComponent={
+            isLoading ? (
+              <ActivityIndicator
+                color="#fff"
+                accessibilityLabel="Loading Cards"
+              />
+            ) : (
+              <CardListEmptyState addCards={addCards} />
+            )
+          }
           ItemSeparatorComponent={HorizontalDivider}
         />
       </View>

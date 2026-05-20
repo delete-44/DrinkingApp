@@ -4,23 +4,27 @@ import SQLiteDatabaseFactory from "@/factories/SQLiteDatabaseFactory";
 import { CardRepository } from "@/src/repositories/CardRepository";
 
 describe("CardRepository", () => {
-  const mockGetAllAsync = jest.fn();
+  const mockGetAllSync = jest.fn();
+  const mockGetFirstAsync = jest.fn();
   const mockRunAsync = jest.fn();
+  const mockWithTransactionAsync = jest.fn((callback) => callback());
 
   const deck = DeckFactory();
 
   const db = SQLiteDatabaseFactory({
-    getAllAsync: mockGetAllAsync,
+    getAllSync: mockGetAllSync,
+    getFirstAsync: mockGetFirstAsync,
     runAsync: mockRunAsync,
+    withTransactionAsync: mockWithTransactionAsync,
   });
 
   describe("before initialisation", () => {
-    it("errors out on index", async () => {
-      const result = await CardRepository.index(deck.id);
+    it("errors out on index", () => {
+      const result = CardRepository.index(deck.id);
 
       expect(result.ok).toEqual(false);
       expect(result.message).toEqual("Error loading Cards");
-      expect(result.payload).toEqual(undefined);
+      expect(result.payload).toEqual([]);
     });
 
     it("errors out on create", async () => {
@@ -31,6 +35,19 @@ describe("CardRepository", () => {
       expect(result.ok).toEqual(false);
       expect(result.message).toEqual("Error creating Card");
       expect(result.payload).toEqual(undefined);
+    });
+
+    it("errors out on createMany", async () => {
+      const result = await CardRepository.createMany(deck.id, [
+        {
+          content: "Drink twice",
+        },
+        { content: "Drink thrice" },
+      ]);
+
+      expect(result.ok).toEqual(false);
+      expect(result.message).toEqual("Error creating Cards");
+      expect(result.changes).toEqual(0);
     });
 
     it("errors out on delete", async () => {
@@ -49,25 +66,105 @@ describe("CardRepository", () => {
 
     describe("when db call fails", () => {
       it("errors out on index", async () => {
-        mockGetAllAsync.mockRejectedValueOnce(new Error("test error"));
+        mockGetAllSync.mockImplementationOnce(() => new Error("test error"));
 
-        const result = await CardRepository.index(deck.id);
+        const result = CardRepository.index(deck.id);
 
         expect(result.ok).toEqual(false);
         expect(result.message).toEqual("Error loading Cards");
-        expect(result.payload).toEqual(undefined);
+        expect(result.payload).toEqual([]);
       });
 
-      it("errors out on create", async () => {
-        mockRunAsync.mockRejectedValueOnce(new Error("test error"));
+      describe("#create", () => {
+        it("errors out on create request", async () => {
+          mockRunAsync.mockRejectedValueOnce(new Error("test error"));
 
-        const result = await CardRepository.create(deck.id, {
-          content: "Drink twice",
+          const result = await CardRepository.create(deck.id, {
+            content: "Default",
+          });
+
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Error creating Card");
+          expect(result.payload).toEqual(undefined);
         });
 
-        expect(result.ok).toEqual(false);
-        expect(result.message).toEqual("Error creating Card");
-        expect(result.payload).toEqual(undefined);
+        it("errors out on find request", async () => {
+          mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 1 });
+          mockGetFirstAsync.mockRejectedValueOnce(new Error("test error"));
+
+          const result = await CardRepository.create(deck.id, {
+            content: "Default",
+          });
+
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Error creating Card");
+          expect(result.payload).toEqual(undefined);
+        });
+
+        it("returns friendly message if card not found", async () => {
+          mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 1 });
+          mockGetFirstAsync.mockResolvedValueOnce(null);
+
+          const result = await CardRepository.create(deck.id, {
+            content: "Default",
+          });
+
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Card not found");
+          expect(result.payload).toEqual(undefined);
+        });
+      });
+
+      describe("#createMany", () => {
+        it("errors out on transaction initialisation", async () => {
+          mockWithTransactionAsync.mockRejectedValueOnce(
+            new Error("test error"),
+          );
+
+          const result = await CardRepository.createMany(deck.id, [
+            {
+              content: "Drink 1",
+            },
+          ]);
+
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Error creating Cards");
+          expect(result.changes).toEqual(0);
+        });
+
+        it("errors out on first create request", async () => {
+          mockRunAsync.mockRejectedValueOnce(new Error("test error"));
+
+          const result = await CardRepository.createMany(deck.id, [
+            {
+              content: "Drink 1",
+            },
+          ]);
+
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Error creating Cards");
+          expect(result.changes).toEqual(0);
+        });
+
+        it("errors out on subsequent create request", async () => {
+          mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 1 });
+          mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 2 });
+          mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 3 });
+          mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 4 });
+          mockRunAsync.mockRejectedValueOnce(new Error("test error"));
+
+          const result = await CardRepository.createMany(deck.id, [
+            { content: "Drink 1" },
+            { content: "Drink 2" },
+            { content: "Drink 3" },
+            { content: "Drink 4" },
+            { content: "Error card!" },
+          ]);
+
+          expect(result.ok).toEqual(false);
+          expect(result.message).toEqual("Error creating Cards");
+          expect(result.changes).toEqual(0);
+        });
       });
 
       it("errors out on delete", async () => {
@@ -86,12 +183,12 @@ describe("CardRepository", () => {
       const card2 = CardFactory({ id: 2, content: "Drink twice" });
       const card3 = CardFactory({ id: 3, content: "Drink thrice" });
 
-      it("#index returns a collection of cards", async () => {
-        mockGetAllAsync.mockResolvedValueOnce([card1, card2, card3]);
+      it("#index returns a collection of cards", () => {
+        mockGetAllSync.mockReturnValueOnce([card1, card2, card3]);
 
-        const result = await CardRepository.index(deck.id);
+        const result = CardRepository.index(deck.id);
 
-        expect(mockGetAllAsync).toHaveBeenCalledWith(
+        expect(mockGetAllSync).toHaveBeenCalledWith(
           "SELECT * FROM cards WHERE deck_id=?",
           deck.id,
         );
@@ -101,22 +198,64 @@ describe("CardRepository", () => {
         expect(result.payload).toEqual([card1, card2, card3]);
       });
 
-      it("#create returns the new cards id + content", async () => {
-        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 4 });
+      it("#create creates the new card & fetches it", async () => {
+        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: card3.id });
+        mockGetFirstAsync.mockResolvedValueOnce(card3);
 
         const result = await CardRepository.create(deck.id, {
-          content: "Drink again",
+          content: card3.content,
         });
 
         expect(mockRunAsync).toHaveBeenCalledWith(
           'INSERT INTO cards ("deck_id", "content") VALUES (?, ?)',
           deck.id,
-          "Drink again",
+          card3.content,
+        );
+
+        expect(mockGetFirstAsync).toHaveBeenCalledWith(
+          "SELECT * FROM cards WHERE id=?",
+          card3.id,
         );
 
         expect(result.ok).toEqual(true);
         expect(result.message).toEqual(undefined);
-        expect(result.payload).toEqual({ id: 4, content: "Drink again" });
+        expect(result.payload).toEqual(card3);
+      });
+
+      it("#createMany creates the new cards & returns sum of changes", async () => {
+        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 1 });
+        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 2 });
+        mockRunAsync.mockResolvedValueOnce({ lastInsertRowId: 3 });
+
+        const result = await CardRepository.createMany(deck.id, [
+          { content: card1.content },
+          { content: card2.content },
+          { content: card3.content },
+        ]);
+
+        expect(mockRunAsync).toHaveBeenCalledTimes(3);
+
+        expect(mockRunAsync).toHaveBeenCalledWith(
+          'INSERT INTO cards ("deck_id", "content") VALUES (?, ?)',
+          deck.id,
+          card1.content,
+        );
+
+        expect(mockRunAsync).toHaveBeenCalledWith(
+          'INSERT INTO cards ("deck_id", "content") VALUES (?, ?)',
+          deck.id,
+          card2.content,
+        );
+
+        expect(mockRunAsync).toHaveBeenCalledWith(
+          'INSERT INTO cards ("deck_id", "content") VALUES (?, ?)',
+          deck.id,
+          card3.content,
+        );
+
+        expect(result.ok).toEqual(true);
+        expect(result.message).toEqual(undefined);
+        expect(result.changes).toEqual(3);
       });
 
       describe("#delete", () => {
