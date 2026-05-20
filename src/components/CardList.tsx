@@ -38,7 +38,11 @@ export default function CardList() {
   // longer term could be useful for downloading/importing decks
   const addCards = useCallback(
     async (newCards: CardPermittedFields[]) => {
-      await createManyCards(newCards);
+      try {
+        await createManyCards(newCards);
+      } catch (e: any) {
+        setErrorMessage(e.message);
+      }
     },
     [createManyCards],
   );

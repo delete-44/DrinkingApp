@@ -47,6 +47,17 @@ describe("CardList", () => {
       expect(screen.queryByText("Error: Failed to load Deck.")).toBeNull();
     });
 
+    it("shows an error message if the create act fails", async () => {
+      mockCreateManyCards.mockRejectedValueOnce(new Error("test error"));
+
+      fireEvent.press(
+        screen.getByRole("button", { name: "Load Default Cards" }),
+      );
+
+      expect(mockCreateManyCards).toHaveBeenCalledWith(DEFAULT_CARDS);
+      await waitFor(() => expect(screen.getByText("test error")).toBeVisible());
+    });
+
     it("allows the user to load the default deck", () => {
       fireEvent.press(
         screen.getByRole("button", { name: "Load Default Cards" }),

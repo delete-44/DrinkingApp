@@ -71,8 +71,8 @@ export function StorageProvider({ children }: StorageProviderProps) {
         ]);
 
       setSelectedDeckIdx(loadedSelectedDeckIdx);
-      setDecks(loadedDecks.payload || []);
-      setPlayers(loadedPlayers.payload || []);
+      setDecks(loadedDecks.payload);
+      setPlayers(loadedPlayers.payload);
 
       setIsLoading(false);
     };
