@@ -9,7 +9,7 @@ export function DeckFactory(overrides: Partial<TDeckData> = {}) {
     updated_at: "1970-01-02",
 
     // TODO: Remove
-    cards: ["Test Card 1"],
+    // cards: ["Test Card 1"],
     ...overrides,
   });
 }

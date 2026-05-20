@@ -28,6 +28,7 @@ describe("Play", () => {
   const mockCardContext = CardContextFactory({ cards });
 
   beforeEach(() => {
+    // @ts-expect-error
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
   });
 

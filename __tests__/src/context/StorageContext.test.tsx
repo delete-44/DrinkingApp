@@ -187,13 +187,11 @@ describe("StorageContext", () => {
       const deck1 = DeckFactory({
         id: 1,
         name: "Default",
-        cards: ["Test card"],
       });
 
       const deck2 = DeckFactory({
         id: 2,
         name: "Second Deck",
-        cards: ["Test 2"],
       });
 
       const decks = [deck1, deck2];
@@ -318,7 +316,6 @@ describe("StorageContext", () => {
 
           const expectedDeck = DeckFactory({
             name: "Updated",
-            cards: decks[1].cards,
             id: decks[1].id,
           });
 
