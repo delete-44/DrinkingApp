@@ -4,16 +4,10 @@ import { TDeckData } from "../types";
 export class Deck {
   readonly id: number;
   name: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 
-  // TODO: Remove the defaults
-  constructor({
-    id = -1,
-    name,
-    created_at = "1970-01-01",
-    updated_at = "1970-01-02",
-  }: TDeckData) {
+  constructor({ id, name, created_at, updated_at }: TDeckData) {
     this.id = id;
     this.name = name;
     this.created_at = created_at;

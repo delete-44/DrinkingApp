@@ -29,10 +29,10 @@ export type TPatchResponse = ResponseMeta & {
 };
 
 export type TDeckData = {
-  id?: number;
+  id: number;
   name: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type TCardData = {

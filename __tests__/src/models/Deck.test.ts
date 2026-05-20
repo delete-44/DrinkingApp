@@ -40,7 +40,8 @@ describe("Deck", () => {
       const deckData = {
         id: 1,
         name: "Test Deck",
-        cards: [],
+        created_at: "1970-01-01",
+        updated_at: "1970-01-02",
       } as TDeckData;
 
       const deck = Deck.fromJson(deckData);
