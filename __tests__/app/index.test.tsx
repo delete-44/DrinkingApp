@@ -1,3 +1,4 @@
+import { CardFactory } from "@/factories/models/CardFactory";
 import { DeckFactory } from "@/factories/models/DeckFactory";
 import {
   fireEvent,
@@ -108,6 +109,8 @@ describe("Index", () => {
           players: ["Sally"],
           isLoading: false,
         });
+
+        jest.spyOn(testDeck, "ncards").mockReturnValue([]);
       });
 
       it("shows full deck selector", () => {
@@ -138,12 +141,16 @@ describe("Index", () => {
     describe("when missing players", () => {
       beforeEach(() => {
         const testDeck = DeckFactory();
+        const testCard = CardFactory();
+
         jest.spyOn(React, "useContext").mockReturnValue({
           selectedDeck: testDeck,
           decks: [testDeck],
           players: [],
           isLoading: false,
         });
+
+        jest.spyOn(testDeck, "ncards").mockReturnValue([testCard]);
       });
 
       it("shows a warning if user tries to start the game", async () => {
@@ -166,6 +173,7 @@ describe("Index", () => {
 
     describe("with a valid game state", () => {
       const testDeck = DeckFactory();
+      const testCard = CardFactory();
 
       beforeEach(() => {
         jest.spyOn(React, "useContext").mockReturnValue({
@@ -174,6 +182,8 @@ describe("Index", () => {
           players: ["Sally"],
           isLoading: false,
         });
+
+        jest.spyOn(testDeck, "ncards").mockReturnValue([testCard]);
       });
 
       it("hides DeckSelector when keyboard shows", async () => {

@@ -54,7 +54,7 @@ export type TPlayerData = {
 };
 
 export type GameState = {
-  card: string;
+  card: Card;
   player: Player;
 };
 
