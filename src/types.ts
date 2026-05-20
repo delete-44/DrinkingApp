@@ -33,9 +33,6 @@ export type TDeckData = {
   name: string;
   created_at?: string;
   updated_at?: string;
-
-  // TODO: Remove
-  cards?: string[];
 };
 
 export type TCardData = {

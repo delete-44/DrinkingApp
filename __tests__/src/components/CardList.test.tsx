@@ -15,7 +15,7 @@ import {
 import React from "react";
 
 describe("CardList", () => {
-  const testDeck = DeckFactory({ cards: [] });
+  const testDeck = DeckFactory();
   const mockCreateCard = jest.fn();
   const mockCreateManyCards = jest.fn();
   const mockDeleteCard = jest.fn();

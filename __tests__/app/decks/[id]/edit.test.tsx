@@ -12,7 +12,7 @@ import {
 import React from "react";
 
 describe("Edit", () => {
-  const testDeck = DeckFactory({ cards: [] });
+  const testDeck = DeckFactory();
   const mockUpdateDeck = jest.fn();
 
   const mockStorageContext = {

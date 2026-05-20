@@ -102,7 +102,7 @@ describe("Index", () => {
 
     describe("when deck has no cards", () => {
       beforeEach(() => {
-        const testDeck = DeckFactory({ cards: [] });
+        const testDeck = DeckFactory();
         jest.spyOn(React, "useContext").mockReturnValue({
           selectedDeck: testDeck,
           decks: [testDeck],

@@ -23,7 +23,7 @@ describe("New", () => {
     isLoading: true,
   };
 
-  const testDeck = DeckFactory({ cards: [] });
+  const testDeck = DeckFactory();
 
   it("shows loading state whilst initialising data", async () => {
     render(

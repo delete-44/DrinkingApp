@@ -16,7 +16,7 @@ export default function DecksLayout() {
 
     const loadedDeck = fetchDeck(parseInt(id));
 
-    if (!loadedDeck?.cards) {
+    if (!loadedDeck) {
       setPageLoadError("Failed to load Deck.");
       return undefined;
     }

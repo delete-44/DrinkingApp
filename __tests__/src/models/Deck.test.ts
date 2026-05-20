@@ -31,7 +31,6 @@ describe("Deck", () => {
         name: deck.name,
         created_at: deck.created_at,
         updated_at: deck.updated_at,
-        cards: deck.cards,
       });
     });
   });
@@ -48,7 +47,6 @@ describe("Deck", () => {
 
       expect(deck.id).toEqual(1);
       expect(deck.name).toEqual("Test Deck");
-      expect(deck.cards).toEqual([]);
     });
   });
 });
