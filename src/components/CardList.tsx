@@ -24,6 +24,7 @@ import {
 import { StorageContext } from "@/src/context/StorageContext";
 import { Deck } from "@/src/models/Deck";
 import { useCallback, useContext, useState } from "react";
+import { CardContext } from "../context/CardContext";
 
 type CardListProps = {
   deck: Deck;
@@ -33,8 +34,8 @@ export default function CardList({ deck }: CardListProps) {
   const [newCard, setNewCard] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { updateDeck, deckCards, createCard, deleteCard } =
-    useContext(StorageContext);
+  const { updateDeck } = useContext(StorageContext);
+  const { cards, createCard, deleteCard } = useContext(CardContext);
 
   // Callback for adding multiple cards to the deck; currently
   // used for inserting the default deck from the empty screen;
@@ -81,7 +82,7 @@ export default function CardList({ deck }: CardListProps) {
     <>
       <View style={styles.listContainer}>
         <FlatList
-          data={deckCards}
+          data={cards}
           renderItem={({ item }) => (
             <RemovableListItem
               label={item.content}

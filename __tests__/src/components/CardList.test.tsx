@@ -1,7 +1,9 @@
+import { CardContextFactory } from "@/factories/context/CardContextFactory";
 import { CardFactory } from "@/factories/models/CardFactory";
 import { DeckFactory } from "@/factories/models/DeckFactory";
 import CardList from "@/src/components/CardList";
 import DEFAULT_DECK from "@/src/constants/default-deck";
+import { CardContext } from "@/src/context/CardContext";
 import { StorageContext } from "@/src/context/StorageContext";
 import { BaseMockStorageContext } from "@/test-utils";
 import {
@@ -23,16 +25,23 @@ describe("CardList", () => {
     selectedDeck: testDeck,
     decks: [testDeck],
     updateDeck: mockUpdateDeck,
+  };
+
+  const mockCardContext = CardContextFactory({
+    deck: testDeck,
+    cards: [],
     createCard: mockCreateCard,
     deleteCard: mockDeleteCard,
-  };
+  });
 
   describe("with no cards initialised", () => {
     beforeEach(() => {
       render(
-        <StorageContext.Provider value={mockStorageContext}>
-          <CardList deck={testDeck} />
-        </StorageContext.Provider>,
+        <CardContext.Provider value={mockCardContext}>
+          <StorageContext.Provider value={mockStorageContext}>
+            <CardList deck={testDeck} />
+          </StorageContext.Provider>
+        </CardContext.Provider>,
       );
     });
 
@@ -147,17 +156,23 @@ describe("CardList", () => {
       ...BaseMockStorageContext,
       selectedDeck: testDeck,
       decks: [testDeck],
-      deckCards: [card1, card2, card3],
       updateDeck: mockUpdateDeck,
+    };
+
+    const mockCardContext = CardContextFactory({
+      deck: testDeck,
+      cards: [card1, card2, card3],
       createCard: mockCreateCard,
       deleteCard: mockDeleteCard,
-    };
+    });
 
     beforeEach(() => {
       render(
-        <StorageContext.Provider value={mockStorageContext}>
-          <CardList deck={testDeck} />
-        </StorageContext.Provider>,
+        <CardContext.Provider value={mockCardContext}>
+          <StorageContext.Provider value={mockStorageContext}>
+            <CardList deck={testDeck} />
+          </StorageContext.Provider>
+        </CardContext.Provider>,
       );
     });
 
