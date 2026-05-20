@@ -209,7 +209,8 @@ describe("CardContext", () => {
 
         const cardContext = renderCardContext(deck);
 
-        expect(CardRepository.index).toHaveBeenCalledTimes(2);
+        // On init
+        expect(CardRepository.index).toHaveBeenCalledTimes(1);
 
         expect(cardContext.current.cards).toEqual([card1, card2, card3]);
 
@@ -224,7 +225,7 @@ describe("CardContext", () => {
         );
 
         // State is set by fetching complete index from repository
-        expect(CardRepository.index).toHaveBeenCalledTimes(3);
+        expect(CardRepository.index).toHaveBeenCalledTimes(2);
       });
     });
 

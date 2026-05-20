@@ -68,6 +68,7 @@ export type CardContextProps = {
   createCard: (patch: CardPermittedFields) => Promise<void>;
   createManyCards: (patches: CardPermittedFields[]) => Promise<void>;
   deleteCard: (id: number) => Promise<void>;
+  isLoading: boolean;
 };
 
 export type StorageProviderProps = {

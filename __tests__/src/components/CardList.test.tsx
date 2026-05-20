@@ -32,7 +32,7 @@ describe("CardList", () => {
     beforeEach(() => {
       render(
         <CardContext.Provider value={mockCardContext}>
-          <CardList deck={testDeck} />
+          <CardList />
         </CardContext.Provider>,
       );
     });
@@ -159,7 +159,7 @@ describe("CardList", () => {
       render(
         <CardContext.Provider value={mockCardContext}>
           <StorageContext.Provider value={mockStorageContext}>
-            <CardList deck={testDeck} />
+            <CardList />
           </StorageContext.Provider>
         </CardContext.Provider>,
       );

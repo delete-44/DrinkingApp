@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Pressable,
@@ -21,20 +22,15 @@ import {
   SPACING_LG,
   SPACING_SM,
 } from "@/src/constants/style-constants";
-import { Deck } from "@/src/models/Deck";
 import { useCallback, useContext, useState } from "react";
 import { CardContext } from "../context/CardContext";
 import { CardPermittedFields } from "../repositories/CardRepository";
 
-type CardListProps = {
-  deck: Deck;
-};
-
-export default function CardList({ deck }: CardListProps) {
+export default function CardList() {
   const [newCard, setNewCard] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { cards, createCard, createManyCards, deleteCard } =
+  const { isLoading, cards, createCard, createManyCards, deleteCard } =
     useContext(CardContext);
 
   // Callback for adding multiple cards to the deck; currently
@@ -88,7 +84,16 @@ export default function CardList({ deck }: CardListProps) {
               removeItemCb={() => removeCard(item.id)}
             />
           )}
-          ListEmptyComponent={<CardListEmptyState addCards={addCards} />}
+          ListEmptyComponent={
+            isLoading ? (
+              <ActivityIndicator
+                color="#fff"
+                accessibilityLabel="Loading Cards"
+              />
+            ) : (
+              <CardListEmptyState addCards={addCards} />
+            )
+          }
           ItemSeparatorComponent={HorizontalDivider}
         />
       </View>

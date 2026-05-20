@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import globalStyles from "@/assets/global-styles";
 import ErrorScreen from "@/src/components/status/ErrorScreen";
+import LoadingScreen from "@/src/components/status/LoadingScreen";
 import { SPACING_MD } from "@/src/constants/style-constants";
 import { CardContext } from "@/src/context/CardContext";
 import { StorageContext } from "@/src/context/StorageContext";
@@ -14,8 +15,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Play() {
   useKeepAwake();
 
-  const { players } = useContext(StorageContext);
-  const { cards } = useContext(CardContext);
+  const { players, isLoading: isStorageContextLoading } =
+    useContext(StorageContext);
+  const { cards, isLoading: isCardContextLoading } = useContext(CardContext);
 
   const [game, setGame] = useState<Game>();
   const [gameState, setGameState] = useState<GameState>();
@@ -23,13 +25,22 @@ export default function Play() {
 
   useEffect(() => {
     try {
+      if (isStorageContextLoading || isCardContextLoading) {
+        return;
+      }
+
       const newGame = new Game(cards, players);
       setGame(newGame);
       setGameState(newGame.drawCard());
     } catch (e: any) {
       setErrorMessage(e.message);
     }
-  }, [cards, players]);
+  }, [cards, isCardContextLoading, isStorageContextLoading, players]);
+
+  // Loading screen
+  if (isStorageContextLoading || isCardContextLoading) {
+    return <LoadingScreen label={"Loading Game"} />;
+  }
 
   // Error screen
   if (!game || !gameState || errorMessage) {

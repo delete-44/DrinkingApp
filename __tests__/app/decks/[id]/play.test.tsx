@@ -32,6 +32,37 @@ describe("Play", () => {
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
   });
 
+  it("shows a loading spinner if storage context is loading", () => {
+    const mockStorageContext = {
+      ...BaseMockStorageContext,
+      isLoading: true,
+    };
+
+    render(
+      <CardContext.Provider value={mockCardContext}>
+        <StorageContext.Provider value={mockStorageContext}>
+          <Play />
+        </StorageContext.Provider>
+      </CardContext.Provider>,
+    );
+
+    expect(screen.getByLabelText("Loading Game")).toBeVisible();
+  });
+
+  it("shows a loading spinner if card context is loading", () => {
+    const mockCardContext = CardContextFactory({ isLoading: true });
+
+    render(
+      <CardContext.Provider value={mockCardContext}>
+        <StorageContext.Provider value={mockStorageContext}>
+          <Play />
+        </StorageContext.Provider>
+      </CardContext.Provider>,
+    );
+
+    expect(screen.getByLabelText("Loading Game")).toBeVisible();
+  });
+
   it("shows a CTA to return home if the initialisation fails", () => {
     render(
       <CardContext.Provider value={mockCardContext}>

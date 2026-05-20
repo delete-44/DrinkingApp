@@ -18,6 +18,7 @@ export function CardContextFactory(
     createCard: jest.fn(),
     createManyCards: jest.fn(),
     deleteCard: jest.fn(),
+    isLoading: false,
     ...overrides,
   };
 }

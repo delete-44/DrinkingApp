@@ -9,17 +9,21 @@ import {
 export const CardContext = createContext({} as CardContextProps);
 
 export function CardProvider({ deck, children }: CardProviderProps) {
-  const [cards, setCards] = useState<Card[]>(() => {
-    return deck ? deck.cards() : [];
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [cards, setCards] = useState<Card[]>([]);
 
   useEffect(() => {
+    setIsLoading(true);
+
     if (!deck) {
       setCards([]);
+      setIsLoading(false);
+
       return;
     }
 
     setCards(deck!.cards());
+    setIsLoading(false);
   }, [deck]);
 
   const createCard = async (patch: CardPermittedFields) => {
@@ -71,6 +75,7 @@ export function CardProvider({ deck, children }: CardProviderProps) {
     createCard,
     createManyCards,
     deleteCard,
+    isLoading,
   };
 
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>;

@@ -14,7 +14,7 @@ export default function DeckForm({ deck, saveDeckCallback }: DeckFormProps) {
     <SafeAreaView style={globalStyles.backgroundGradient}>
       <DeckTitlebar saveDeckCallback={saveDeckCallback} deck={deck} />
 
-      <CardList deck={deck} />
+      <CardList />
     </SafeAreaView>
   );
 }
