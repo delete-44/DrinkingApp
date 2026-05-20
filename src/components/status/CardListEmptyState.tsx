@@ -1,22 +1,42 @@
 import globalStyles from "@/assets/global-styles";
-import DEFAULT_DECK from "@/src/constants/default-deck";
+import { DEFAULT_CARDS } from "@/src/constants/default-deck";
 import { SPACING_MD, SPACING_SM } from "@/src/constants/style-constants";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { CardPermittedFields } from "@/src/repositories/CardRepository";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 type CardListEmptyStateProps = {
-  addCards: (cards: string[]) => void;
+  addCards: (cards: CardPermittedFields[]) => void;
 };
 
 export default function CardListEmptyState({
   addCards,
 }: CardListEmptyStateProps) {
+  const [isActive, setIsActive] = useState(false);
+
+  if (isActive) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator color="#fff" accessibilityLabel="Loading Cards" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Pressable
         role="button"
         style={globalStyles.button}
         onPress={() => {
-          addCards(DEFAULT_DECK.cards);
+          setIsActive(true);
+          addCards(DEFAULT_CARDS);
         }}
       >
         <Text style={globalStyles.buttonText}>Load Default Cards</Text>
