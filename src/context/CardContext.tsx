@@ -9,7 +9,9 @@ import {
 export const CardContext = createContext({} as CardContextProps);
 
 export function CardProvider({ deck, children }: CardProviderProps) {
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<Card[]>(() => {
+    return deck ? deck.cards() : [];
+  });
 
   useEffect(() => {
     if (!deck) {
@@ -17,7 +19,7 @@ export function CardProvider({ deck, children }: CardProviderProps) {
       return;
     }
 
-    setCards(deck?.ncards());
+    setCards(deck!.cards());
   }, [deck]);
 
   const createCard = async (deckId: number, patch: CardPermittedFields) => {
@@ -42,7 +44,7 @@ export function CardProvider({ deck, children }: CardProviderProps) {
       throw new Error(resp.message);
     }
 
-    const newCards = deck!.ncards();
+    const newCards = deck!.cards();
 
     setCards(newCards);
   };

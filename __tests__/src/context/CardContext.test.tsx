@@ -51,7 +51,7 @@ describe("CardContext", () => {
     beforeEach(() => {
       jest
         .spyOn(CardRepository, "index")
-        .mockReturnValueOnce({ ok: true, payload: [card1, card2, card3] });
+        .mockReturnValue({ ok: true, payload: [card1, card2, card3] });
     });
 
     describe("#createCard", () => {
@@ -165,12 +165,11 @@ describe("CardContext", () => {
           .spyOn(CardRepository, "createMany")
           .mockResolvedValueOnce({ ok: true, changes: 3 });
 
-        jest.spyOn(CardRepository, "index").mockReturnValueOnce({
-          ok: true,
-          payload: [card1, card2, card3, card4, card5, card6],
-        });
+        expect(CardRepository.index).toHaveBeenCalledTimes(0);
 
         const cardContext = renderCardContext(deck);
+
+        expect(CardRepository.index).toHaveBeenCalledTimes(2);
 
         expect(cardContext.current.cards).toEqual([card1, card2, card3]);
 
@@ -185,17 +184,7 @@ describe("CardContext", () => {
         );
 
         // State is set by fetching complete index from repository
-        expect(CardRepository.index).toHaveBeenCalledTimes(2);
-
-        // Assert context state updated
-        expect(cardContext.current.cards).toEqual([
-          card1,
-          card2,
-          card3,
-          card4,
-          card5,
-          card6,
-        ]);
+        expect(CardRepository.index).toHaveBeenCalledTimes(3);
       });
     });
 

@@ -110,7 +110,7 @@ describe("Index", () => {
           isLoading: false,
         });
 
-        jest.spyOn(testDeck, "ncards").mockReturnValue([]);
+        jest.spyOn(testDeck, "cards").mockReturnValue([]);
       });
 
       it("shows full deck selector", () => {
@@ -150,7 +150,7 @@ describe("Index", () => {
           isLoading: false,
         });
 
-        jest.spyOn(testDeck, "ncards").mockReturnValue([testCard]);
+        jest.spyOn(testDeck, "cards").mockReturnValue([testCard]);
       });
 
       it("shows a warning if user tries to start the game", async () => {
@@ -183,7 +183,7 @@ describe("Index", () => {
           isLoading: false,
         });
 
-        jest.spyOn(testDeck, "ncards").mockReturnValue([testCard]);
+        jest.spyOn(testDeck, "cards").mockReturnValue([testCard]);
       });
 
       it("hides DeckSelector when keyboard shows", async () => {

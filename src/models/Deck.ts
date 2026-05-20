@@ -1,5 +1,6 @@
 import { CardRepository } from "../repositories/CardRepository";
 import { TDeckData } from "../types";
+import { Card } from "./Card";
 
 export class Deck {
   readonly id: number;
@@ -14,7 +15,7 @@ export class Deck {
     this.updated_at = updated_at;
   }
 
-  ncards() {
+  cards(): Card[] {
     const resp = CardRepository.index(this.id);
 
     return resp.payload;

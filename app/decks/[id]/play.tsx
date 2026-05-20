@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Play() {
   useKeepAwake();
 
-  const { players, isLoading } = useContext(StorageContext);
+  const { players } = useContext(StorageContext);
   const { cards } = useContext(CardContext);
 
   const [game, setGame] = useState<Game>();
@@ -29,7 +29,7 @@ export default function Play() {
     } catch (e: any) {
       setErrorMessage(e.message);
     }
-  }, [isLoading, cards, players]);
+  }, [cards, players]);
 
   // Error screen
   if (!game || !gameState || errorMessage) {

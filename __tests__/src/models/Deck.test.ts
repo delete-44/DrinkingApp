@@ -5,7 +5,7 @@ import { CardRepository } from "@/src/repositories/CardRepository";
 import { TDeckData } from "@/src/types";
 
 describe("Deck", () => {
-  describe("#ncards", () => {
+  describe("#cards", () => {
     it("loads cards associated with this deck", () => {
       const deck = DeckFactory();
       const card1 = CardFactory({ id: 1, deck_id: deck.id });
@@ -16,7 +16,7 @@ describe("Deck", () => {
         .spyOn(CardRepository, "index")
         .mockReturnValueOnce({ ok: true, payload: [card1, card2, card3] });
 
-      const res = deck.ncards();
+      const res = deck.cards();
 
       expect(res).toEqual([card1, card2, card3]);
     });
