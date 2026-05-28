@@ -1,6 +1,12 @@
 import { migrate } from "@/db/migrate";
+import { seed } from "@/db/seed";
 import MigrationFactory from "@/factories/MigrationFactory";
 import SQLiteDatabaseFactory from "@/factories/SQLiteDatabaseFactory";
+
+jest.mock("@/db/seed", () => ({
+  ...jest.requireActual("@/db/seed"),
+  seed: jest.fn(),
+}));
 
 describe("migrate", () => {
   const mockUp1 = jest.fn();
@@ -49,6 +55,7 @@ describe("migrate", () => {
     expect(mockUp5).not.toHaveBeenCalled();
 
     expect(mockExecAsync).toHaveBeenCalledWith("PRAGMA user_version = 2");
+    expect(seed).toHaveBeenCalledWith(mockDb);
   });
 
   it("runs all migrations when user version is unset", async () => {
@@ -63,6 +70,7 @@ describe("migrate", () => {
     expect(mockUp5).toHaveBeenCalledWith(mockDb);
 
     expect(mockExecAsync).toHaveBeenCalledWith("PRAGMA user_version = 5");
+    expect(seed).toHaveBeenCalledWith(mockDb);
   });
 
   it("runs only pending migrations when user DB version is out of date", async () => {
@@ -79,5 +87,7 @@ describe("migrate", () => {
     expect(mockUp5).toHaveBeenCalledWith(mockDb);
 
     expect(mockExecAsync).toHaveBeenCalledWith("PRAGMA user_version = 5");
+
+    expect(seed).not.toHaveBeenCalled();
   });
 });
