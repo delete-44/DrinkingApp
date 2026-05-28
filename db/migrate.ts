@@ -1,6 +1,7 @@
 import { type SQLiteDatabase } from "expo-sqlite";
 import { allMigrations } from "./migrations";
 import { TDatabaseMigration } from "./migrations/TDatabaseMigration";
+import { seed } from "./seed";
 
 export async function migrate(
   db: SQLiteDatabase,
@@ -10,7 +11,8 @@ export async function migrate(
     user_version: number;
   }>("PRAGMA user_version");
 
-  let currentDbVersion = pragmaUserVersion?.user_version || 0;
+  const startingDbVersion = pragmaUserVersion?.user_version || 0;
+  let currentDbVersion = startingDbVersion;
 
   console.log("[DB] Initialising DB at version:", currentDbVersion);
 
@@ -30,6 +32,11 @@ export async function migrate(
 
       break;
     }
+  }
+
+  if (startingDbVersion === 0) {
+    // Load default deck into the DB if this is users first run
+    await seed(db);
   }
 
   await db.execAsync(`PRAGMA user_version = ${currentDbVersion}`);
