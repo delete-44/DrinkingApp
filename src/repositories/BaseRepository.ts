@@ -6,4 +6,8 @@ export abstract class BaseRepository {
   static initialise(database: SQLiteDatabase) {
     this.db = database;
   }
+
+  protected static validate(patch: any) {
+    throw new Error("Not implemented");
+  }
 }

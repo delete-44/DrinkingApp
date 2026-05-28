@@ -11,7 +11,7 @@ import { BaseRepository } from "./BaseRepository";
 export type PlayerPermittedFields = Pick<TPlayerData, "name">;
 
 export class PlayerRepository extends BaseRepository {
-  private static _validate({ name }: PlayerPermittedFields) {
+  protected static validate({ name }: PlayerPermittedFields) {
     if (!name) {
       throw new ValidationError("Player name cannot be empty");
     }
@@ -46,7 +46,7 @@ export class PlayerRepository extends BaseRepository {
     name,
   }: PlayerPermittedFields): Promise<TItemResponse<Player>> {
     try {
-      this._validate({ name: name.trim() });
+      this.validate({ name: name.trim() });
 
       const created = await this.db.runAsync(
         `INSERT INTO players ("name") VALUES (?)`,

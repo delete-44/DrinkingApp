@@ -107,7 +107,7 @@ describe("PlayerList", () => {
       expect(screen.queryByText("test error")).toBeNull();
     });
 
-    it("trims whitespace from player names", async () => {
+    it("successfully creates players", async () => {
       render(
         <StorageContext.Provider value={mockStorageContext}>
           <PlayerList />
@@ -115,7 +115,7 @@ describe("PlayerList", () => {
       );
 
       const input = screen.getByLabelText("Name");
-      fireEvent.changeText(input, " Alice  ");
+      fireEvent.changeText(input, "Alice");
 
       const addButton = screen.getByRole("button", { name: "Add Player" });
       fireEvent.press(addButton);

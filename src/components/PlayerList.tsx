@@ -34,7 +34,7 @@ export default function PlayerList() {
   const addPlayer = useCallback(
     async (name: string) => {
       try {
-        await createPlayer({ name: name.trim() });
+        await createPlayer({ name });
         setNewPlayer("");
       } catch (e: any) {
         setErrorMessage(e.message);
