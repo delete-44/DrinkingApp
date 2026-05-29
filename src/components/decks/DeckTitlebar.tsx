@@ -47,11 +47,13 @@ export default function DeckTitlebar({
 
   if (editingDeckName) {
     return (
-      <View style={styles.deckNameWrapper} role="form">
+      <View style={styles.activeStateWrapper} role="form">
         <WrappedTextInput
           label="Deck Name"
           value={workingDeckName}
           errorMessage={deckNameErrorMessage}
+          submitBehaviour="blurAndSubmit"
+          onSubmit={() => updateDeckName(workingDeckName)}
           onChange={(text) => {
             setDeckNameErrorMessage("");
             setWorkingDeckName(text);
@@ -73,7 +75,7 @@ export default function DeckTitlebar({
 
   return (
     <>
-      <View style={styles.actionsWrapper}>
+      <View style={styles.inertStateWrapper}>
         <Text style={[globalStyles.textLg, { flex: 1 }]}>{deck.name}</Text>
 
         <Pressable
@@ -107,7 +109,7 @@ export default function DeckTitlebar({
 }
 
 const baseTitlebar = {
-  padding: SPACING_LG,
+  paddingHorizontal: SPACING_LG,
   flexDirection: "row",
   gap: SPACING_SM,
 
@@ -116,18 +118,18 @@ const baseTitlebar = {
 } as ViewStyle;
 
 const styles = StyleSheet.create({
-  actionsWrapper: {
+  inertStateWrapper: {
     ...baseTitlebar,
     alignItems: "center",
+    paddingVertical: SPACING_LG,
   },
-  deckNameWrapper: {
+  activeStateWrapper: {
     ...baseTitlebar,
     alignItems: "flex-end",
-    paddingBottom: SPACING_LG - FORM_LABEL_HEIGHT,
   },
   confirmButton: {
     ...globalStyles.buttonHighlight,
-    marginBottom: FORM_LABEL_HEIGHT,
+    marginBottom: FORM_LABEL_HEIGHT + 1.5, // Pixel-perfect tweaks to align this with inert-state buttons
     height: FORM_CONTROL_SIZE,
   },
 });

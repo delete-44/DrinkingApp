@@ -69,7 +69,6 @@ export default StyleSheet.create({
   },
   textInput: {
     fontFamily: "JockeyOne",
-    flex: 1,
     backgroundColor: CONTENT_COLOR,
     borderWidth: 5,
     borderColor: DECORATION_COLOR,
