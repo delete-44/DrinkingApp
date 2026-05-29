@@ -102,6 +102,8 @@ export default function CardList() {
             label="Card Content"
             value={newCard}
             errorMessage={errorMessage}
+            multiline
+            submitBehaviour="newline"
             onChange={(text) => {
               setErrorMessage("");
               setNewCard(text);
