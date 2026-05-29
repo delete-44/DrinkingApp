@@ -109,7 +109,7 @@ export default function DeckTitlebar({
 }
 
 const baseTitlebar = {
-  padding: SPACING_LG,
+  paddingHorizontal: SPACING_LG,
   flexDirection: "row",
   gap: SPACING_SM,
 
@@ -120,18 +120,16 @@ const baseTitlebar = {
 const styles = StyleSheet.create({
   inertStateWrapper: {
     ...baseTitlebar,
-    marginTop: FORM_LABEL_HEIGHT,
-    minHeight: FORM_CONTROL_SIZE + 56,
     alignItems: "center",
+    paddingVertical: SPACING_LG,
   },
   activeStateWrapper: {
     ...baseTitlebar,
     alignItems: "flex-end",
-    paddingBottom: SPACING_LG - FORM_LABEL_HEIGHT,
   },
   confirmButton: {
     ...globalStyles.buttonHighlight,
-    marginBottom: FORM_LABEL_HEIGHT + 2,
+    marginBottom: FORM_LABEL_HEIGHT + 1.5, // Pixel-perfect tweaks to align this with inert-state buttons
     height: FORM_CONTROL_SIZE,
   },
 });
