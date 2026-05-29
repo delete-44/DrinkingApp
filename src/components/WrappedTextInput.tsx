@@ -5,15 +5,24 @@ import {
   SPACING_SM,
   WARNING_COLOR,
 } from "@/src/constants/style-constants";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  StyleSheet,
+  SubmitBehavior,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import SVG from "./SVG";
 
 type WrappedTextInputProps = {
   label: string;
   value: string;
   errorMessage: string;
+  submitBehaviour?: SubmitBehavior;
   autofocus?: boolean;
+  multiline?: boolean;
   onChange: (text: string) => void;
+  onSubmit?: () => void;
 };
 
 export default function WrappedTextInput({
@@ -21,7 +30,10 @@ export default function WrappedTextInput({
   value,
   errorMessage,
   autofocus = false,
+  multiline = false,
+  submitBehaviour,
   onChange,
+  onSubmit,
 }: WrappedTextInputProps) {
   return (
     <View style={globalStyles.formGroup}>
@@ -40,6 +52,10 @@ export default function WrappedTextInput({
         value={value}
         onChangeText={onChange}
         autoFocus={autofocus}
+        multiline={multiline}
+        numberOfLines={5}
+        onSubmitEditing={onSubmit}
+        submitBehavior={submitBehaviour}
       />
 
       <View style={style.textWrapper}>
@@ -69,7 +85,7 @@ export default function WrappedTextInput({
 
 const style = StyleSheet.create({
   textWrapper: {
-    height: FORM_LABEL_HEIGHT,
+    minHeight: FORM_LABEL_HEIGHT,
     marginLeft: 5,
     gap: SPACING_SM,
     flexDirection: "row",
